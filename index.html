@@ -640,8 +640,9 @@
   // ✅ 初期設備（税别单价 unitEx）
   const initItems = [
     { name:"レジスター", qty:1, unitEx:90000 },
-    { name:"プリンター", qty:1, unitEx:0 },
-    { name:"キャッシュドロア", qty:1, unitEx:0 },
+    { name:"プリンター", qty:1, unitEx:29000 },
+     { name:"タブレット", qty:1, unitEx:35000 },
+    { name:"キャッシュドロア", qty:1, unitEx:8000 },
   ];
 
   // ✅ 利用料：月额 8800（税込）→ 税别 8000（10%）
@@ -829,7 +830,7 @@ ${recLines}
 
       if(json && json.ok){
         document.getElementById("submitMsg").innerHTML =
-          `<span class="ok">送信完了：申込ID ${json.appId || ""}（PDF/XLSXは管理者メールへ）</span>`;
+          `<span class="ok">送信完了：申込ID ${json.appId || ""}</span>`;
       }else{
         document.getElementById("submitMsg").innerHTML =
           `<span class="err">送信失敗：${(json && (json.error||json.message)) || "不明なエラー"}</span>`;
