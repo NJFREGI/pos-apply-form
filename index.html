@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>收银系统申请（NJF REGI 风格 Demo）</title>
+  <title>NJFREGI レジシステム申込フォーム（Demo）</title>
   <style>
     :root{
       --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#6b7280;
@@ -13,7 +13,7 @@
     }
     *{box-sizing:border-box}
     body{
-      margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans SC","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+      margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
       background:var(--bg); color:var(--text);
     }
     header{
@@ -27,9 +27,20 @@
     .brand{display:flex; flex-direction:column; gap:2px}
     .brand b{font-size:16px}
     .brand span{font-size:12px; color:var(--muted)}
-    .pill{
-      font-size:12px; padding:6px 10px; border:1px solid var(--border);
-      border-radius:999px; background:#fff;
+
+    /* === Step Blocks（4つのブロック） === */
+    .stepBlocks{display:flex; gap:8px; align-items:center; flex-wrap:nowrap; user-select:none;}
+    .sb{
+      width:44px; height:28px; border-radius:10px;
+      border:1px solid var(--border); background:#fff; color:var(--muted);
+      font-weight:800; font-size:12px;
+      display:flex; align-items:center; justify-content:center;
+      transition: all .2s ease;
+    }
+    .sb.done{background:#eef2ff; border-color:#c7d2fe; color:#374151;}
+    .sb.active{
+      background:var(--primary); border-color:var(--primary2); color:#fff;
+      box-shadow:0 10px 20px rgba(37,99,235,.18);
     }
 
     .progress{
@@ -102,87 +113,101 @@
     .divider{height:1px; background:var(--border); margin:12px 0}
   </style>
 </head>
+
 <body>
 <header>
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <b>收银系统申请表（手机网页 Demo）</b
+        <b>NJFREGI レジシステム申込フォーム（Demo）</b>
+        <span>ステップ入力・郵便番号から住所自動入力・自動合計</span>
       </div>
-      <div class="pill" id="stepPill">Step 1 / 4</div>
+
+      <div class="stepBlocks" id="stepBlocks" aria-label="ステップ">
+        <div class="sb" data-i="0">1</div>
+        <div class="sb" data-i="1">2</div>
+        <div class="sb" data-i="2">3</div>
+        <div class="sb" data-i="3">4</div>
+      </div>
     </div>
+
     <div class="progress"><div class="bar" id="bar"></div></div>
   </div>
 </header>
 
 <main class="wrap">
-
   <!-- Step 1 -->
   <section class="card step active" id="step1">
-    <h2>事项确认（必须全部勾选）</h2>
+    <h2>重要事項確認（すべてチェック必須）</h2>
 
     <div class="checklist" id="checks">
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>契约期间2年，满期后按1年自动更新</b>
-          <p>我已理解契约期间与自动更新规则。</p>
+          <b>契約期間は2年、満了後は1年ごとに自動更新</b>
+          <p>契約期間および自動更新ルールを理解しました。</p>
         </div>
       </div>
+
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>利用开始日：设备安装（含设置）完成之日</b>
-          <p>我已理解开始日可能晚于申込日。</p>
+          <b>利用開始日：機器の設置（設定含む）完了日</b>
+          <p>利用開始日は申込日より後になる場合があることを理解しました。</p>
         </div>
       </div>
+
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>最低利用24个月，提前解约需补足最低期间费用</b>
-          <p>我已理解中途解约的费用规则。</p>
+          <b>最低利用期間24ヶ月、途中解約は残期間費用が発生</b>
+          <p>途中解約時の費用ルールを理解しました。</p>
         </div>
       </div>
+
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>非推荐外接设备不做动作品质保证</b>
-          <p>使用非推荐设备产生的问题由客户自行承担。</p>
+          <b>推奨外機器の動作保証は対象外</b>
+          <p>推奨外機器の利用に伴う不具合はお客様責任となることを理解しました。</p>
         </div>
       </div>
+
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>数据保存最大24个月，25个月起可能被删除</b>
-          <p>我理解需要自行备份数据。</p>
+          <b>データ保存期間は最大24ヶ月（25ヶ月以降削除の可能性）</b>
+          <p>必要に応じてお客様側でバックアップが必要なことを理解しました。</p>
         </div>
       </div>
+
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>解约需提前1个月书面申请（解约申请书）</b>
-          <p>我理解解约办理方式。</p>
+          <b>解約は1ヶ月前までに書面で申請</b>
+          <p>解約手続き方法を理解しました。</p>
         </div>
       </div>
+
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
-          <b>同意个人信息用于：收银/订单处理、分析改善、咨询对应、法令对应</b>
-          <p>理解个人信息将依法妥善管理。</p>
+          <b>個人情報の利用目的に同意（精算・注文処理、改善、問合せ対応、法令対応）</b>
+          <p>個人情報は適切に管理されることを理解しました。</p>
         </div>
       </div>
     </div>
 
     <div class="row" style="margin-top:14px;">
-      <button class="btn" id="to2" disabled>下一步：填写基本信息</button>
+      <button class="btn" id="to2" disabled>次へ：基本情報</button>
     </div>
-    <div class="hint" id="checkHint">请先把上面所有确认事项勾选完毕。</div>
+    <div class="hint" id="checkHint">上記の重要事項をすべてチェックしてください。</div>
   </section>
 
   <!-- Step 2 -->
   <section class="card step" id="step2">
-    <h2>基本信息（契约者）</h2>
-    <p class="sub">对应PDF里的：商号/社名、地址、手机、E-mail、担当者等。</p>
+    <h2>基本情報（ご契約者）</h2>
+    <p class="sub">社名/屋号、住所、携帯番号、E-mail、担当者などを入力してください。</p>
 
     <div class="grid cols2">
       <div>
@@ -190,20 +215,20 @@
         <input id="applyDate" type="date">
       </div>
       <div>
-        <label>顾客代码（可选）</label>
-        <input id="customerCode" placeholder="例如：20260123001">
+        <label>顧客コード（任意）</label>
+        <input id="customerCode" placeholder="例：20260123001">
       </div>
       <div>
-        <label>商号/公司名 / 店铺名</label>
-        <input id="companyName" placeholder="例如：株式会社BBC">
+        <label>社名 / 屋号 / 店舗名</label>
+        <input id="companyName" placeholder="例：株式会社BBC">
       </div>
       <div>
-        <label>负责人 / 担当者名</label>
-        <input id="personName" placeholder="例如：丹野 龍介">
+        <label>担当者名</label>
+        <input id="personName" placeholder="例：丹野 龍介">
       </div>
 
       <div>
-        <label>手机</label>
+        <label>携帯番号</label>
         <input id="mobile" inputmode="tel" placeholder="090-xxxx-xxxx">
       </div>
       <div>
@@ -214,138 +239,138 @@
 
     <div class="divider"></div>
 
-    <h2>契约者地址（本社/本人住址）</h2>
+    <h2>ご契約者住所（本社/本人住所）</h2>
     <div class="grid cols2">
       <div>
-        <label>邮编（日本）</label>
-        <input id="zipCompany" inputmode="numeric" placeholder="例如：2730005（无需-）">
+        <label>郵便番号（日本）</label>
+        <input id="zipCompany" inputmode="numeric" placeholder="例：2730005（ハイフン不要）">
       </div>
       <div class="row" style="align-items:flex-end">
-        <button class="btn ghost" id="zipCompanyBtn" type="button">邮编自动填地址</button>
+        <button class="btn ghost" id="zipCompanyBtn" type="button">住所自動入力</button>
         <span class="small muted" id="zipCompanyMsg"></span>
       </div>
       <div style="grid-column:1/-1">
-        <label>街道地址（自动带出）</label>
-        <input id="addrCompany1" placeholder="例如：千葉県船橋市本町1丁目">
+        <label>住所（自動入力）</label>
+        <input id="addrCompany1" placeholder="例：千葉県船橋市本町1丁目">
       </div>
       <div style="grid-column:1/-1">
-        <label>门牌号 / 楼层（手动填写）</label>
-        <input id="addrCompany2" placeholder="例如：11-25 3F">
+        <label>番地・建物名（手入力）</label>
+        <input id="addrCompany2" placeholder="例：11-25 3F">
       </div>
     </div>
 
     <div class="row" style="margin-top:14px;">
-      <button class="btn secondary" id="back1">上一步</button>
-      <button class="btn" id="to3">下一步：设置先/请求先</button>
+      <button class="btn secondary" id="back1">戻る</button>
+      <button class="btn" id="to3">次へ：設置先/請求先</button>
     </div>
   </section>
 
   <!-- Step 3 -->
   <section class="card step" id="step3">
-    <h2>设置先（服务使用场所）</h2>
-    <p class="sub">支持“同上”：如果设置先与契约者地址一致，一键复制。</p>
+    <h2>設置先（サービス利用場所）</h2>
+    <p class="sub">「同上」ボタンで、ご契約者住所を設置先へコピーできます。</p>
 
     <div class="row">
-      <button class="btn ghost" id="copyCompanyToInstall" type="button">同上：复制契约者地址到设置先</button>
+      <button class="btn ghost" id="copyCompanyToInstall" type="button">同上：ご契約者住所を設置先へ</button>
     </div>
 
     <div class="grid cols2" style="margin-top:10px;">
       <div>
-        <label>设置先名称</label>
-        <input id="installName" placeholder="例如：麻辣湯倶楽部">
+        <label>設置先名称</label>
+        <input id="installName" placeholder="例：麻辣湯倶楽部">
       </div>
       <div>
-        <label>电话</label>
-        <input id="installTel" inputmode="tel" placeholder="例如：047-xxx-xxxx">
+        <label>電話番号</label>
+        <input id="installTel" inputmode="tel" placeholder="例：047-xxx-xxxx">
       </div>
       <div>
-        <label>邮编</label>
-        <input id="zipInstall" inputmode="numeric" placeholder="例如：2730005">
+        <label>郵便番号</label>
+        <input id="zipInstall" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
-        <button class="btn ghost" id="zipInstallBtn" type="button">邮编自动填地址</button>
+        <button class="btn ghost" id="zipInstallBtn" type="button">住所自動入力</button>
         <span class="small muted" id="zipInstallMsg"></span>
       </div>
       <div style="grid-column:1/-1">
-        <label>街道地址（自动带出）</label>
+        <label>住所（自動入力）</label>
         <input id="addrInstall1">
       </div>
       <div style="grid-column:1/-1">
-        <label>门牌号 / 楼层（手动填写）</label>
+        <label>番地・建物名（手入力）</label>
         <input id="addrInstall2">
       </div>
       <div>
-        <label>营业时间（可选）</label>
-        <input id="bizHours" placeholder="例如：11:00-23:00">
+        <label>営業時間（任意）</label>
+        <input id="bizHours" placeholder="例：11:00-23:00">
       </div>
       <div>
-        <label>定休日（可选）</label>
-        <input id="holiday" placeholder="例如：周一">
+        <label>定休日（任意）</label>
+        <input id="holiday" placeholder="例：月曜日">
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <h2>请款先 / 支付方式</h2>
-    <p class="sub">支持“同上”：如果请款先与设置先一致，一键复制。</p>
+    <h2>請求先 / 支払方法</h2>
+    <p class="sub">「同上」ボタンで、設置先住所を請求先へコピーできます。</p>
 
     <div class="row">
-      <button class="btn ghost" id="copyInstallToBill" type="button">同上：复制设置先到请款先</button>
+      <button class="btn ghost" id="copyInstallToBill" type="button">同上：設置先を請求先へ</button>
     </div>
 
     <div class="grid cols2" style="margin-top:10px;">
       <div>
-        <label>请款先名称</label>
-        <input id="billName" placeholder="例如：麻辣湯倶楽部">
+        <label>請求先名称</label>
+        <input id="billName" placeholder="例：麻辣湯倶楽部">
       </div>
       <div>
-        <label>支付方式</label>
+        <label>支払方法</label>
         <select id="payMethod">
-          <option value="振込">银行转账（振込）</option>
-          <option value="口座振替">自动扣款（口座振替）</option>
-          <option value="カード">信用卡（カード）</option>
+          <option value="振込">銀行振込</option>
+          <option value="口座振替">口座振替</option>
+          <option value="カード">クレジットカード</option>
         </select>
       </div>
       <div>
-        <label>邮编</label>
-        <input id="zipBill" inputmode="numeric" placeholder="例如：2730005">
+        <label>郵便番号</label>
+        <input id="zipBill" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
-        <button class="btn ghost" id="zipBillBtn" type="button">邮编自动填地址</button>
+        <button class="btn ghost" id="zipBillBtn" type="button">住所自動入力</button>
         <span class="small muted" id="zipBillMsg"></span>
       </div>
       <div style="grid-column:1/-1">
-        <label>街道地址（自动带出）</label>
+        <label>住所（自動入力）</label>
         <input id="addrBill1">
       </div>
       <div style="grid-column:1/-1">
-        <label>门牌号 / 楼层（手动填写）</label>
+        <label>番地・建物名（手入力）</label>
         <input id="addrBill2">
       </div>
       <div>
-        <label>请款期间（可选）</label>
-        <input id="billingTerm" placeholder="例如：2026/02/01 - 2028/01/31">
+        <label>請求期間（任意）</label>
+        <input id="billingTerm" placeholder="例：2026/02/01 - 2028/01/31">
       </div>
       <div>
-        <label>课金开始日（可选）</label>
+        <label>課金開始日（任意）</label>
         <input id="chargeStart" type="date">
       </div>
     </div>
 
     <div class="row" style="margin-top:14px;">
-      <button class="btn secondary" id="back2">上一步</button>
-      <button class="btn" id="to4">下一步：设备&服务选择</button>
+      <button class="btn secondary" id="back2">戻る</button>
+      <button class="btn" id="to4">次へ：機器/サービス</button>
     </div>
   </section>
 
   <!-- Step 4 -->
   <section class="card step" id="step4">
-    <h2>设备与服务（自动计算合计）</h2>
-    <p class="sub">单价可预设，客户只选数量。默认税率10%。你也可以后续把品项改成你自己的产品套餐。</p>
+    <h2>機器・サービス（自動計算）</h2>
+    <p class="sub">単価は事前設定、入力は数量のみ。税率はデモとして選択式です。</p>
 
     <div class="grid cols2">
       <div>
-        <label>默认税率</label>
+        <label>税率</label>
         <select id="taxRate">
           <option value="0.10" selected>10%</option>
           <option value="0.08">8%</option>
@@ -353,25 +378,25 @@
         </select>
       </div>
       <div>
-        <label>币种显示</label>
+        <label>通貨</label>
         <select id="currency">
-          <option value="JPY" selected>JPY（日元）</option>
-          <option value="CNY">CNY（人民币）</option>
+          <option value="JPY" selected>JPY（円）</option>
+          <option value="CNY">CNY（元）</option>
         </select>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <h2>初期费用（设备/工事/其他）</h2>
+    <h2>初期費用（機器/工事/その他）</h2>
     <table id="initTable">
       <thead>
         <tr>
-          <th style="width:30%">服务名称/型番</th>
+          <th style="width:30%">名称</th>
           <th style="width:12%">数量</th>
-          <th style="width:18%">税别单价</th>
-          <th class="num" style="width:20%">税别金额</th>
-          <th class="num" style="width:20%">税込金额</th>
+          <th style="width:18%">税別単価</th>
+          <th class="num" style="width:20%">税別金額</th>
+          <th class="num" style="width:20%">税込金額</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -379,16 +404,16 @@
 
     <div class="divider"></div>
 
-    <h2>利用料（服务）</h2>
+    <h2>利用料（サービス）</h2>
     <table id="recTable">
       <thead>
         <tr>
-          <th style="width:28%">服务名称</th>
-          <th style="width:16%">契约种别</th>
+          <th style="width:28%">サービス名</th>
+          <th style="width:16%">契約種別</th>
           <th style="width:12%">数量</th>
-          <th style="width:18%">税别单价</th>
-          <th class="num" style="width:13%">税别金额</th>
-          <th class="num" style="width:13%">税込金额</th>
+          <th style="width:18%">税別単価</th>
+          <th class="num" style="width:13%">税別金額</th>
+          <th class="num" style="width:13%">税込金額</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -397,44 +422,61 @@
     <div class="divider"></div>
 
     <div class="totalbox" id="totals">
-      <div class="line"><span class="muted">初期费用 合计（税别）</span><b id="initEx">-</b></div>
-      <div class="line"><span class="muted">初期费用 合计（税込）</span><b id="initIn">-</b></div>
-      <div class="line"><span class="muted">利用料 合计（税别）</span><b id="recEx">-</b></div>
-      <div class="line"><span class="muted">利用料 合计（税込）</span><b id="recIn">-</b></div>
+      <div class="line"><span class="muted">初期費用 合計（税別）</span><b id="initEx">-</b></div>
+      <div class="line"><span class="muted">初期費用 合計（税込）</span><b id="initIn">-</b></div>
+      <div class="line"><span class="muted">利用料 合計（税別）</span><b id="recEx">-</b></div>
+      <div class="line"><span class="muted">利用料 合計（税込）</span><b id="recIn">-</b></div>
       <div class="divider"></div>
-      <div class="line grand"><span>完工时应付（合计）</span><span id="grand">-</span></div>
-      <div class="hint">提示：这就是你PDF里“＜完工時お支払額＞”的逻辑：初期费用+利用料。你也可以把“利用料”改成月额/年额套餐。:contentReference[oaicite:5]{index=5}</div>
+      <div class="line grand"><span>完工時お支払額（合計）</span><span id="grand">-</span></div>
+      <div class="hint">※ デモ：初期費用＋利用料の合計です。</div>
     </div>
 
     <div class="divider"></div>
 
-    <h2>最后确认（演示提交）</h2>
-    <p class="sub">当前是前端演示：点击“生成申请摘要”会把数据整理成一段文本，方便你之后接后端API/邮件/数据库。</p>
-    <div class="row">
-      <button class="btn secondary" id="back3">上一步</button>
-      <button class="btn" id="makeSummary">生成申请摘要</button>
-      <button class="btn danger" id="resetAll" type="button">清空重填</button>
-    </div>
-    <div class="hint" id="submitMsg"></div>
-    <textarea id="summary" placeholder="这里会生成申请摘要（可复制）" style="margin-top:10px;"></textarea>
-  </section>
+    <h2>最終確認（デモ）</h2>
+    <p class="sub">「申込内容を作成」で内容を確認後、「送信」でGASへ送ります（PDF/XLSXは管理者メールへ）。</p>
 
+    <div class="row">
+      <button class="btn secondary" id="back3">戻る</button>
+      <button class="btn" id="makeSummary" type="button">申込内容を作成</button>
+
+      <!-- ✅ ここが送信ボタン -->
+      <button class="btn" id="sendToGAS" type="button">送信</button>
+
+      <button class="btn danger" id="resetAll" type="button">リセット</button>
+    </div>
+
+    <div class="hint" id="submitMsg"></div>
+    <textarea id="summary" placeholder="ここに申込内容が生成されます（コピー可）" style="margin-top:10px;"></textarea>
+  </section>
 </main>
 
 <script>
+  // ===============================
+  // ✅ GAS 接続設定（ここだけ自分用に固定）
+  // ===============================
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxf3SVmq4bi7VU-7USK6jbHXBDAApKK-Sfw1TgJMNDsRp4cJ9rxzGPlqscKylc6CnWfvA/exec";
+  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2"; // GAS側 CONFIG.apiKey と同じにする
+
   // ---------- Step control ----------
   const steps = ["step1","step2","step3","step4"].map(id=>document.getElementById(id));
   let stepIndex = 0;
-  const stepPill = document.getElementById("stepPill");
   const bar = document.getElementById("bar");
+  const stepBlocks = [...document.querySelectorAll("#stepBlocks .sb")];
 
   function setStep(i){
     stepIndex = Math.max(0, Math.min(steps.length-1, i));
     steps.forEach((s,idx)=>s.classList.toggle("active", idx===stepIndex));
-    stepPill.textContent = `Step ${stepIndex+1} / ${steps.length}`;
+
+    stepBlocks.forEach((b, idx) => {
+      b.classList.toggle("done", idx < stepIndex);
+      b.classList.toggle("active", idx === stepIndex);
+    });
+
     bar.style.width = `${(stepIndex)/(steps.length-1)*100}%`;
     window.scrollTo({top:0, behavior:"smooth"});
   }
+  setStep(0);
 
   // Step1: checklist gate
   const checks = [...document.querySelectorAll("#checks input[type=checkbox][data-required='1']")];
@@ -443,7 +485,9 @@
   function refreshChecklist(){
     const ok = checks.every(c=>c.checked);
     to2.disabled = !ok;
-    checkHint.innerHTML = ok ? `<span class="ok">已全部确认，可以下一步。</span>` : `请先把上面所有确认事项勾选完毕。`;
+    checkHint.innerHTML = ok
+      ? `<span class="ok">すべて確認しました。次へ進めます。</span>`
+      : `上記の重要事項をすべてチェックしてください。`;
   }
   checks.forEach(c=>c.addEventListener("change", refreshChecklist));
   refreshChecklist();
@@ -457,40 +501,51 @@
 
   // ---------- Defaults ----------
   const today = new Date();
-  document.getElementById("applyDate").value = today.toISOString().slice(0,10);
+  const isoToday = today.toISOString().slice(0,10);
+  document.getElementById("applyDate").value = isoToday;
+
+  // ✅ 課金開始日：次月1日を自動入力
+  function nextMonthFirstISO(d){
+    const y = d.getFullYear();
+    const m = d.getMonth(); // 0-11
+    const first = new Date(y, m + 1, 1); // 次月1日
+    const yyyy = first.getFullYear();
+    const mm = String(first.getMonth()+1).padStart(2,"0");
+    const dd = String(first.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+  document.getElementById("chargeStart").value = nextMonthFirstISO(today);
 
   // ---------- ZipCloud (Japan) address lookup ----------
-  // API: https://zipcloud.ibsnet.co.jp/doc/api
   async function lookupZip(zip, msgEl, addr1El){
     const z = String(zip||"").replace(/[^\d]/g,"");
     if(z.length !== 7){
-      msgEl.textContent = "邮编需7位数字";
+      msgEl.textContent = "郵便番号は7桁で入力してください";
       msgEl.className = "small err";
       return;
     }
-    msgEl.textContent = "查询中…";
+    msgEl.textContent = "検索中…";
     msgEl.className = "small muted";
     try{
       const url = `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${encodeURIComponent(z)}`;
       const res = await fetch(url);
       const data = await res.json();
       if(data.status !== 200 || !data.results || !data.results.length){
-        msgEl.textContent = "未找到该邮编";
+        msgEl.textContent = "該当する住所が見つかりません";
         msgEl.className = "small err";
         return;
       }
       const r = data.results[0];
-      const addr = `${r.address1}${r.address2}${r.address3}`; // 都道府県+市区町村+町域
+      const addr = `${r.address1}${r.address2}${r.address3}`;
       addr1El.value = addr;
-      msgEl.textContent = "已自动填入街道地址";
+      msgEl.textContent = "住所を自動入力しました";
       msgEl.className = "small ok";
     }catch(e){
-      msgEl.textContent = "查询失败（网络）";
+      msgEl.textContent = "検索に失敗しました（ネットワーク）";
       msgEl.className = "small err";
     }
   }
 
-  // company
   document.getElementById("zipCompanyBtn").addEventListener("click", ()=>{
     lookupZip(
       document.getElementById("zipCompany").value,
@@ -498,7 +553,6 @@
       document.getElementById("addrCompany1")
     );
   });
-  // install
   document.getElementById("zipInstallBtn").addEventListener("click", ()=>{
     lookupZip(
       document.getElementById("zipInstall").value,
@@ -506,7 +560,6 @@
       document.getElementById("addrInstall1")
     );
   });
-  // bill
   document.getElementById("zipBillBtn").addEventListener("click", ()=>{
     lookupZip(
       document.getElementById("zipBill").value,
@@ -537,22 +590,19 @@
   // ---------- Line items + totals ----------
   const fmt = (n, cur)=>{
     const v = Number.isFinite(n) ? n : 0;
-    // 简单格式化：JPY用逗号
     if(cur==="JPY") return "¥ " + Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
     if(cur==="CNY") return "¥ " + (Math.round(v*100)/100).toString();
     return String(v);
   };
 
   const initItems = [
-    // 参考你PDF示例：レジスター 90,000 / プリンター 0 / キャシュードロア 0
     { name:"レジスター", qty:1, unit:90000 },
     { name:"プリンター", qty:1, unit:0 },
-    { name:"キャシュードロア", qty:1, unit:0 },
+    { name:"キャッシュドロア", qty:1, unit:0 },
   ];
 
   const recItems = [
-    // 参考你PDF示例：年額 80,000
-    { name:"基本利用料（年額）", type:"年額", qty:1, unit:80000 },
+    { name:"基本利用料", type:"年額", qty:1, unit:80000 },
   ];
 
   const initTbody = document.querySelector("#initTable tbody");
@@ -563,15 +613,9 @@
   function makeRowInit(item, idx){
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>
-        <input value="${item.name}" data-k="name" data-i="${idx}" aria-label="name"/>
-      </td>
-      <td>
-        <input class="num" inputmode="numeric" value="${item.qty}" data-k="qty" data-i="${idx}" aria-label="qty"/>
-      </td>
-      <td>
-        <input class="num" inputmode="numeric" value="${item.unit}" data-k="unit" data-i="${idx}" aria-label="unit"/>
-      </td>
+      <td><input value="${item.name}" data-k="name" data-i="${idx}" aria-label="name"/></td>
+      <td><input class="num" inputmode="numeric" value="${item.qty}" data-k="qty" data-i="${idx}" aria-label="qty"/></td>
+      <td><input class="num" inputmode="numeric" value="${item.unit}" data-k="unit" data-i="${idx}" aria-label="unit"/></td>
       <td class="num" data-out="ex">-</td>
       <td class="num" data-out="in">-</td>
     `;
@@ -603,7 +647,6 @@
     recTbody.innerHTML = "";
     recItems.forEach((it, idx)=>recTbody.appendChild(makeRowRec(it, idx)));
 
-    // bind change
     initTbody.querySelectorAll("input").forEach(el=>{
       el.addEventListener("input", ()=>{
         const i = Number(el.dataset.i);
@@ -634,7 +677,6 @@
     const tax = parseFloat(taxRateEl.value || "0.1");
     const cur = currencyEl.value;
 
-    // init
     let initEx = 0, initIn = 0;
     [...initTbody.querySelectorAll("tr")].forEach((tr, idx)=>{
       const it = initItems[idx];
@@ -645,7 +687,6 @@
       tr.querySelector('[data-out="in"]').textContent = fmt(inc, cur);
     });
 
-    // recurring
     let recEx = 0, recIn = 0;
     [...recTbody.querySelectorAll("tr")].forEach((tr, idx)=>{
       const it = recItems[idx];
@@ -658,20 +699,19 @@
 
     document.getElementById("initEx").textContent = fmt(initEx, cur);
     document.getElementById("initIn").textContent = fmt(initIn, cur);
-    document.getElementById("recEx").textContent = fmt(recEx, cur);
-    document.getElementById("recIn").textContent = fmt(recIn, cur);
-    document.getElementById("grand").textContent = fmt(initIn + recIn, cur);
+    document.getElementById("recEx").textContent  = fmt(recEx, cur);
+    document.getElementById("recIn").textContent  = fmt(recIn, cur);
+    document.getElementById("grand").textContent  = fmt(initIn + recIn, cur);
   }
 
   taxRateEl.addEventListener("change", calcTotals);
   currencyEl.addEventListener("change", calcTotals);
-
   renderTables();
 
   // ---------- Summary generation ----------
   function val(id){ return (document.getElementById(id).value || "").trim(); }
 
-  document.getElementById("makeSummary").addEventListener("click", ()=>{
+  function buildSummaryText(){
     const cur = currencyEl.value;
     const tax = parseFloat(taxRateEl.value||"0.1");
 
@@ -685,64 +725,149 @@
     const initLines = initItems.map(it=>{
       const ex = (it.qty||0)*(it.unit||0);
       const inc = ex*(1+tax);
-      return `- ${it.name} ×${it.qty}  单价:${fmt(it.unit,cur)}  税别:${fmt(ex,cur)}  税込:${fmt(inc,cur)}`;
+      return `- ${it.name} ×${it.qty}　単価:${fmt(it.unit,cur)}　税別:${fmt(ex,cur)}　税込:${fmt(inc,cur)}`;
     }).join("\n");
 
     const recLines = recItems.map(it=>{
       const ex = (it.qty||0)*(it.unit||0);
       const inc = ex*(1+tax);
-      return `- ${it.name}（${it.type}）×${it.qty}  单价:${fmt(it.unit,cur)}  税别:${fmt(ex,cur)}  税込:${fmt(inc,cur)}`;
+      return `- ${it.name}（${it.type}）×${it.qty}　単価:${fmt(it.unit,cur)}　税別:${fmt(ex,cur)}　税込:${fmt(inc,cur)}`;
     }).join("\n");
 
-    // totals (recompute)
     let initIn=0, recIn=0;
     initItems.forEach(it=> initIn += (it.qty||0)*(it.unit||0)*(1+tax));
     recItems.forEach(it=>  recIn  += (it.qty||0)*(it.unit||0)*(1+tax));
     const grand = initIn + recIn;
 
-    const text =
-`【收银系统申请摘要（Demo）】
+    return `【NJFREGI レジシステム申込内容（Demo）】
 申込日：${val("applyDate")}
-顾客代码：${val("customerCode")}
-支付方式：${val("payMethod")}
+顧客コード：${val("customerCode")}
+支払方法：${val("payMethod")}
 
-[契约者]
-公司/店名：${val("companyName")}
+[ご契約者]
+社名/屋号：${val("companyName")}
 担当者：${val("personName")}
-手机：${val("mobile")}
-邮箱：${val("email")}
-地址：${addr("zipCompany","addrCompany1","addrCompany2")}
+携帯：${val("mobile")}
+E-mail：${val("email")}
+住所：${addr("zipCompany","addrCompany1","addrCompany2")}
 
-[设置先]
+[設置先]
 名称：${val("installName")}
-电话：${val("installTel")}
-地址：${addr("zipInstall","addrInstall1","addrInstall2")}
-营业时间：${val("bizHours")}
+電話：${val("installTel")}
+住所：${addr("zipInstall","addrInstall1","addrInstall2")}
+営業時間：${val("bizHours")}
 定休日：${val("holiday")}
 
-[请款先]
+[請求先]
 名称：${val("billName")}
-地址：${addr("zipBill","addrBill1","addrBill2")}
-请款期间：${val("billingTerm")}
-课金开始日：${val("chargeStart")}
+住所：${addr("zipBill","addrBill1","addrBill2")}
+請求期間：${val("billingTerm")}
+課金開始日：${val("chargeStart")}
 
-[初期费用]
+[初期費用]
 ${initLines}
 
 [利用料]
 ${recLines}
 
 税率：${Math.round(tax*100)}%
-＜完工时应付合计＞：${fmt(grand, cur)}
+＜完工時お支払額 合計＞：${fmt(grand, cur)}
+`;
+  }
 
-（下一步：把这段摘要提交到你的后端API/邮件/Google Sheet即可正式落地）`;
-
+  document.getElementById("makeSummary").addEventListener("click", ()=>{
+    const text = buildSummaryText();
     document.getElementById("summary").value = text;
-    document.getElementById("submitMsg").innerHTML = `<span class="ok">已生成摘要，可直接复制。</span>`;
+    document.getElementById("submitMsg").innerHTML = `<span class="ok">申込内容を作成しました（コピー可能）。</span>`;
+  });
+
+  // ===============================
+  // ✅ 送信（GASへPOST）
+  // ===============================
+  function buildPayload(){
+    return {
+      apiKey: API_KEY,
+      // Step2
+      applyDate: val("applyDate"),
+      customerCode: val("customerCode"),
+      companyName: val("companyName"),
+      personName: val("personName"),
+      mobile: val("mobile"),
+      email: val("email"),
+      zipCompany: val("zipCompany"),
+      addrCompany1: val("addrCompany1"),
+      addrCompany2: val("addrCompany2"),
+      // Step3
+      installName: val("installName"),
+      installTel: val("installTel"),
+      zipInstall: val("zipInstall"),
+      addrInstall1: val("addrInstall1"),
+      addrInstall2: val("addrInstall2"),
+      bizHours: val("bizHours"),
+      holiday: val("holiday"),
+      billName: val("billName"),
+      payMethod: val("payMethod"),
+      zipBill: val("zipBill"),
+      addrBill1: val("addrBill1"),
+      addrBill2: val("addrBill2"),
+      billingTerm: val("billingTerm"),
+      chargeStart: val("chargeStart"),
+      // Step4
+      taxRate: parseFloat(taxRateEl.value || "0.10"),
+      currency: currencyEl.value,
+      initItems,
+      recItems,
+    };
+  }
+
+  const sendBtn = document.getElementById("sendToGAS");
+  sendBtn.addEventListener("click", async ()=>{
+    // 先に摘要が空なら生成して見せる
+    if(!document.getElementById("summary").value.trim()){
+      document.getElementById("summary").value = buildSummaryText();
+    }
+
+    // 簡単バリデーション（最低限）
+    if(!val("companyName") || !val("personName")){
+      document.getElementById("submitMsg").innerHTML = `<span class="err">社名/屋号 と 担当者名 は必須です。</span>`;
+      return;
+    }
+
+    sendBtn.disabled = true;
+    document.getElementById("submitMsg").innerHTML = `<span class="muted">送信中…</span>`;
+
+    try{
+      const payload = buildPayload();
+
+      // ✅ CORS回避のため text/plain で送る（GAS側はJSON.parseでOK）
+      const res = await fetch(GAS_URL, {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); } catch(_){ json = { ok:false, raw:text }; }
+
+      if(json && json.ok){
+        document.getElementById("submitMsg").innerHTML =
+          `<span class="ok">送信完了：申込ID ${json.appId || ""}（管理者メールへ送付済み）</span>`;
+      }else{
+        document.getElementById("submitMsg").innerHTML =
+          `<span class="err">送信失敗：${(json && (json.error||json.message)) || "不明なエラー"}</span>`;
+      }
+    }catch(e){
+      document.getElementById("submitMsg").innerHTML =
+        `<span class="err">送信失敗（ネットワーク/CORS）：${String(e)}</span>`;
+    }finally{
+      sendBtn.disabled = false;
+    }
   });
 
   document.getElementById("resetAll").addEventListener("click", ()=>{
-    if(!confirm("确定清空所有内容？")) return;
+    if(!confirm("入力内容をリセットします。よろしいですか？")) return;
     location.reload();
   });
 </script>
