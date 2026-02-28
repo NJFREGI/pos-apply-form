@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NJFREGI レジシステム申込フォーム（Demo）</title>
+  <title>NJFREGI レジシステム申込フォーム</title>
   <style>
     :root{
       --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#6b7280;
@@ -16,17 +16,28 @@
       margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
       background:var(--bg); color:var(--text);
     }
+
     header{
       position:sticky; top:0; z-index:10;
       background:linear-gradient(180deg, #ffffff, #ffffffcc);
       backdrop-filter: blur(10px);
       border-bottom:1px solid var(--border);
+      transition: transform .25s ease;
     }
-    .wrap{max-width:860px; margin:0 auto; padding:14px 14px 28px}
-    .topbar{display:flex; align-items:center; justify-content:space-between; gap:12px;}
-    .brand{display:flex; flex-direction:column; gap:2px}
-    .brand b{font-size:16px}
-    .brand span{font-size:12px; color:var(--muted)}
+    header.hide{ transform: translateY(-110%); }
+
+    .wrap{max-width:860px; margin:0 auto; padding:10px 14px 28px}
+    .titleTop{
+      font-weight:900; font-size:16px; line-height:1.2;
+      text-align:center;
+    }
+    .subtitleTop{
+      text-align:center; color:var(--muted); font-size:12px; margin-top:4px;
+    }
+    .topbarRow{
+      margin-top:10px;
+      display:flex; align-items:center; justify-content:center;
+    }
 
     /* === Step Blocks（4つのブロック） === */
     .stepBlocks{display:flex; gap:8px; align-items:center; flex-wrap:nowrap; user-select:none;}
@@ -44,7 +55,7 @@
     }
 
     .progress{
-      margin-top:12px; height:10px; border-radius:999px;
+      margin-top:10px; height:8px; border-radius:999px;
       background:#eef2ff; overflow:hidden; border:1px solid #e0e7ff;
     }
     .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--primary),#7c3aed); transition:width .25s ease}
@@ -94,35 +105,52 @@
     .checkitem b{font-size:13px}
     .checkitem p{margin:4px 0 0; font-size:12px; color:var(--muted); line-height:1.45}
 
-    table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border:1px solid var(--border); border-radius:14px}
-    th,td{padding:10px; font-size:12px; border-bottom:1px solid var(--border); vertical-align:middle}
-    th{background:#f9fafb; text-align:left; color:#374151}
-    tr:last-child td{border-bottom:0}
-    td input{padding:10px; border-radius:12px; font-size:13px}
-    .num{text-align:right; font-variant-numeric: tabular-nums;}
     .muted{color:var(--muted)}
-    .totalbox{
-      display:grid; gap:6px; padding:12px; border:1px solid var(--border); border-radius:14px; background:#fafafa;
-    }
-    .totalbox .line{display:flex; justify-content:space-between; font-size:13px}
-    .totalbox .grand{font-size:16px; font-weight:800}
     .hint{font-size:12px; color:var(--muted); margin-top:8px}
     .ok{color:var(--ok); font-weight:700}
     .err{color:var(--danger); font-weight:700}
     .small{font-size:12px}
     .divider{height:1px; background:var(--border); margin:12px 0}
+
+    /* ✅ 设备/利用料：更清晰的卡片布局 */
+    .itemList{display:grid; gap:10px}
+    .itemCard{
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:#fff;
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+    .itemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .itemName{font-weight:800; font-size:14px}
+    .itemPrice{font-size:12px; color:#374151; text-align:right}
+    .itemPrice b{font-size:14px}
+    .itemQtyRow{display:flex; gap:10px; align-items:center}
+    .itemQtyRow label{margin:0; width:78px}
+    .itemQtyRow input{flex:1}
+
+    .totalbox{
+      display:grid; gap:6px; padding:12px; border:1px solid var(--border); border-radius:14px; background:#fafafa;
+    }
+    .totalbox .line{display:flex; justify-content:space-between; font-size:13px}
+    .totalbox .grand{font-size:16px; font-weight:900}
   </style>
 </head>
 
 <body>
-<header>
+<header id="header">
   <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <b>NJFREGI レジシステム申込フォーム（Demo）</b>
-        <span>ステップ入力・郵便番号から住所自動入力・自動合計</span>
-      </div>
+    <!-- ✅ 2. 标题放在最上面（在 1,2,3,4 的上面） -->
+    <div class="titleTop">NJFREGI レジシステム申込フォーム</div>
+    <div class="subtitleTop">ステップ入力・郵便番号から住所自動入力・自動合計</div>
 
+    <div class="topbarRow">
       <div class="stepBlocks" id="stepBlocks" aria-label="ステップ">
         <div class="sb" data-i="0">1</div>
         <div class="sb" data-i="1">2</div>
@@ -136,6 +164,7 @@
 </header>
 
 <main class="wrap">
+
   <!-- Step 1 -->
   <section class="card step active" id="step1">
     <h2>重要事項確認（すべてチェック必須）</h2>
@@ -148,7 +177,6 @@
           <p>契約期間および自動更新ルールを理解しました。</p>
         </div>
       </div>
-
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
@@ -156,7 +184,6 @@
           <p>利用開始日は申込日より後になる場合があることを理解しました。</p>
         </div>
       </div>
-
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
@@ -164,7 +191,6 @@
           <p>途中解約時の費用ルールを理解しました。</p>
         </div>
       </div>
-
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
@@ -172,7 +198,6 @@
           <p>推奨外機器の利用に伴う不具合はお客様責任となることを理解しました。</p>
         </div>
       </div>
-
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
@@ -180,7 +205,6 @@
           <p>必要に応じてお客様側でバックアップが必要なことを理解しました。</p>
         </div>
       </div>
-
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
@@ -188,7 +212,6 @@
           <p>解約手続き方法を理解しました。</p>
         </div>
       </div>
-
       <div class="checkitem">
         <input type="checkbox" data-required="1">
         <div>
@@ -214,10 +237,13 @@
         <label>申込日</label>
         <input id="applyDate" type="date">
       </div>
+
+      <!-- ✅ 1. 顧客コード自动生成，去掉（任意） -->
       <div>
-        <label>顧客コード（任意）</label>
-        <input id="customerCode" placeholder="例：20260123001">
+        <label>顧客コード</label>
+        <input id="customerCode" readonly>
       </div>
+
       <div>
         <label>社名 / 屋号 / 店舗名</label>
         <input id="companyName" placeholder="例：株式会社BBC">
@@ -299,13 +325,15 @@
         <label>番地・建物名（手入力）</label>
         <input id="addrInstall2">
       </div>
+
+      <!-- ✅ 6. 营业时间 & 休息时间：下拉 -->
       <div>
-        <label>営業時間（任意）</label>
-        <input id="bizHours" placeholder="例：11:00-23:00">
+        <label>営業時間</label>
+        <select id="bizHours"></select>
       </div>
       <div>
-        <label>定休日（任意）</label>
-        <input id="holiday" placeholder="例：月曜日">
+        <label>定休日</label>
+        <select id="holiday"></select>
       </div>
     </div>
 
@@ -323,14 +351,13 @@
         <label>請求先名称</label>
         <input id="billName" placeholder="例：麻辣湯倶楽部">
       </div>
+
+      <!-- ✅ 7/8. 支払方法固定：銀行振込（无下拉） -->
       <div>
         <label>支払方法</label>
-        <select id="payMethod">
-          <option value="振込">銀行振込</option>
-          <option value="口座振替">口座振替</option>
-          <option value="カード">クレジットカード</option>
-        </select>
+        <input id="payMethod" value="銀行振込" readonly>
       </div>
+
       <div>
         <label>郵便番号</label>
         <input id="zipBill" inputmode="numeric" placeholder="例：2730005">
@@ -347,12 +374,16 @@
         <label>番地・建物名（手入力）</label>
         <input id="addrBill2">
       </div>
+
+      <!-- ✅ 3. 请求期间默认：从课金开始日起 1 年 -->
       <div>
-        <label>請求期間（任意）</label>
-        <input id="billingTerm" placeholder="例：2026/02/01 - 2028/01/31">
+        <label>請求期間</label>
+        <input id="billingTerm" readonly>
       </div>
+
+      <!-- ✅ 课金开始日：默认次月1日 -->
       <div>
-        <label>課金開始日（任意）</label>
+        <label>課金開始日</label>
         <input id="chargeStart" type="date">
       </div>
     </div>
@@ -366,97 +397,60 @@
   <!-- Step 4 -->
   <section class="card step" id="step4">
     <h2>機器・サービス（自動計算）</h2>
-    <p class="sub">単価は事前設定、入力は数量のみ。税率はデモとして選択式です。</p>
-
-    <div class="grid cols2">
-      <div>
-        <label>税率</label>
-        <select id="taxRate">
-          <option value="0.10" selected>10%</option>
-          <option value="0.08">8%</option>
-          <option value="0.00">0%</option>
-        </select>
-      </div>
-      <div>
-        <label>通貨</label>
-        <select id="currency">
-          <option value="JPY" selected>JPY（円）</option>
-          <option value="CNY">CNY（元）</option>
-        </select>
-      </div>
-    </div>
+    <p class="sub">
+      <!-- ✅ 4/8. 税率固定10%，去掉通货选择 -->
+      税率：10%（固定） / 通貨：JPY（固定）
+    </p>
 
     <div class="divider"></div>
 
+    <!-- ✅ 4. 设备改成更清晰：名称一行 + 单价（税込），下一行填数量 -->
     <h2>初期費用（機器/工事/その他）</h2>
-    <table id="initTable">
-      <thead>
-        <tr>
-          <th style="width:30%">名称</th>
-          <th style="width:12%">数量</th>
-          <th style="width:18%">税別単価</th>
-          <th class="num" style="width:20%">税別金額</th>
-          <th class="num" style="width:20%">税込金額</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="itemList" id="initList"></div>
 
     <div class="divider"></div>
 
+    <!-- ✅ 9. 利用料也改成同样显示方式，固定 月額 8800 -->
     <h2>利用料（サービス）</h2>
-    <table id="recTable">
-      <thead>
-        <tr>
-          <th style="width:28%">サービス名</th>
-          <th style="width:16%">契約種別</th>
-          <th style="width:12%">数量</th>
-          <th style="width:18%">税別単価</th>
-          <th class="num" style="width:13%">税別金額</th>
-          <th class="num" style="width:13%">税込金額</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="itemList" id="recList"></div>
 
     <div class="divider"></div>
 
     <div class="totalbox" id="totals">
-      <div class="line"><span class="muted">初期費用 合計（税別）</span><b id="initEx">-</b></div>
       <div class="line"><span class="muted">初期費用 合計（税込）</span><b id="initIn">-</b></div>
-      <div class="line"><span class="muted">利用料 合計（税別）</span><b id="recEx">-</b></div>
       <div class="line"><span class="muted">利用料 合計（税込）</span><b id="recIn">-</b></div>
       <div class="divider"></div>
       <div class="line grand"><span>完工時お支払額（合計）</span><span id="grand">-</span></div>
-      <div class="hint">※ デモ：初期費用＋利用料の合計です。</div>
     </div>
 
     <div class="divider"></div>
 
-    <h2>最終確認（デモ）</h2>
-    <p class="sub">「申込内容を作成」で内容を確認後、「送信」でGASへ送ります（PDF/XLSXは管理者メールへ）。</p>
+    <h2>最終確認</h2>
+    <p class="sub">「申込内容を作成」で確認後、「送信」でGASへ送ります（PDF/XLSXは管理者メールへ）。</p>
 
     <div class="row">
-      <button class="btn secondary" id="back3">戻る</button>
+      <button class="btn secondary" id="back3" type="button">戻る</button>
       <button class="btn" id="makeSummary" type="button">申込内容を作成</button>
-
-      <!-- ✅ ここが送信ボタン -->
       <button class="btn" id="sendToGAS" type="button">送信</button>
-
       <button class="btn danger" id="resetAll" type="button">リセット</button>
     </div>
 
     <div class="hint" id="submitMsg"></div>
     <textarea id="summary" placeholder="ここに申込内容が生成されます（コピー可）" style="margin-top:10px;"></textarea>
   </section>
+
 </main>
 
 <script>
   // ===============================
-  // ✅ GAS 接続設定（ここだけ自分用に固定）
+  // GAS 接続設定
   // ===============================
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxf3SVmq4bi7VU-7USK6jbHXBDAApKK-Sfw1TgJMNDsRp4cJ9rxzGPlqscKylc6CnWfvA/exec";
-  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2"; // GAS側 CONFIG.apiKey と同じにする
+  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
+
+  // ✅ 固定：税率10%、通貨JPY
+  const TAX_RATE = 0.10;
+  const CURRENCY = "JPY";
 
   // ---------- Step control ----------
   const steps = ["step1","step2","step3","step4"].map(id=>document.getElementById(id));
@@ -467,12 +461,10 @@
   function setStep(i){
     stepIndex = Math.max(0, Math.min(steps.length-1, i));
     steps.forEach((s,idx)=>s.classList.toggle("active", idx===stepIndex));
-
     stepBlocks.forEach((b, idx) => {
       b.classList.toggle("done", idx < stepIndex);
       b.classList.toggle("active", idx === stepIndex);
     });
-
     bar.style.width = `${(stepIndex)/(steps.length-1)*100}%`;
     window.scrollTo({top:0, behavior:"smooth"});
   }
@@ -499,24 +491,81 @@
   document.getElementById("to4").addEventListener("click", ()=>setStep(3));
   document.getElementById("back3").addEventListener("click", ()=>setStep(2));
 
+  // ---------- Header auto hide on scroll（5） ----------
+  const headerEl = document.getElementById("header");
+  let lastY = window.scrollY;
+  window.addEventListener("scroll", ()=>{
+    const y = window.scrollY;
+    if(y > lastY && y > 80){ headerEl.classList.add("hide"); }
+    else { headerEl.classList.remove("hide"); }
+    lastY = y;
+  }, {passive:true});
+
   // ---------- Defaults ----------
   const today = new Date();
-  const isoToday = today.toISOString().slice(0,10);
-  document.getElementById("applyDate").value = isoToday;
+  document.getElementById("applyDate").value = today.toISOString().slice(0,10);
 
-  // ✅ 課金開始日：次月1日を自動入力
-  function nextMonthFirstISO(d){
+  // ✅ 1. 顾客コード：YYYYMMDD001
+  function yyyymmdd(d){
     const y = d.getFullYear();
-    const m = d.getMonth(); // 0-11
-    const first = new Date(y, m + 1, 1); // 次月1日
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${y}${m}${dd}`;
+  }
+  document.getElementById("customerCode").value = `${yyyymmdd(today)}001`;
+
+  // ✅ 课金开始日：次月1日
+  function nextMonthFirstISO(d){
+    const first = new Date(d.getFullYear(), d.getMonth()+1, 1);
     const yyyy = first.getFullYear();
     const mm = String(first.getMonth()+1).padStart(2,"0");
     const dd = String(first.getDate()).padStart(2,"0");
     return `${yyyy}-${mm}-${dd}`;
   }
-  document.getElementById("chargeStart").value = nextMonthFirstISO(today);
+  const chargeStartEl = document.getElementById("chargeStart");
+  chargeStartEl.value = nextMonthFirstISO(today);
 
-  // ---------- ZipCloud (Japan) address lookup ----------
+  // ✅ 3. 請求期間：課金開始日〜1年
+  const billingTermEl = document.getElementById("billingTerm");
+  function formatSlash(d){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${y}/${m}/${dd}`;
+  }
+  function setBillingTermByChargeStart(){
+    const v = chargeStartEl.value;
+    if(!v) return;
+    const start = new Date(v + "T00:00:00");
+    const end = new Date(start);
+    end.setFullYear(end.getFullYear()+1);
+    end.setDate(end.getDate()-1); // 1年-1日（区间更自然）
+    billingTermEl.value = `${formatSlash(start)} - ${formatSlash(end)}`;
+  }
+  setBillingTermByChargeStart();
+  chargeStartEl.addEventListener("change", setBillingTermByChargeStart);
+
+  // ✅ 6. 营业时间/休息日下拉
+  const bizHoursEl = document.getElementById("bizHours");
+  const holidayEl = document.getElementById("holiday");
+  const bizOptions = [
+    "11:00-23:00","11:00-22:00","10:00-22:00","17:00-23:00","24時間","未定"
+  ];
+  bizOptions.forEach((t,i)=>{
+    const op=document.createElement("option");
+    op.value=t; op.textContent=t;
+    if(i===0) op.selected=true;
+    bizHoursEl.appendChild(op);
+  });
+  const holidayOptions = ["なし","不定休","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日","日曜日"];
+  holidayOptions.forEach((t,i)=>{
+    const op=document.createElement("option");
+    op.value=t; op.textContent=t;
+    if(i===0) op.selected=true;
+    holidayEl.appendChild(op);
+  });
+
+  // ---------- ZipCloud ----------
   async function lookupZip(zip, msgEl, addr1El){
     const z = String(zip||"").replace(/[^\d]/g,"");
     if(z.length !== 7){
@@ -536,8 +585,7 @@
         return;
       }
       const r = data.results[0];
-      const addr = `${r.address1}${r.address2}${r.address3}`;
-      addr1El.value = addr;
+      addr1El.value = `${r.address1}${r.address2}${r.address3}`;
       msgEl.textContent = "住所を自動入力しました";
       msgEl.className = "small ok";
     }catch(e){
@@ -545,7 +593,6 @@
       msgEl.className = "small err";
     }
   }
-
   document.getElementById("zipCompanyBtn").addEventListener("click", ()=>{
     lookupZip(
       document.getElementById("zipCompany").value,
@@ -568,7 +615,7 @@
     );
   });
 
-  // ---------- "同上" copy ----------
+  // ---------- 同上 copy ----------
   const zipCompany = document.getElementById("zipCompany");
   const addrCompany1 = document.getElementById("addrCompany1");
   const addrCompany2 = document.getElementById("addrCompany2");
@@ -587,159 +634,94 @@
     document.getElementById("billName").value = document.getElementById("installName").value || "";
   });
 
-  // ---------- Line items + totals ----------
-  const fmt = (n, cur)=>{
-    const v = Number.isFinite(n) ? n : 0;
-    if(cur==="JPY") return "¥ " + Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    if(cur==="CNY") return "¥ " + (Math.round(v*100)/100).toString();
-    return String(v);
-  };
+  // ---------- Money format ----------
+  const fmtJPY = (n)=> "¥ " + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
+  // ✅ 初期設備（税别单价 unitEx）
   const initItems = [
-    { name:"レジスター", qty:1, unit:90000 },
-    { name:"プリンター", qty:1, unit:0 },
-    { name:"キャッシュドロア", qty:1, unit:0 },
+    { name:"レジスター", qty:1, unitEx:90000 },
+    { name:"プリンター", qty:1, unitEx:0 },
+    { name:"キャッシュドロア", qty:1, unitEx:0 },
   ];
 
+  // ✅ 利用料：月额 8800（税込）→ 税别 8000（10%）
   const recItems = [
-    { name:"基本利用料", type:"年額", qty:1, unit:80000 },
+    { name:"基本利用料（月額）", qty:1, unitEx:8000 },
   ];
 
-  const initTbody = document.querySelector("#initTable tbody");
-  const recTbody  = document.querySelector("#recTable tbody");
-  const taxRateEl = document.getElementById("taxRate");
-  const currencyEl = document.getElementById("currency");
+  const initList = document.getElementById("initList");
+  const recList  = document.getElementById("recList");
 
-  function makeRowInit(item, idx){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input value="${item.name}" data-k="name" data-i="${idx}" aria-label="name"/></td>
-      <td><input class="num" inputmode="numeric" value="${item.qty}" data-k="qty" data-i="${idx}" aria-label="qty"/></td>
-      <td><input class="num" inputmode="numeric" value="${item.unit}" data-k="unit" data-i="${idx}" aria-label="unit"/></td>
-      <td class="num" data-out="ex">-</td>
-      <td class="num" data-out="in">-</td>
+  function makeItemCard(item, idx, listName){
+    const unitInc = Math.round(item.unitEx * (1+TAX_RATE));
+    const card = document.createElement("div");
+    card.className = "itemCard";
+    card.innerHTML = `
+      <div class="itemTop">
+        <div class="itemName">${item.name}</div>
+        <div class="itemPrice">単価（税込）<br><b>${fmtJPY(unitInc)}</b></div>
+      </div>
+      <div class="itemQtyRow">
+        <label>数量</label>
+        <input class="num" inputmode="numeric" value="${item.qty}" data-idx="${idx}" data-list="${listName}">
+      </div>
     `;
-    return tr;
+    const input = card.querySelector("input");
+    input.addEventListener("input", ()=>{
+      const i = Number(input.dataset.idx);
+      const v = Math.max(0, parseInt(input.value||"0",10)||0);
+      if(listName==="init") initItems[i].qty = v;
+      if(listName==="rec")  recItems[i].qty  = v;
+      calcTotals();
+    });
+    return card;
   }
 
-  function makeRowRec(item, idx){
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><input value="${item.name}" data-k="name" data-i="${idx}" aria-label="name"/></td>
-      <td>
-        <select data-k="type" data-i="${idx}" aria-label="type">
-          <option value="月額" ${item.type==="月額"?"selected":""}>月額</option>
-          <option value="年額" ${item.type==="年額"?"selected":""}>年額</option>
-          <option value="一括" ${item.type==="一括"?"selected":""}>一括</option>
-        </select>
-      </td>
-      <td><input class="num" inputmode="numeric" value="${item.qty}" data-k="qty" data-i="${idx}" aria-label="qty"/></td>
-      <td><input class="num" inputmode="numeric" value="${item.unit}" data-k="unit" data-i="${idx}" aria-label="unit"/></td>
-      <td class="num" data-out="ex">-</td>
-      <td class="num" data-out="in">-</td>
-    `;
-    return tr;
-  }
-
-  function renderTables(){
-    initTbody.innerHTML = "";
-    initItems.forEach((it, idx)=>initTbody.appendChild(makeRowInit(it, idx)));
-    recTbody.innerHTML = "";
-    recItems.forEach((it, idx)=>recTbody.appendChild(makeRowRec(it, idx)));
-
-    initTbody.querySelectorAll("input").forEach(el=>{
-      el.addEventListener("input", ()=>{
-        const i = Number(el.dataset.i);
-        const k = el.dataset.k;
-        if(k==="name") initItems[i].name = el.value;
-        if(k==="qty") initItems[i].qty = Math.max(0, parseInt(el.value||"0",10)||0);
-        if(k==="unit") initItems[i].unit = Math.max(0, parseInt(el.value||"0",10)||0);
-        calcTotals();
-      });
-    });
-
-    recTbody.querySelectorAll("input,select").forEach(el=>{
-      el.addEventListener("input", ()=>{
-        const i = Number(el.dataset.i);
-        const k = el.dataset.k;
-        if(k==="name") recItems[i].name = el.value;
-        if(k==="type") recItems[i].type = el.value;
-        if(k==="qty") recItems[i].qty = Math.max(0, parseInt(el.value||"0",10)||0);
-        if(k==="unit") recItems[i].unit = Math.max(0, parseInt(el.value||"0",10)||0);
-        calcTotals();
-      });
-    });
-
+  function renderLists(){
+    initList.innerHTML="";
+    initItems.forEach((it,idx)=>initList.appendChild(makeItemCard(it, idx, "init")));
+    recList.innerHTML="";
+    recItems.forEach((it,idx)=>recList.appendChild(makeItemCard(it, idx, "rec")));
     calcTotals();
   }
 
-  function calcTotals(){
-    const tax = parseFloat(taxRateEl.value || "0.1");
-    const cur = currencyEl.value;
-
-    let initEx = 0, initIn = 0;
-    [...initTbody.querySelectorAll("tr")].forEach((tr, idx)=>{
-      const it = initItems[idx];
-      const ex = (it.qty||0) * (it.unit||0);
-      const inc = ex * (1+tax);
-      initEx += ex; initIn += inc;
-      tr.querySelector('[data-out="ex"]').textContent = fmt(ex, cur);
-      tr.querySelector('[data-out="in"]').textContent = fmt(inc, cur);
-    });
-
-    let recEx = 0, recIn = 0;
-    [...recTbody.querySelectorAll("tr")].forEach((tr, idx)=>{
-      const it = recItems[idx];
-      const ex = (it.qty||0) * (it.unit||0);
-      const inc = ex * (1+tax);
-      recEx += ex; recIn += inc;
-      tr.querySelector('[data-out="ex"]').textContent = fmt(ex, cur);
-      tr.querySelector('[data-out="in"]').textContent = fmt(inc, cur);
-    });
-
-    document.getElementById("initEx").textContent = fmt(initEx, cur);
-    document.getElementById("initIn").textContent = fmt(initIn, cur);
-    document.getElementById("recEx").textContent  = fmt(recEx, cur);
-    document.getElementById("recIn").textContent  = fmt(recIn, cur);
-    document.getElementById("grand").textContent  = fmt(initIn + recIn, cur);
+  function sumInc(items){
+    return items.reduce((a,it)=> a + (it.qty||0)*Math.round(it.unitEx*(1+TAX_RATE)), 0);
   }
+  function calcTotals(){
+    const initIn = sumInc(initItems);
+    const recIn  = sumInc(recItems);
+    document.getElementById("initIn").textContent = fmtJPY(initIn);
+    document.getElementById("recIn").textContent  = fmtJPY(recIn);
+    document.getElementById("grand").textContent  = fmtJPY(initIn + recIn);
+  }
+  renderLists();
 
-  taxRateEl.addEventListener("change", calcTotals);
-  currencyEl.addEventListener("change", calcTotals);
-  renderTables();
-
-  // ---------- Summary generation ----------
+  // ---------- Summary ----------
   function val(id){ return (document.getElementById(id).value || "").trim(); }
-
+  function addr(zip, a1, a2){
+    const z = val(zip);
+    const p1 = val(a1);
+    const p2 = val(a2);
+    return `〒${z} ${p1} ${p2}`.replace(/\s+/g," ").trim();
+  }
   function buildSummaryText(){
-    const cur = currencyEl.value;
-    const tax = parseFloat(taxRateEl.value||"0.1");
-
-    function addr(zip, a1, a2){
-      const z = val(zip);
-      const p1 = val(a1);
-      const p2 = val(a2);
-      return `〒${z} ${p1} ${p2}`.replace(/\s+/g," ").trim();
-    }
-
     const initLines = initItems.map(it=>{
-      const ex = (it.qty||0)*(it.unit||0);
-      const inc = ex*(1+tax);
-      return `- ${it.name} ×${it.qty}　単価:${fmt(it.unit,cur)}　税別:${fmt(ex,cur)}　税込:${fmt(inc,cur)}`;
+      const unitInc = Math.round(it.unitEx*(1+TAX_RATE));
+      const inc = (it.qty||0)*unitInc;
+      return `- ${it.name} ×${it.qty}　単価（税込）:${fmtJPY(unitInc)}　小計:${fmtJPY(inc)}`;
     }).join("\n");
 
     const recLines = recItems.map(it=>{
-      const ex = (it.qty||0)*(it.unit||0);
-      const inc = ex*(1+tax);
-      return `- ${it.name}（${it.type}）×${it.qty}　単価:${fmt(it.unit,cur)}　税別:${fmt(ex,cur)}　税込:${fmt(inc,cur)}`;
+      const unitInc = Math.round(it.unitEx*(1+TAX_RATE));
+      const inc = (it.qty||0)*unitInc;
+      return `- ${it.name} ×${it.qty}　単価（税込）:${fmtJPY(unitInc)}　小計:${fmtJPY(inc)}`;
     }).join("\n");
 
-    let initIn=0, recIn=0;
-    initItems.forEach(it=> initIn += (it.qty||0)*(it.unit||0)*(1+tax));
-    recItems.forEach(it=>  recIn  += (it.qty||0)*(it.unit||0)*(1+tax));
-    const grand = initIn + recIn;
+    const initIn = sumInc(initItems);
+    const recIn  = sumInc(recItems);
 
-    return `【NJFREGI レジシステム申込内容（Demo）】
+    return `【NJFREGI レジシステム申込内容】
 申込日：${val("applyDate")}
 顧客コード：${val("customerCode")}
 支払方法：${val("payMethod")}
@@ -770,24 +752,20 @@ ${initLines}
 [利用料]
 ${recLines}
 
-税率：${Math.round(tax*100)}%
-＜完工時お支払額 合計＞：${fmt(grand, cur)}
+税率：10%（固定）
+＜完工時お支払額 合計＞：${fmtJPY(initIn + recIn)}
 `;
   }
 
   document.getElementById("makeSummary").addEventListener("click", ()=>{
-    const text = buildSummaryText();
-    document.getElementById("summary").value = text;
+    document.getElementById("summary").value = buildSummaryText();
     document.getElementById("submitMsg").innerHTML = `<span class="ok">申込内容を作成しました（コピー可能）。</span>`;
   });
 
-  // ===============================
-  // ✅ 送信（GASへPOST）
-  // ===============================
+  // ---------- Send ----------
   function buildPayload(){
     return {
       apiKey: API_KEY,
-      // Step2
       applyDate: val("applyDate"),
       customerCode: val("customerCode"),
       companyName: val("companyName"),
@@ -797,7 +775,7 @@ ${recLines}
       zipCompany: val("zipCompany"),
       addrCompany1: val("addrCompany1"),
       addrCompany2: val("addrCompany2"),
-      // Step3
+
       installName: val("installName"),
       installTel: val("installTel"),
       zipInstall: val("zipInstall"),
@@ -805,6 +783,7 @@ ${recLines}
       addrInstall2: val("addrInstall2"),
       bizHours: val("bizHours"),
       holiday: val("holiday"),
+
       billName: val("billName"),
       payMethod: val("payMethod"),
       zipBill: val("zipBill"),
@@ -812,22 +791,21 @@ ${recLines}
       addrBill2: val("addrBill2"),
       billingTerm: val("billingTerm"),
       chargeStart: val("chargeStart"),
-      // Step4
-      taxRate: parseFloat(taxRateEl.value || "0.10"),
-      currency: currencyEl.value,
-      initItems,
-      recItems,
+
+      taxRate: TAX_RATE,
+      currency: CURRENCY,
+
+      // GAS端期望字段名 initItems/recItems（数组里用 qty / unit）
+      initItems: initItems.map(it=>({ name: it.name, qty: it.qty, unit: it.unitEx })),
+      recItems:  recItems.map(it=>({ name: it.name, qty: it.qty, unit: it.unitEx, type: "月額" })),
     };
   }
 
   const sendBtn = document.getElementById("sendToGAS");
   sendBtn.addEventListener("click", async ()=>{
-    // 先に摘要が空なら生成して見せる
     if(!document.getElementById("summary").value.trim()){
       document.getElementById("summary").value = buildSummaryText();
     }
-
-    // 簡単バリデーション（最低限）
     if(!val("companyName") || !val("personName")){
       document.getElementById("submitMsg").innerHTML = `<span class="err">社名/屋号 と 担当者名 は必須です。</span>`;
       return;
@@ -838,12 +816,10 @@ ${recLines}
 
     try{
       const payload = buildPayload();
-
-      // ✅ CORS回避のため text/plain で送る（GAS側はJSON.parseでOK）
       const res = await fetch(GAS_URL, {
         method: "POST",
         mode: "cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避免预检更稳
         body: JSON.stringify(payload),
       });
 
@@ -853,7 +829,7 @@ ${recLines}
 
       if(json && json.ok){
         document.getElementById("submitMsg").innerHTML =
-          `<span class="ok">送信完了：申込ID ${json.appId || ""}（管理者メールへ送付済み）</span>`;
+          `<span class="ok">送信完了：申込ID ${json.appId || ""}（PDF/XLSXは管理者メールへ）</span>`;
       }else{
         document.getElementById("submitMsg").innerHTML =
           `<span class="err">送信失敗：${(json && (json.error||json.message)) || "不明なエラー"}</span>`;
