@@ -603,7 +603,7 @@
    * 必須設定
    ***************/
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxf3SVmq4bi7VU-7USK6jbHXBDAApKK-Sfw1TgJMNDsRp4cJ9rxzGPlqscKylc6CnWfvA/exec";
-  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2"; // 你GAS里CONFIG.apiKey要一致
+  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
   const TAX_RATE = 0.10;
 
   /***************
@@ -643,7 +643,7 @@
     const els = document.querySelectorAll("input,select,textarea");
     els.forEach(el=>{
       el.addEventListener("focus", ()=>headerEl.classList.add("hide"));
-      el.addEventListener("blur", ()=>{ /* 不强制显示，靠scroll控制 */ });
+      el.addEventListener("blur", ()=>{});
     });
   }
   bindFocusHide();
@@ -783,13 +783,11 @@
    * Devices (税込単価表示 + 数量入力)
    ***************/
   const devices = [
-    // 你之前的レジスターは税別90000 → 税込99000 として表示
     { key:"register", name:"レジスター", unitInc: 99000, qty: 1 },
     { key:"tablet", name:"タブレット", unitInc: 32900, qty: 0 },
     { key:"kds", name:"キッチンモニター", unitInc: 66000, qty: 0 },
-    // 需要的话也可以保留这些
-    { key:"printer", name:"プリンター", unitInc: 0, qty: 0 },
-    { key:"drawer", name:"キャッシュドロア", unitInc: 0, qty: 0 },
+    { key:"printer", name:"プリンター", unitInc: 33000, qty: 0 },
+    { key:"drawer", name:"キャッシュドロア", unitInc: 22000, qty: 0 },
   ];
 
   const deviceListEl = document.getElementById("deviceList");
@@ -806,26 +804,35 @@
         </div>
         <div class="qtyRow">
           <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">数量</label>
-          <input inputmode="numeric" class="num" value="${it.qty}" data-i="${idx}" aria-label="qty">
+          <input type="number" min="0" step="1" class="num" value="${it.qty}" data-i="${idx}" aria-label="qty">
         </div>
       `;
       deviceListEl.appendChild(card);
     });
 
-    deviceListEl.querySelectorAll("input[data-i]").forEach(inp=>{
-      inp.addEventListener("input", ()=>{
+    deviceListEl.querySelectorAll("input[data-i]").forEach(inp => {
+      inp.addEventListener("input", (e) => {
         const i = Number(inp.dataset.i);
-        devices[i].qty = Math.max(0, parseInt(inp.value||"0",10)||0);
+        const val = parseInt(e.target.value, 10);
+        devices[i].qty = isNaN(val) || val < 0 ? 0 : val;
         calcGrand();
+      });
+      
+      inp.addEventListener("blur", (e) => {
+        const i = Number(inp.dataset.i);
+        if (e.target.value === "" || isNaN(parseInt(e.target.value, 10))) {
+          devices[i].qty = 0;
+          e.target.value = 0;
+          calcGrand();
+        }
       });
     });
 
     calcGrand();
   }
-  renderDevices();
 
   /***************
-   * Rec plan (monthly/yearly) no qty
+   * Rec plan (monthly/yearly)
    ***************/
   const recPlanEl = document.getElementById("recPlan");
   const recPriceText = document.getElementById("recPriceText");
@@ -844,9 +851,16 @@
   });
 
   function calcGrand(){
-    const initTotal = devices.reduce((a,it)=>a + (it.qty||0)*(it.unitInc||0), 0);
+    const initTotal = devices.reduce((a, it) => {
+      const qty = Number(it.qty) || 0;
+      const price = Number(it.unitInc) || 0;
+      return a + (qty * price);
+    }, 0);
+    
     const rp = getRecPlan();
-    const grand = initTotal + rp.priceInc;
+    const price = Number(rp.priceInc) || 0;
+    const grand = initTotal + price;
+    
     document.getElementById("grand").textContent = fmtJPY(grand);
   }
 
@@ -855,24 +869,6 @@
    ***************/
   const confirmPage = document.getElementById("confirmPage");
 
-  function row(label, value){
-    const div1 = document.createElement("div");
-    div1.className = "jpLabel";
-    div1.textContent = label;
-    const div2 = document.createElement("div");
-    div2.className = "jpVal";
-    div2.textContent = value || "";
-    return [div1, div2];
-  }
-  /*
-  function fillGrid(el, pairs){
-    el.innerHTML = "";
-    pairs.forEach(([l,v])=>{
-      const [a,b] = row(l,v);
-      el.appendChild(a); el.appendChild(b);
-    });
-  }
-  */
   function addrLine(z,a1,a2){
     return `〒${(z||"")} ${(a1||"")} ${(a2||"")}`.replace(/\s+/g," ").trim();
   }
@@ -883,23 +879,19 @@
       name: d.name,
       qty: d.qty,
       unitInc: d.unitInc
-    })).filter(x => (x.qty||0) > 0 || x.unitInc === 0); // 保留0円项也OK
+    })).filter(x => (x.qty||0) > 0 || x.unitInc === 0);
 
     return {
       apiKey: API_KEY,
-
       applyDate: document.getElementById("applyDate").value,
       customerCode: document.getElementById("customerCode").value,
-
       companyName: (document.getElementById("companyName").value||"").trim(),
       personName: (document.getElementById("personName").value||"").trim(),
       mobile: (document.getElementById("mobile").value||"").trim(),
       email: (document.getElementById("email").value||"").trim(),
-
       zipCompany: (document.getElementById("zipCompany").value||"").trim(),
       addrCompany1: (document.getElementById("addrCompany1").value||"").trim(),
       addrCompany2: (document.getElementById("addrCompany2").value||"").trim(),
-
       installName: (document.getElementById("installName").value||"").trim(),
       installTel: (document.getElementById("installTel").value||"").trim(),
       zipInstall: (document.getElementById("zipInstall").value||"").trim(),
@@ -907,141 +899,136 @@
       addrInstall2: (document.getElementById("addrInstall2").value||"").trim(),
       bizHours: document.getElementById("bizHours").value,
       holiday: document.getElementById("holiday").value,
-
       billName: (document.getElementById("billName").value||"").trim(),
       payMethod: "銀行振込",
       zipBill: (document.getElementById("zipBill").value||"").trim(),
       addrBill1: (document.getElementById("addrBill1").value||"").trim(),
       addrBill2: (document.getElementById("addrBill2").value||"").trim(),
-
       chargeStart: chargeStartEl.value,
       billingTerm: billingTermEl.value,
-
       taxRate: TAX_RATE,
-
       initItems,
-      recPlan: rp, // {plan, priceInc}
+      recPlan: rp,
     };
   }
 
   document.getElementById("goConfirm").addEventListener("click", ()=>{
-  // refresh billing term (safety)
-  const csV = chargeStartEl.value;
-  if(csV){
-    const d = new Date(csV + "T00:00:00");
-    billingTermEl.value = formatTerm(d);
-  }
+    const csV = chargeStartEl.value;
+    if(csV){
+      const d = new Date(csV + "T00:00:00");
+      billingTermEl.value = formatTerm(d);
+    }
 
-  const p = buildPayload();
+    const p = buildPayload();
 
-  // 填充契約者情報
-  const contractGrid = document.getElementById("c_contract");
-  contractGrid.innerHTML = "";
-  const contractPairs = [
-    ["申込日", p.applyDate],
-    ["顧客コード", p.customerCode],
-    ["社名/屋号", p.companyName],
-    ["担当者", p.personName],
-    ["携帯", p.mobile],
-    ["E-mail", p.email],
-    ["住所", addrLine(p.zipCompany, p.addrCompany1, p.addrCompany2)]
-  ];
-  contractPairs.forEach(([label, value]) => {
-    const labelDiv = document.createElement("div");
-    labelDiv.className = "jpLabel";
-    labelDiv.textContent = label;
-    const valueDiv = document.createElement("div");
-    valueDiv.className = "jpVal";
-    valueDiv.textContent = value || "未入力";
-    contractGrid.appendChild(labelDiv);
-    contractGrid.appendChild(valueDiv);
-  });
-
-  // 填充設置先情報
-  const installGrid = document.getElementById("c_install");
-  installGrid.innerHTML = "";
-  const installPairs = [
-    ["名称", p.installName],
-    ["電話", p.installTel],
-    ["住所", addrLine(p.zipInstall, p.addrInstall1, p.addrInstall2)],
-    ["営業時間", p.bizHours],
-    ["定休日", p.holiday]
-  ];
-  installPairs.forEach(([label, value]) => {
-    const labelDiv = document.createElement("div");
-    labelDiv.className = "jpLabel";
-    labelDiv.textContent = label;
-    const valueDiv = document.createElement("div");
-    valueDiv.className = "jpVal";
-    valueDiv.textContent = value || "未入力";
-    installGrid.appendChild(labelDiv);
-    installGrid.appendChild(valueDiv);
-  });
-
-  // 填充請求先情報
-  const billGrid = document.getElementById("c_bill");
-  billGrid.innerHTML = "";
-  const billPairs = [
-    ["名称", p.billName],
-    ["支払方法", p.payMethod],
-    ["住所", addrLine(p.zipBill, p.addrBill1, p.addrBill2)],
-    ["課金開始日", p.chargeStart],
-    ["請求期間", p.billingTerm]
-  ];
-  billPairs.forEach(([label, value]) => {
-    const labelDiv = document.createElement("div");
-    labelDiv.className = "jpLabel";
-    labelDiv.textContent = label;
-    const valueDiv = document.createElement("div");
-    valueDiv.className = "jpVal";
-    valueDiv.textContent = value || "未入力";
-    billGrid.appendChild(labelDiv);
-    billGrid.appendChild(valueDiv);
-  });
-
-  // 填充初期費用
-  const initBox = document.getElementById("c_init");
-  initBox.innerHTML = "";
-  if (p.initItems.length === 0) {
-    const emptyMsg = document.createElement("div");
-    emptyMsg.className = "jpItem";
-    emptyMsg.innerHTML = "<div>選択された機器はありません</div><div>¥ 0</div>";
-    initBox.appendChild(emptyMsg);
-  } else {
-    p.initItems.forEach(it=>{
-      const sub = (it.qty||0)*(it.unitInc||0);
-      const row = document.createElement("div");
-      row.className = "jpItem";
-      row.innerHTML = `<div>${it.name}　${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
-      initBox.appendChild(row);
+    // 填充契約者情報
+    const contractGrid = document.getElementById("c_contract");
+    contractGrid.innerHTML = "";
+    const contractPairs = [
+      ["申込日", p.applyDate],
+      ["顧客コード", p.customerCode],
+      ["社名/屋号", p.companyName],
+      ["担当者", p.personName],
+      ["携帯", p.mobile],
+      ["E-mail", p.email],
+      ["住所", addrLine(p.zipCompany, p.addrCompany1, p.addrCompany2)]
+    ];
+    contractPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value || "未入力";
+      contractGrid.appendChild(labelDiv);
+      contractGrid.appendChild(valueDiv);
     });
-  }
 
-  // 填充利用料
-  const recGrid = document.getElementById("c_rec");
-  recGrid.innerHTML = "";
-  const recPairs = [
-    ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`]
-  ];
-  recPairs.forEach(([label, value]) => {
-    const labelDiv = document.createElement("div");
-    labelDiv.className = "jpLabel";
-    labelDiv.textContent = label;
-    const valueDiv = document.createElement("div");
-    valueDiv.className = "jpVal";
-    valueDiv.textContent = value;
-    recGrid.appendChild(labelDiv);
-    recGrid.appendChild(valueDiv);
+    // 填充設置先情報
+    const installGrid = document.getElementById("c_install");
+    installGrid.innerHTML = "";
+    const installPairs = [
+      ["名称", p.installName],
+      ["電話", p.installTel],
+      ["住所", addrLine(p.zipInstall, p.addrInstall1, p.addrInstall2)],
+      ["営業時間", p.bizHours],
+      ["定休日", p.holiday]
+    ];
+    installPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value || "未入力";
+      installGrid.appendChild(labelDiv);
+      installGrid.appendChild(valueDiv);
+    });
+
+    // 填充請求先情報
+    const billGrid = document.getElementById("c_bill");
+    billGrid.innerHTML = "";
+    const billPairs = [
+      ["名称", p.billName],
+      ["支払方法", p.payMethod],
+      ["住所", addrLine(p.zipBill, p.addrBill1, p.addrBill2)],
+      ["課金開始日", p.chargeStart],
+      ["請求期間", p.billingTerm]
+    ];
+    billPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value || "未入力";
+      billGrid.appendChild(labelDiv);
+      billGrid.appendChild(valueDiv);
+    });
+
+    // 填充初期費用
+    const initBox = document.getElementById("c_init");
+    initBox.innerHTML = "";
+    if (p.initItems.length === 0) {
+      const emptyMsg = document.createElement("div");
+      emptyMsg.className = "jpItem";
+      emptyMsg.innerHTML = "<div>選択された機器はありません</div><div>¥ 0</div>";
+      initBox.appendChild(emptyMsg);
+    } else {
+      p.initItems.forEach(it=>{
+        const sub = (it.qty||0)*(it.unitInc||0);
+        const row = document.createElement("div");
+        row.className = "jpItem";
+        row.innerHTML = `<div>${it.name}　${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
+        initBox.appendChild(row);
+      });
+    }
+
+    // 填充利用料
+    const recGrid = document.getElementById("c_rec");
+    recGrid.innerHTML = "";
+    const recPairs = [
+      ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`]
+    ];
+    recPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value;
+      recGrid.appendChild(labelDiv);
+      recGrid.appendChild(valueDiv);
+    });
+
+    const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
+    const grand = initTotal + p.recPlan.priceInc;
+    document.getElementById("c_grand").textContent = fmtJPY(grand);
+
+    confirmPage.style.display = "block";
+    confirmPage.setAttribute("aria-hidden","false");
+    window.scrollTo({top:0, behavior:"instant"});
   });
-
-  const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
-  const grand = initTotal + p.recPlan.priceInc;
-  document.getElementById("c_grand").textContent = fmtJPY(grand);
-
-  confirmPage.style.display = "block";
-  confirmPage.setAttribute("aria-hidden","false");
-  window.scrollTo({top:0, behavior:"instant"});
-});
 
   document.getElementById("confirmBack").addEventListener("click", ()=>{
     confirmPage.style.display = "none";
@@ -1085,6 +1072,19 @@
       sendBtn.disabled = false;
       sendBtn.textContent = "送信";
     }
+  });
+
+  // 页面加载完成后执行初始化
+  document.addEventListener("DOMContentLoaded", function() {
+    // 确保设备列表渲染
+    renderDevices();
+    
+    // 确保基本料金显示正确
+    const rp = getRecPlan();
+    recPriceText.textContent = `${rp.plan} ${fmtJPY(rp.priceInc)} (税込)`;
+    
+    // 计算初始合计
+    calcGrand();
   });
 </script>
 </body>
