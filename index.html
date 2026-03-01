@@ -864,6 +864,7 @@
     div2.textContent = value || "";
     return [div1, div2];
   }
+  /*
   function fillGrid(el, pairs){
     el.innerHTML = "";
     pairs.forEach(([l,v])=>{
@@ -871,6 +872,7 @@
       el.appendChild(a); el.appendChild(b);
     });
   }
+  */
   function addrLine(z,a1,a2){
     return `〒${(z||"")} ${(a1||"")} ${(a2||"")}`.replace(/\s+/g," ").trim();
   }
@@ -923,43 +925,89 @@
   }
 
   document.getElementById("goConfirm").addEventListener("click", ()=>{
-    // refresh billing term (safety)
-    const csV = chargeStartEl.value;
-    if(csV){
-      const d = new Date(csV + "T00:00:00");
-      billingTermEl.value = formatTerm(d);
-    }
+  // refresh billing term (safety)
+  const csV = chargeStartEl.value;
+  if(csV){
+    const d = new Date(csV + "T00:00:00");
+    billingTermEl.value = formatTerm(d);
+  }
 
-    const p = buildPayload();
+  const p = buildPayload();
 
-    fillGrid(document.getElementById("c_contract"), [
-      ["申込日", p.applyDate],
-      ["顧客コード", p.customerCode],
-      ["社名/屋号", p.companyName],
-      ["担当者", p.personName],
-      ["携帯", p.mobile],
-      ["E-mail", p.email],
-      ["住所", addrLine(p.zipCompany,p.addrCompany1,p.addrCompany2)],
-    ]);
+  // 填充契約者情報
+  const contractGrid = document.getElementById("c_contract");
+  contractGrid.innerHTML = "";
+  const contractPairs = [
+    ["申込日", p.applyDate],
+    ["顧客コード", p.customerCode],
+    ["社名/屋号", p.companyName],
+    ["担当者", p.personName],
+    ["携帯", p.mobile],
+    ["E-mail", p.email],
+    ["住所", addrLine(p.zipCompany, p.addrCompany1, p.addrCompany2)]
+  ];
+  contractPairs.forEach(([label, value]) => {
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "jpLabel";
+    labelDiv.textContent = label;
+    const valueDiv = document.createElement("div");
+    valueDiv.className = "jpVal";
+    valueDiv.textContent = value || "未入力";
+    contractGrid.appendChild(labelDiv);
+    contractGrid.appendChild(valueDiv);
+  });
 
-    fillGrid(document.getElementById("c_install"), [
-      ["名称", p.installName],
-      ["電話", p.installTel],
-      ["住所", addrLine(p.zipInstall,p.addrInstall1,p.addrInstall2)],
-      ["営業時間", p.bizHours],
-      ["定休日", p.holiday],
-    ]);
+  // 填充設置先情報
+  const installGrid = document.getElementById("c_install");
+  installGrid.innerHTML = "";
+  const installPairs = [
+    ["名称", p.installName],
+    ["電話", p.installTel],
+    ["住所", addrLine(p.zipInstall, p.addrInstall1, p.addrInstall2)],
+    ["営業時間", p.bizHours],
+    ["定休日", p.holiday]
+  ];
+  installPairs.forEach(([label, value]) => {
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "jpLabel";
+    labelDiv.textContent = label;
+    const valueDiv = document.createElement("div");
+    valueDiv.className = "jpVal";
+    valueDiv.textContent = value || "未入力";
+    installGrid.appendChild(labelDiv);
+    installGrid.appendChild(valueDiv);
+  });
 
-    fillGrid(document.getElementById("c_bill"), [
-      ["名称", p.billName],
-      ["支払方法", p.payMethod],
-      ["住所", addrLine(p.zipBill,p.addrBill1,p.addrBill2)],
-      ["課金開始日", p.chargeStart],
-      ["請求期間", p.billingTerm],
-    ]);
+  // 填充請求先情報
+  const billGrid = document.getElementById("c_bill");
+  billGrid.innerHTML = "";
+  const billPairs = [
+    ["名称", p.billName],
+    ["支払方法", p.payMethod],
+    ["住所", addrLine(p.zipBill, p.addrBill1, p.addrBill2)],
+    ["課金開始日", p.chargeStart],
+    ["請求期間", p.billingTerm]
+  ];
+  billPairs.forEach(([label, value]) => {
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "jpLabel";
+    labelDiv.textContent = label;
+    const valueDiv = document.createElement("div");
+    valueDiv.className = "jpVal";
+    valueDiv.textContent = value || "未入力";
+    billGrid.appendChild(labelDiv);
+    billGrid.appendChild(valueDiv);
+  });
 
-    const initBox = document.getElementById("c_init");
-    initBox.innerHTML = "";
+  // 填充初期費用
+  const initBox = document.getElementById("c_init");
+  initBox.innerHTML = "";
+  if (p.initItems.length === 0) {
+    const emptyMsg = document.createElement("div");
+    emptyMsg.className = "jpItem";
+    emptyMsg.innerHTML = "<div>選択された機器はありません</div><div>¥ 0</div>";
+    initBox.appendChild(emptyMsg);
+  } else {
     p.initItems.forEach(it=>{
       const sub = (it.qty||0)*(it.unitInc||0);
       const row = document.createElement("div");
@@ -967,19 +1015,33 @@
       row.innerHTML = `<div>${it.name}　${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
       initBox.appendChild(row);
     });
+  }
 
-    fillGrid(document.getElementById("c_rec"), [
-      ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`],
-    ]);
-
-    const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
-    const grand = initTotal + p.recPlan.priceInc;
-    document.getElementById("c_grand").textContent = fmtJPY(grand);
-
-    confirmPage.style.display = "block";
-    confirmPage.setAttribute("aria-hidden","false");
-    window.scrollTo({top:0, behavior:"instant"});
+  // 填充利用料
+  const recGrid = document.getElementById("c_rec");
+  recGrid.innerHTML = "";
+  const recPairs = [
+    ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`]
+  ];
+  recPairs.forEach(([label, value]) => {
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "jpLabel";
+    labelDiv.textContent = label;
+    const valueDiv = document.createElement("div");
+    valueDiv.className = "jpVal";
+    valueDiv.textContent = value;
+    recGrid.appendChild(labelDiv);
+    recGrid.appendChild(valueDiv);
   });
+
+  const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
+  const grand = initTotal + p.recPlan.priceInc;
+  document.getElementById("c_grand").textContent = fmtJPY(grand);
+
+  confirmPage.style.display = "block";
+  confirmPage.setAttribute("aria-hidden","false");
+  window.scrollTo({top:0, behavior:"instant"});
+});
 
   document.getElementById("confirmBack").addEventListener("click", ()=>{
     confirmPage.style.display = "none";
