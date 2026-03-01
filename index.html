@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NJFREGI レジシステム申込フォーム</title>
-
   <style>
     :root{
       --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#6b7280;
@@ -14,12 +13,10 @@
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+      margin:0; font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
       background:var(--bg); color:var(--text);
     }
 
-    /* ===== Header (auto-hide) ===== */
     header{
       position:sticky; top:0; z-index:10;
       background:linear-gradient(180deg, #ffffff, #ffffffcc);
@@ -29,42 +26,31 @@
     }
     header.hide{ transform: translateY(-110%); }
 
-    .wrap{max-width:860px; margin:0 auto; padding:12px 14px 28px}
-    .topbar{display:flex; align-items:flex-end; justify-content:space-between; gap:12px;}
-    .brand{display:flex; flex-direction:column; gap:6px}
-    .brand .title{
-      font-weight:1000;
-      font-size:16px;
-      line-height:1.2;
+    .wrap{max-width:860px; margin:0 auto; padding:10px 14px 28px}
+    .titleTop{
+      font-weight:900; font-size:16px; line-height:1.2;
+      text-align:center;
     }
-    .brand .sub{
-      font-size:12px; color:var(--muted);
+    .subtitleTop{
+      text-align:center; color:var(--muted); font-size:12px; margin-top:4px;
+    }
+    .topbarRow{
+      margin-top:10px;
+      display:flex; align-items:center; justify-content:center;
     }
 
-    /* step blocks */
-    .stepBlocks{
-      display:flex; gap:8px; align-items:center; flex-wrap:nowrap; user-select:none;
-    }
+    /* === Step Blocks（4つのブロック） === */
+    .stepBlocks{display:flex; gap:8px; align-items:center; flex-wrap:nowrap; user-select:none;}
     .sb{
-      width:42px; height:28px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--muted);
-      font-weight:900;
-      font-size:12px;
+      width:44px; height:28px; border-radius:10px;
+      border:1px solid var(--border); background:#fff; color:var(--muted);
+      font-weight:800; font-size:12px;
       display:flex; align-items:center; justify-content:center;
       transition: all .2s ease;
     }
-    .sb.done{
-      background:#eef2ff;
-      border-color:#c7d2fe;
-      color:#374151;
-    }
+    .sb.done{background:#eef2ff; border-color:#c7d2fe; color:#374151;}
     .sb.active{
-      background:var(--primary);
-      border-color:var(--primary2);
-      color:#fff;
+      background:var(--primary); border-color:var(--primary2); color:#fff;
       box-shadow:0 10px 20px rgba(37,99,235,.18);
     }
 
@@ -75,206 +61,96 @@
     .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--primary),#7c3aed); transition:width .25s ease}
 
     .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px;
-      margin-top:12px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:var(--radius); box-shadow:var(--shadow);
+      padding:14px; margin-top:14px;
     }
-    h2{margin:0 0 10px; font-size:15px; font-weight:1000}
+    h2{margin:0 0 10px; font-size:16px}
+    .sub{margin:0 0 12px; color:var(--muted); font-size:12px; line-height:1.5}
+
     .grid{display:grid; gap:10px}
     @media(min-width:720px){ .grid.cols2{grid-template-columns: 1fr 1fr;} }
 
-    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px; font-weight:800}
+    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px}
     input, select, textarea{
-      width:100%;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#fff;
-      outline:none;
+      width:100%; padding:12px 12px; border-radius:12px;
+      border:1px solid var(--border); background:#fff; outline:none;
       font-size:14px;
-      font-weight:800;
     }
-    input[readonly]{ background:#f9fafb; color:#111; }
-    input:focus, select:focus, textarea:focus{
-      border-color:#c7d2fe;
-      box-shadow:0 0 0 4px rgba(99,102,241,.15)
-    }
+    input:focus, select:focus, textarea:focus{border-color:#c7d2fe; box-shadow:0 0 0 4px rgba(99,102,241,.15)}
+    textarea{min-height:90px; resize:vertical}
 
     .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .btn{
       appearance:none; border:0; border-radius:14px;
-      padding:12px 14px; font-size:14px; font-weight:1000;
+      padding:12px 14px; font-size:14px; font-weight:600;
       background:var(--primary); color:#fff; cursor:pointer;
       box-shadow:0 10px 20px rgba(37,99,235,.18);
     }
     .btn:active{transform:translateY(1px)}
-    .btn.secondary{
-      background:#fff; color:var(--text);
-      border:1px solid var(--border); box-shadow:none
-    }
-    .btn.ghost{
-      background:transparent; color:var(--primary);
-      border:1px dashed #c7d2fe; box-shadow:none
-    }
+    .btn.secondary{background:#fff; color:var(--text); border:1px solid var(--border); box-shadow:none}
+    .btn.ghost{background:transparent; color:var(--primary); border:1px dashed #c7d2fe; box-shadow:none}
     .btn.danger{background:var(--danger)}
     .btn[disabled]{opacity:.5; cursor:not-allowed; transform:none}
 
     .step{display:none}
     .step.active{display:block}
 
-    /* checklist */
     .checklist{display:grid; gap:10px; margin-top:10px}
     .checkitem{
       display:flex; gap:10px; align-items:flex-start;
       padding:12px; border-radius:14px; border:1px solid var(--border); background:#fff;
     }
     .checkitem input{width:auto; margin-top:2px}
-    .checkitem b{font-size:13px; font-weight:1000}
-    .checkitem p{margin:4px 0 0; font-size:12px; color:var(--muted); line-height:1.45; font-weight:700}
+    .checkitem b{font-size:13px}
+    .checkitem p{margin:4px 0 0; font-size:12px; color:var(--muted); line-height:1.45}
 
+    .muted{color:var(--muted)}
+    .hint{font-size:12px; color:var(--muted); margin-top:8px}
+    .ok{color:var(--ok); font-weight:700}
+    .err{color:var(--danger); font-weight:700}
+    .small{font-size:12px}
     .divider{height:1px; background:var(--border); margin:12px 0}
 
-    /* device blocks */
-    .deviceList{display:grid; gap:10px}
-    .deviceCard{
+    /* ✅ 设备/利用料：更清晰的卡片布局 */
+    .itemList{display:grid; gap:10px}
+    .itemCard{
       border:1px solid var(--border);
-      border-radius:16px;
+      border-radius:14px;
       background:#fff;
       padding:12px;
       display:grid;
-      gap:8px;
+      gap:10px;
     }
-    .deviceTop{
-      display:flex; justify-content:space-between; gap:12px; align-items:center;
-      font-weight:1000;
+    .itemTop{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
     }
-    .price{color:#111}
-    .qtyRow{
-      display:flex; gap:10px; align-items:center;
-    }
-    .qtyRow input{
-      max-width:140px;
-      text-align:right;
-      font-variant-numeric: tabular-nums;
-    }
-    .muted{color:var(--muted)}
+    .itemName{font-weight:800; font-size:14px}
+    .itemPrice{font-size:12px; color:#374151; text-align:right}
+    .itemPrice b{font-size:14px}
+    .itemQtyRow{display:flex; gap:10px; align-items:center}
+    .itemQtyRow label{margin:0; width:78px}
+    .itemQtyRow input{flex:1}
 
-    /* confirm page overlay */
-    .confirmPage{
-      display:none;
-      position:fixed; inset:0;
-      background:linear-gradient(180deg,#eef2ff,#f6f7fb);
-      z-index:9999;
-      overflow:auto;
-      padding-bottom:90px;
+    .totalbox{
+      display:grid; gap:6px; padding:12px; border:1px solid var(--border); border-radius:14px; background:#fafafa;
     }
-    .confirmWrap{max-width:860px; margin:0 auto; padding:14px}
-    .confirmHeader{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      margin-bottom:12px;
-    }
-    .confirmTitle{
-      font-weight:1000; font-size:18px;
-      padding:10px 12px;
-      border-radius:16px;
-      background:#fff;
-      border:1px solid #c7d2fe;
-      box-shadow:0 10px 30px rgba(0,0,0,.06);
-    }
-    .jpSection{
-      margin-top:12px;
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .jpSecTitle{
-      background:#eef2ff;
-      border-bottom:1px solid #c7d2fe;
-      padding:10px 12px;
-      font-weight:1000;
-    }
-    .jpGrid{
-      display:grid;
-      grid-template-columns: 140px 1fr;
-      gap:8px 10px;
-      padding:12px;
-    }
-    .jpLabel{color:var(--muted); font-weight:900; font-size:13px;}
-    .jpVal{font-weight:1000; font-size:14px;}
-    .jpList{
-      padding:12px;
-      display:grid; gap:10px;
-    }
-    .jpItem{
-      display:flex; justify-content:space-between; gap:12px;
-      font-weight:1000;
-      border-bottom:1px dashed #e5e7eb;
-      padding-bottom:8px;
-    }
-    .jpItem:last-child{border-bottom:0; padding-bottom:0;}
-
-    .jpGrand{
-      margin-top:14px;
-      padding:16px;
-      border-radius:20px;
-      border:1px solid #c7d2fe;
-      background:linear-gradient(180deg,#eef2ff,#ffffff);
-      text-align:center;
-      box-shadow:var(--shadow);
-    }
-    .jpGrandTitle{font-weight:1000; font-size:15px;}
-    .jpGrandValue{margin-top:8px; font-size:36px; font-weight:1000; letter-spacing:.5px;}
-
-    .sendBar{
-      position:fixed; left:0; right:0; bottom:0;
-      background:linear-gradient(180deg,#ffffffcc,#ffffff);
-      border-top:1px solid var(--border);
-      backdrop-filter: blur(10px);
-      padding:10px 12px;
-      z-index:10000;
-    }
-    .sendBar .inner{max-width:860px; margin:0 auto; display:flex; gap:10px; align-items:center;}
-    .sendBtn{
-      flex:1;
-      height:52px;
-      border-radius:16px;
-      background:var(--primary);
-      color:#fff;
-      font-weight:1000;
-      font-size:16px;
-      border:0;
-      box-shadow:0 12px 24px rgba(37,99,235,.22);
-      cursor:pointer;
-    }
-    .sendBtn:disabled{opacity:.5; cursor:not-allowed;}
-    .backBtn{
-      height:52px;
-      padding:0 16px;
-      border-radius:16px;
-      background:#fff;
-      border:1px solid var(--border);
-      font-weight:1000;
-      cursor:pointer;
-    }
-    .ok{color:var(--ok); font-weight:1000}
-    .err{color:var(--danger); font-weight:1000}
+    .totalbox .line{display:flex; justify-content:space-between; font-size:13px}
+    .totalbox .grand{font-size:16px; font-weight:900}
   </style>
 </head>
 
 <body>
-<header id="siteHeader">
+<header id="header">
   <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="title">NJFREGI レジシステム申込フォーム</div>
-        <div class="sub">ステップ入力・住所自動入力・自動計算</div>
-      </div>
+    <!-- ✅ 2. 标题放在最上面（在 1,2,3,4 的上面） -->
+    <div class="titleTop">NJFREGI レジシステム申込フォーム</div>
+    <div class="subtitleTop">ステップ入力・郵便番号から住所自動入力・自動合計</div>
 
+    <div class="topbarRow">
       <div class="stepBlocks" id="stepBlocks" aria-label="ステップ">
         <div class="sb" data-i="0">1</div>
         <div class="sb" data-i="1">2</div>
@@ -287,7 +163,7 @@
   </div>
 </header>
 
-<main class="wrap" id="mainWrap">
+<main class="wrap">
 
   <!-- Step 1 -->
   <section class="card step active" id="step1">
@@ -346,26 +222,28 @@
     </div>
 
     <div class="row" style="margin-top:14px;">
-      <button class="btn" id="to2" disabled>次へ</button>
+      <button class="btn" id="to2" disabled>次へ：基本情報</button>
     </div>
-    <div id="checkHint" style="margin-top:8px; font-weight:900; color:var(--muted); font-size:12px;">
-      上記の重要事項をすべてチェックしてください。
-    </div>
+    <div class="hint" id="checkHint">上記の重要事項をすべてチェックしてください。</div>
   </section>
 
   <!-- Step 2 -->
   <section class="card step" id="step2">
     <h2>基本情報（ご契約者）</h2>
+    <p class="sub">社名/屋号、住所、携帯番号、E-mail、担当者などを入力してください。</p>
 
     <div class="grid cols2">
       <div>
         <label>申込日</label>
-        <input id="applyDate" type="date" readonly>
+        <input id="applyDate" type="date">
       </div>
+
+      <!-- ✅ 1. 顧客コード自动生成，去掉（任意） -->
       <div>
         <label>顧客コード</label>
         <input id="customerCode" readonly>
       </div>
+
       <div>
         <label>社名 / 屋号 / 店舗名</label>
         <input id="companyName" placeholder="例：株式会社BBC">
@@ -387,41 +265,42 @@
 
     <div class="divider"></div>
 
-    <h2>ご契約者住所</h2>
+    <h2>ご契約者住所（本社/本人住所）</h2>
     <div class="grid cols2">
       <div>
-        <label>郵便番号（7桁）</label>
-        <input id="zipCompany" inputmode="numeric" placeholder="例：2730005">
+        <label>郵便番号（日本）</label>
+        <input id="zipCompany" inputmode="numeric" placeholder="例：2730005（ハイフン不要）">
       </div>
       <div class="row" style="align-items:flex-end">
         <button class="btn ghost" id="zipCompanyBtn" type="button">住所自動入力</button>
-        <span id="zipCompanyMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
+        <span class="small muted" id="zipCompanyMsg"></span>
       </div>
       <div style="grid-column:1/-1">
         <label>住所（自動入力）</label>
         <input id="addrCompany1" placeholder="例：千葉県船橋市本町1丁目">
       </div>
       <div style="grid-column:1/-1">
-        <label>番地・建物名</label>
+        <label>番地・建物名（手入力）</label>
         <input id="addrCompany2" placeholder="例：11-25 3F">
       </div>
     </div>
 
     <div class="row" style="margin-top:14px;">
       <button class="btn secondary" id="back1">戻る</button>
-      <button class="btn" id="to3">次へ</button>
+      <button class="btn" id="to3">次へ：設置先/請求先</button>
     </div>
   </section>
 
   <!-- Step 3 -->
   <section class="card step" id="step3">
-    <h2>設置先 / 請求先</h2>
+    <h2>設置先（サービス利用場所）</h2>
+    <p class="sub">「同上」ボタンで、ご契約者住所を設置先へコピーできます。</p>
 
-    <div class="row" style="margin-bottom:10px">
+    <div class="row">
       <button class="btn ghost" id="copyCompanyToInstall" type="button">同上：ご契約者住所を設置先へ</button>
     </div>
 
-    <div class="grid cols2">
+    <div class="grid cols2" style="margin-top:10px;">
       <div>
         <label>設置先名称</label>
         <input id="installName" placeholder="例：麻辣湯倶楽部">
@@ -431,188 +310,151 @@
         <input id="installTel" inputmode="tel" placeholder="例：047-xxx-xxxx">
       </div>
       <div>
-        <label>郵便番号（7桁）</label>
+        <label>郵便番号</label>
         <input id="zipInstall" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
         <button class="btn ghost" id="zipInstallBtn" type="button">住所自動入力</button>
-        <span id="zipInstallMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
+        <span class="small muted" id="zipInstallMsg"></span>
       </div>
       <div style="grid-column:1/-1">
         <label>住所（自動入力）</label>
         <input id="addrInstall1">
       </div>
       <div style="grid-column:1/-1">
-        <label>番地・建物名</label>
+        <label>番地・建物名（手入力）</label>
         <input id="addrInstall2">
       </div>
 
+      <!-- ✅ 6. 营业时间 & 休息时间：下拉 -->
       <div>
         <label>営業時間</label>
-        <select id="bizHours">
-          <option value="11:00-23:00" selected>11:00-23:00</option>
-        </select>
+        <select id="bizHours"></select>
       </div>
       <div>
         <label>定休日</label>
-        <select id="holiday">
-          <option value="なし" selected>なし</option>
-        </select>
+        <select id="holiday"></select>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <div class="row" style="margin-bottom:10px">
+    <h2>請求先 / 支払方法</h2>
+    <p class="sub">「同上」ボタンで、設置先住所を請求先へコピーできます。</p>
+
+    <div class="row">
       <button class="btn ghost" id="copyInstallToBill" type="button">同上：設置先を請求先へ</button>
     </div>
 
-    <div class="grid cols2">
+    <div class="grid cols2" style="margin-top:10px;">
       <div>
         <label>請求先名称</label>
         <input id="billName" placeholder="例：麻辣湯倶楽部">
       </div>
+
+      <!-- ✅ 7/8. 支払方法固定：銀行振込（无下拉） -->
       <div>
         <label>支払方法</label>
-        <input value="銀行振込" readonly>
+        <input id="payMethod" value="銀行振込" readonly>
       </div>
 
       <div>
-        <label>郵便番号（7桁）</label>
+        <label>郵便番号</label>
         <input id="zipBill" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
         <button class="btn ghost" id="zipBillBtn" type="button">住所自動入力</button>
-        <span id="zipBillMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
+        <span class="small muted" id="zipBillMsg"></span>
       </div>
       <div style="grid-column:1/-1">
         <label>住所（自動入力）</label>
         <input id="addrBill1">
       </div>
       <div style="grid-column:1/-1">
-        <label>番地・建物名</label>
+        <label>番地・建物名（手入力）</label>
         <input id="addrBill2">
       </div>
 
-      <div>
-        <label>課金開始日</label>
-        <input id="chargeStart" type="date" readonly>
-      </div>
+      <!-- ✅ 3. 请求期间默认：从课金开始日起 1 年 -->
       <div>
         <label>請求期間</label>
         <input id="billingTerm" readonly>
+      </div>
+
+      <!-- ✅ 课金开始日：默认次月1日 -->
+      <div>
+        <label>課金開始日</label>
+        <input id="chargeStart" type="date">
       </div>
     </div>
 
     <div class="row" style="margin-top:14px;">
       <button class="btn secondary" id="back2">戻る</button>
-      <button class="btn" id="to4">次へ</button>
+      <button class="btn" id="to4">次へ：機器/サービス</button>
     </div>
   </section>
 
   <!-- Step 4 -->
   <section class="card step" id="step4">
-    <h2>機器・サービス</h2>
+    <h2>機器・サービス（自動計算）</h2>
+    <p class="sub">
+      <!-- ✅ 4/8. 税率固定10%，去掉通货选择 -->
+      税率：10%（固定） / 通貨：JPY（固定）
+    </p>
 
     <div class="divider"></div>
-    <h2>初期費用（機器）</h2>
 
-    <div class="deviceList" id="deviceList"></div>
+    <!-- ✅ 4. 设备改成更清晰：名称一行 + 单价（税込），下一行填数量 -->
+    <h2>初期費用（機器/工事/その他）</h2>
+    <div class="itemList" id="initList"></div>
 
     <div class="divider"></div>
 
-    <h2>利用料</h2>
-    <div class="deviceCard">
-      <div class="deviceTop">
-        <div>基本利用料</div>
-        <div class="price" id="recPriceText">月額 ¥ 8,800（税込）</div>
-      </div>
-      <div class="qtyRow">
-        <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">プラン</label>
-        <select id="recPlan">
-          <option value="monthly" selected>月額 8,800（税込）</option>
-          <option value="yearly">年額 88,000（税込）</option>
-        </select>
-      </div>
+    <!-- ✅ 9. 利用料也改成同样显示方式，固定 月額 8800 -->
+    <h2>利用料（サービス）</h2>
+    <div class="itemList" id="recList"></div>
+
+    <div class="divider"></div>
+
+    <div class="totalbox" id="totals">
+      <div class="line"><span class="muted">初期費用 合計（税込）</span><b id="initIn">-</b></div>
+      <div class="line"><span class="muted">利用料 合計（税込）</span><b id="recIn">-</b></div>
+      <div class="divider"></div>
+      <div class="line grand"><span>完工時お支払額（合計）</span><span id="grand">-</span></div>
     </div>
 
     <div class="divider"></div>
 
-    <div class="jpGrand">
-      <div class="jpGrandTitle">完工時お支払額（合計）</div>
-      <div class="jpGrandValue" id="grand">¥ 0</div>
+    <h2>最終確認</h2>
+    <p class="sub">「申込内容を作成」で確認後、「送信」でGASへ送ります（PDF/XLSXは管理者メールへ）。</p>
+
+    <div class="row">
+      <button class="btn secondary" id="back3" type="button">戻る</button>
+      <button class="btn" id="makeSummary" type="button">申込内容を作成</button>
+      <button class="btn" id="sendToGAS" type="button">送信</button>
+      <button class="btn danger" id="resetAll" type="button">リセット</button>
     </div>
 
-    <div class="row" style="margin-top:14px;">
-      <button class="btn secondary" id="back3">戻る</button>
-      <button class="btn" id="goConfirm">申込内容を確認</button>
-    </div>
-
-    <div id="submitMsg" style="margin-top:10px; font-size:12px; font-weight:900; color:var(--muted)"></div>
+    <div class="hint" id="submitMsg"></div>
+    <textarea id="summary" placeholder="ここに申込内容が生成されます（コピー可）" style="margin-top:10px;"></textarea>
   </section>
+
 </main>
 
-<!-- Confirm Page -->
-<section class="confirmPage" id="confirmPage" aria-hidden="true">
-  <div class="confirmWrap">
-    <div class="confirmHeader">
-      <div class="confirmTitle">申込内容の確認</div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">ご契約者</div>
-      <div class="jpGrid" id="c_contract"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">設置先</div>
-      <div class="jpGrid" id="c_install"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">請求先</div>
-      <div class="jpGrid" id="c_bill"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">初期費用（機器）</div>
-      <div class="jpList" id="c_init"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">利用料</div>
-      <div class="jpGrid" id="c_rec"></div>
-    </div>
-
-    <div class="jpGrand">
-      <div class="jpGrandTitle">完工時お支払額（合計）</div>
-      <div class="jpGrandValue" id="c_grand">-</div>
-    </div>
-  </div>
-
-  <div class="sendBar">
-    <div class="inner">
-      <button class="backBtn" id="confirmBack">戻る</button>
-      <button class="sendBtn" id="sendBtn">送信</button>
-    </div>
-  </div>
-</section>
-
 <script>
-  /***************
-   * 必須設定
-   ***************/
+  // ===============================
+  // GAS 接続設定
+  // ===============================
   const GAS_URL = "https://script.google.com/macros/s/AKfycbxf3SVmq4bi7VU-7USK6jbHXBDAApKK-Sfw1TgJMNDsRp4cJ9rxzGPlqscKylc6CnWfvA/exec";
-  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2"; // 你GAS里CONFIG.apiKey要一致
-  const TAX_RATE = 0.10;
+  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
 
-  /***************
-   * Step control
-   ***************/
-  const headerEl = document.getElementById("siteHeader");
+  // ✅ 固定：税率10%、通貨JPY
+  const TAX_RATE = 0.10;
+  const CURRENCY = "JPY";
+
+  // ---------- Step control ----------
   const steps = ["step1","step2","step3","step4"].map(id=>document.getElementById(id));
   let stepIndex = 0;
-
   const bar = document.getElementById("bar");
   const stepBlocks = [...document.querySelectorAll("#stepBlocks .sb")];
 
@@ -628,29 +470,7 @@
   }
   setStep(0);
 
-  /***************
-   * Header auto-hide on scroll & input focus
-   ***************/
-  let lastY = 0;
-  window.addEventListener("scroll", ()=>{
-    const y = window.scrollY || 0;
-    if(y > lastY + 8 && y > 60) headerEl.classList.add("hide");
-    if(y < lastY - 8) headerEl.classList.remove("hide");
-    lastY = y;
-  }, {passive:true});
-
-  function bindFocusHide(){
-    const els = document.querySelectorAll("input,select,textarea");
-    els.forEach(el=>{
-      el.addEventListener("focus", ()=>headerEl.classList.add("hide"));
-      el.addEventListener("blur", ()=>{ /* 不强制显示，靠scroll控制 */ });
-    });
-  }
-  bindFocusHide();
-
-  /***************
-   * Step1 checklist gate
-   ***************/
+  // Step1: checklist gate
   const checks = [...document.querySelectorAll("#checks input[type=checkbox][data-required='1']")];
   const to2 = document.getElementById("to2");
   const checkHint = document.getElementById("checkHint");
@@ -658,7 +478,7 @@
     const ok = checks.every(c=>c.checked);
     to2.disabled = !ok;
     checkHint.innerHTML = ok
-      ? `<span class="ok">確認が完了しました。次へ進めます。</span>`
+      ? `<span class="ok">すべて確認しました。次へ進めます。</span>`
       : `上記の重要事項をすべてチェックしてください。`;
   }
   checks.forEach(c=>c.addEventListener("change", refreshChecklist));
@@ -671,68 +491,108 @@
   document.getElementById("to4").addEventListener("click", ()=>setStep(3));
   document.getElementById("back3").addEventListener("click", ()=>setStep(2));
 
-  /***************
-   * Defaults: applyDate, customerCode, chargeStart(next month 1st), billingTerm(+1 year)
-   ***************/
-  function pad2(n){ return String(n).padStart(2,"0"); }
-  function formatYMD(d){
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-  }
-  function formatYYYYMMDD(d){
-    return `${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`;
-  }
-  function nextMonthFirst(d){
-    return new Date(d.getFullYear(), d.getMonth()+1, 1);
-  }
-  function formatTerm(startDate){
-    const s = startDate;
-    const e = new Date(s.getFullYear()+1, s.getMonth(), s.getDate()-1);
-    return `${formatYMD(s)} ～ ${formatYMD(e)}`;
-  }
+  // ---------- Header auto hide on scroll（5） ----------
+  const headerEl = document.getElementById("header");
+  let lastY = window.scrollY;
+  window.addEventListener("scroll", ()=>{
+    const y = window.scrollY;
+    if(y > lastY && y > 80){ headerEl.classList.add("hide"); }
+    else { headerEl.classList.remove("hide"); }
+    lastY = y;
+  }, {passive:true});
 
+  // ---------- Defaults ----------
   const today = new Date();
-  document.getElementById("applyDate").value = formatYMD(today);
-  document.getElementById("customerCode").value = `${formatYYYYMMDD(today)}001`;
+  document.getElementById("applyDate").value = today.toISOString().slice(0,10);
 
+  // ✅ 1. 顾客コード：YYYYMMDD001
+  function yyyymmdd(d){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${y}${m}${dd}`;
+  }
+  document.getElementById("customerCode").value = `${yyyymmdd(today)}001`;
+
+  // ✅ 课金开始日：次月1日
+  function nextMonthFirstISO(d){
+    const first = new Date(d.getFullYear(), d.getMonth()+1, 1);
+    const yyyy = first.getFullYear();
+    const mm = String(first.getMonth()+1).padStart(2,"0");
+    const dd = String(first.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
   const chargeStartEl = document.getElementById("chargeStart");
+  chargeStartEl.value = nextMonthFirstISO(today);
+
+  // ✅ 3. 請求期間：課金開始日〜1年
   const billingTermEl = document.getElementById("billingTerm");
+  function formatSlash(d){
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${y}/${m}/${dd}`;
+  }
+  function setBillingTermByChargeStart(){
+    const v = chargeStartEl.value;
+    if(!v) return;
+    const start = new Date(v + "T00:00:00");
+    const end = new Date(start);
+    end.setFullYear(end.getFullYear()+1);
+    end.setDate(end.getDate()-1); // 1年-1日（区间更自然）
+    billingTermEl.value = `${formatSlash(start)} - ${formatSlash(end)}`;
+  }
+  setBillingTermByChargeStart();
+  chargeStartEl.addEventListener("change", setBillingTermByChargeStart);
 
-  const cs = nextMonthFirst(today);
-  chargeStartEl.value = formatYMD(cs);
-  billingTermEl.value = formatTerm(cs);
+  // ✅ 6. 营业时间/休息日下拉
+  const bizHoursEl = document.getElementById("bizHours");
+  const holidayEl = document.getElementById("holiday");
+  const bizOptions = [
+    "11:00-23:00","11:00-22:00","10:00-22:00","17:00-23:00","24時間","未定"
+  ];
+  bizOptions.forEach((t,i)=>{
+    const op=document.createElement("option");
+    op.value=t; op.textContent=t;
+    if(i===0) op.selected=true;
+    bizHoursEl.appendChild(op);
+  });
+  const holidayOptions = ["なし","不定休","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日","日曜日"];
+  holidayOptions.forEach((t,i)=>{
+    const op=document.createElement("option");
+    op.value=t; op.textContent=t;
+    if(i===0) op.selected=true;
+    holidayEl.appendChild(op);
+  });
 
-  /***************
-   * ZipCloud address lookup
-   ***************/
+  // ---------- ZipCloud ----------
   async function lookupZip(zip, msgEl, addr1El){
     const z = String(zip||"").replace(/[^\d]/g,"");
     if(z.length !== 7){
       msgEl.textContent = "郵便番号は7桁で入力してください";
-      msgEl.className = "err";
+      msgEl.className = "small err";
       return;
     }
     msgEl.textContent = "検索中…";
-    msgEl.className = "muted";
+    msgEl.className = "small muted";
     try{
       const url = `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${encodeURIComponent(z)}`;
       const res = await fetch(url);
       const data = await res.json();
       if(data.status !== 200 || !data.results || !data.results.length){
         msgEl.textContent = "該当する住所が見つかりません";
-        msgEl.className = "err";
+        msgEl.className = "small err";
         return;
       }
       const r = data.results[0];
-      const addr = `${r.address1}${r.address2}${r.address3}`;
-      addr1El.value = addr;
+      addr1El.value = `${r.address1}${r.address2}${r.address3}`;
       msgEl.textContent = "住所を自動入力しました";
-      msgEl.className = "ok";
+      msgEl.className = "small ok";
     }catch(e){
       msgEl.textContent = "検索に失敗しました（ネットワーク）";
-      msgEl.className = "err";
+      msgEl.className = "small err";
     }
   }
-
   document.getElementById("zipCompanyBtn").addEventListener("click", ()=>{
     lookupZip(
       document.getElementById("zipCompany").value,
@@ -755,15 +615,18 @@
     );
   });
 
-  /***************
-   * "同上" copy
-   ***************/
+  // ---------- 同上 copy ----------
+  const zipCompany = document.getElementById("zipCompany");
+  const addrCompany1 = document.getElementById("addrCompany1");
+  const addrCompany2 = document.getElementById("addrCompany2");
+
   document.getElementById("copyCompanyToInstall").addEventListener("click", ()=>{
-    document.getElementById("zipInstall").value = document.getElementById("zipCompany").value;
-    document.getElementById("addrInstall1").value = document.getElementById("addrCompany1").value;
-    document.getElementById("addrInstall2").value = document.getElementById("addrCompany2").value;
+    document.getElementById("zipInstall").value = zipCompany.value;
+    document.getElementById("addrInstall1").value = addrCompany1.value;
+    document.getElementById("addrInstall2").value = addrCompany2.value;
     document.getElementById("installName").value = document.getElementById("companyName").value || "";
   });
+
   document.getElementById("copyInstallToBill").addEventListener("click", ()=>{
     document.getElementById("zipBill").value = document.getElementById("zipInstall").value;
     document.getElementById("addrBill1").value = document.getElementById("addrInstall1").value;
@@ -771,258 +634,217 @@
     document.getElementById("billName").value = document.getElementById("installName").value || "";
   });
 
-  /***************
-   * Money formatter
-   ***************/
-  function fmtJPY(n){
-    const v = Math.round(Number(n||0));
-    return "¥ " + String(v).replace(/\B(?=(\d{3})+(?!\d))/g,",");
-  }
+  // ---------- Money format ----------
+  const fmtJPY = (n)=> "¥ " + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
-  /***************
-   * Devices (税込単価表示 + 数量入力)
-   ***************/
-  const devices = [
-    // 你之前的レジスターは税別90000 → 税込99000 として表示
-    { key:"register", name:"レジスター", unitInc: 99000, qty: 1 },
-    { key:"tablet", name:"タブレット", unitInc: 32900, qty: 0 },
-    { key:"kds", name:"キッチンモニター", unitInc: 66000, qty: 0 },
-    // 需要的话也可以保留这些
-    { key:"printer", name:"プリンター", unitInc: 0, qty: 0 },
-    { key:"drawer", name:"キャッシュドロア", unitInc: 0, qty: 0 },
+  // ✅ 初期設備（税别单价 unitEx）
+  const initItems = [
+    { name:"レジスター", qty:1, unitEx:90000 },
+    { name:"プリンター", qty:1, unitEx:0 },
+    { name:"キャッシュドロア", qty:1, unitEx:0 },
   ];
 
-  const deviceListEl = document.getElementById("deviceList");
+  // ✅ 利用料：月额 8800（税込）→ 税别 8000（10%）
+  const recItems = [
+    { name:"基本利用料（月額）", qty:1, unitEx:8000 },
+  ];
 
-  function renderDevices(){
-    deviceListEl.innerHTML = "";
-    devices.forEach((it, idx)=>{
-      const card = document.createElement("div");
-      card.className = "deviceCard";
-      card.innerHTML = `
-        <div class="deviceTop">
-          <div>${it.name}</div>
-          <div class="price">${fmtJPY(it.unitInc)}（税込）</div>
-        </div>
-        <div class="qtyRow">
-          <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">数量</label>
-          <input inputmode="numeric" class="num" value="${it.qty}" data-i="${idx}" aria-label="qty">
-        </div>
-      `;
-      deviceListEl.appendChild(card);
+  const initList = document.getElementById("initList");
+  const recList  = document.getElementById("recList");
+
+  function makeItemCard(item, idx, listName){
+    const unitInc = Math.round(item.unitEx * (1+TAX_RATE));
+    const card = document.createElement("div");
+    card.className = "itemCard";
+    card.innerHTML = `
+      <div class="itemTop">
+        <div class="itemName">${item.name}</div>
+        <div class="itemPrice">単価（税込）<br><b>${fmtJPY(unitInc)}</b></div>
+      </div>
+      <div class="itemQtyRow">
+        <label>数量</label>
+        <input class="num" inputmode="numeric" value="${item.qty}" data-idx="${idx}" data-list="${listName}">
+      </div>
+    `;
+    const input = card.querySelector("input");
+    input.addEventListener("input", ()=>{
+      const i = Number(input.dataset.idx);
+      const v = Math.max(0, parseInt(input.value||"0",10)||0);
+      if(listName==="init") initItems[i].qty = v;
+      if(listName==="rec")  recItems[i].qty  = v;
+      calcTotals();
     });
-
-    deviceListEl.querySelectorAll("input[data-i]").forEach(inp=>{
-      inp.addEventListener("input", ()=>{
-        const i = Number(inp.dataset.i);
-        devices[i].qty = Math.max(0, parseInt(inp.value||"0",10)||0);
-        calcGrand();
-      });
-    });
-
-    calcGrand();
-  }
-  renderDevices();
-
-  /***************
-   * Rec plan (monthly/yearly) no qty
-   ***************/
-  const recPlanEl = document.getElementById("recPlan");
-  const recPriceText = document.getElementById("recPriceText");
-
-  function getRecPlan(){
-    if(recPlanEl.value === "yearly"){
-      return { plan:"年額", priceInc: 88000 };
-    }
-    return { plan:"月額", priceInc: 8800 };
+    return card;
   }
 
-  recPlanEl.addEventListener("change", ()=>{
-    const p = getRecPlan();
-    recPriceText.textContent = `${p.plan} ${fmtJPY(p.priceInc)}（税込）`;
-    calcGrand();
+  function renderLists(){
+    initList.innerHTML="";
+    initItems.forEach((it,idx)=>initList.appendChild(makeItemCard(it, idx, "init")));
+    recList.innerHTML="";
+    recItems.forEach((it,idx)=>recList.appendChild(makeItemCard(it, idx, "rec")));
+    calcTotals();
+  }
+
+  function sumInc(items){
+    return items.reduce((a,it)=> a + (it.qty||0)*Math.round(it.unitEx*(1+TAX_RATE)), 0);
+  }
+  function calcTotals(){
+    const initIn = sumInc(initItems);
+    const recIn  = sumInc(recItems);
+    document.getElementById("initIn").textContent = fmtJPY(initIn);
+    document.getElementById("recIn").textContent  = fmtJPY(recIn);
+    document.getElementById("grand").textContent  = fmtJPY(initIn + recIn);
+  }
+  renderLists();
+
+  // ---------- Summary ----------
+  function val(id){ return (document.getElementById(id).value || "").trim(); }
+  function addr(zip, a1, a2){
+    const z = val(zip);
+    const p1 = val(a1);
+    const p2 = val(a2);
+    return `〒${z} ${p1} ${p2}`.replace(/\s+/g," ").trim();
+  }
+  function buildSummaryText(){
+    const initLines = initItems.map(it=>{
+      const unitInc = Math.round(it.unitEx*(1+TAX_RATE));
+      const inc = (it.qty||0)*unitInc;
+      return `- ${it.name} ×${it.qty}　単価（税込）:${fmtJPY(unitInc)}　小計:${fmtJPY(inc)}`;
+    }).join("\n");
+
+    const recLines = recItems.map(it=>{
+      const unitInc = Math.round(it.unitEx*(1+TAX_RATE));
+      const inc = (it.qty||0)*unitInc;
+      return `- ${it.name} ×${it.qty}　単価（税込）:${fmtJPY(unitInc)}　小計:${fmtJPY(inc)}`;
+    }).join("\n");
+
+    const initIn = sumInc(initItems);
+    const recIn  = sumInc(recItems);
+
+    return `【NJFREGI レジシステム申込内容】
+申込日：${val("applyDate")}
+顧客コード：${val("customerCode")}
+支払方法：${val("payMethod")}
+
+[ご契約者]
+社名/屋号：${val("companyName")}
+担当者：${val("personName")}
+携帯：${val("mobile")}
+E-mail：${val("email")}
+住所：${addr("zipCompany","addrCompany1","addrCompany2")}
+
+[設置先]
+名称：${val("installName")}
+電話：${val("installTel")}
+住所：${addr("zipInstall","addrInstall1","addrInstall2")}
+営業時間：${val("bizHours")}
+定休日：${val("holiday")}
+
+[請求先]
+名称：${val("billName")}
+住所：${addr("zipBill","addrBill1","addrBill2")}
+請求期間：${val("billingTerm")}
+課金開始日：${val("chargeStart")}
+
+[初期費用]
+${initLines}
+
+[利用料]
+${recLines}
+
+税率：10%（固定）
+＜完工時お支払額 合計＞：${fmtJPY(initIn + recIn)}
+`;
+  }
+
+  document.getElementById("makeSummary").addEventListener("click", ()=>{
+    document.getElementById("summary").value = buildSummaryText();
+    document.getElementById("submitMsg").innerHTML = `<span class="ok">申込内容を作成しました（コピー可能）。</span>`;
   });
 
-  function calcGrand(){
-    const initTotal = devices.reduce((a,it)=>a + (it.qty||0)*(it.unitInc||0), 0);
-    const rp = getRecPlan();
-    const grand = initTotal + rp.priceInc;
-    document.getElementById("grand").textContent = fmtJPY(grand);
-  }
-
-  /***************
-   * Confirm page render
-   ***************/
-  const confirmPage = document.getElementById("confirmPage");
-
-  function row(label, value){
-    const div1 = document.createElement("div");
-    div1.className = "jpLabel";
-    div1.textContent = label;
-    const div2 = document.createElement("div");
-    div2.className = "jpVal";
-    div2.textContent = value || "";
-    return [div1, div2];
-  }
-  function fillGrid(el, pairs){
-    el.innerHTML = "";
-    pairs.forEach(([l,v])=>{
-      const [a,b] = row(l,v);
-      el.appendChild(a); el.appendChild(b);
-    });
-  }
-  function addrLine(z,a1,a2){
-    return `〒${(z||"")} ${(a1||"")} ${(a2||"")}`.replace(/\s+/g," ").trim();
-  }
-
+  // ---------- Send ----------
   function buildPayload(){
-    const rp = getRecPlan();
-    const initItems = devices.map(d=>({
-      name: d.name,
-      qty: d.qty,
-      unitInc: d.unitInc
-    })).filter(x => (x.qty||0) > 0 || x.unitInc === 0); // 保留0円项也OK
-
     return {
       apiKey: API_KEY,
+      applyDate: val("applyDate"),
+      customerCode: val("customerCode"),
+      companyName: val("companyName"),
+      personName: val("personName"),
+      mobile: val("mobile"),
+      email: val("email"),
+      zipCompany: val("zipCompany"),
+      addrCompany1: val("addrCompany1"),
+      addrCompany2: val("addrCompany2"),
 
-      applyDate: document.getElementById("applyDate").value,
-      customerCode: document.getElementById("customerCode").value,
+      installName: val("installName"),
+      installTel: val("installTel"),
+      zipInstall: val("zipInstall"),
+      addrInstall1: val("addrInstall1"),
+      addrInstall2: val("addrInstall2"),
+      bizHours: val("bizHours"),
+      holiday: val("holiday"),
 
-      companyName: (document.getElementById("companyName").value||"").trim(),
-      personName: (document.getElementById("personName").value||"").trim(),
-      mobile: (document.getElementById("mobile").value||"").trim(),
-      email: (document.getElementById("email").value||"").trim(),
-
-      zipCompany: (document.getElementById("zipCompany").value||"").trim(),
-      addrCompany1: (document.getElementById("addrCompany1").value||"").trim(),
-      addrCompany2: (document.getElementById("addrCompany2").value||"").trim(),
-
-      installName: (document.getElementById("installName").value||"").trim(),
-      installTel: (document.getElementById("installTel").value||"").trim(),
-      zipInstall: (document.getElementById("zipInstall").value||"").trim(),
-      addrInstall1: (document.getElementById("addrInstall1").value||"").trim(),
-      addrInstall2: (document.getElementById("addrInstall2").value||"").trim(),
-      bizHours: document.getElementById("bizHours").value,
-      holiday: document.getElementById("holiday").value,
-
-      billName: (document.getElementById("billName").value||"").trim(),
-      payMethod: "銀行振込",
-      zipBill: (document.getElementById("zipBill").value||"").trim(),
-      addrBill1: (document.getElementById("addrBill1").value||"").trim(),
-      addrBill2: (document.getElementById("addrBill2").value||"").trim(),
-
-      chargeStart: chargeStartEl.value,
-      billingTerm: billingTermEl.value,
+      billName: val("billName"),
+      payMethod: val("payMethod"),
+      zipBill: val("zipBill"),
+      addrBill1: val("addrBill1"),
+      addrBill2: val("addrBill2"),
+      billingTerm: val("billingTerm"),
+      chargeStart: val("chargeStart"),
 
       taxRate: TAX_RATE,
+      currency: CURRENCY,
 
-      initItems,
-      recPlan: rp, // {plan, priceInc}
+      // GAS端期望字段名 initItems/recItems（数组里用 qty / unit）
+      initItems: initItems.map(it=>({ name: it.name, qty: it.qty, unit: it.unitEx })),
+      recItems:  recItems.map(it=>({ name: it.name, qty: it.qty, unit: it.unitEx, type: "月額" })),
     };
   }
 
-  document.getElementById("goConfirm").addEventListener("click", ()=>{
-    // refresh billing term (safety)
-    const csV = chargeStartEl.value;
-    if(csV){
-      const d = new Date(csV + "T00:00:00");
-      billingTermEl.value = formatTerm(d);
+  const sendBtn = document.getElementById("sendToGAS");
+  sendBtn.addEventListener("click", async ()=>{
+    if(!document.getElementById("summary").value.trim()){
+      document.getElementById("summary").value = buildSummaryText();
+    }
+    if(!val("companyName") || !val("personName")){
+      document.getElementById("submitMsg").innerHTML = `<span class="err">社名/屋号 と 担当者名 は必須です。</span>`;
+      return;
     }
 
-    const p = buildPayload();
-
-    fillGrid(document.getElementById("c_contract"), [
-      ["申込日", p.applyDate],
-      ["顧客コード", p.customerCode],
-      ["社名/屋号", p.companyName],
-      ["担当者", p.personName],
-      ["携帯", p.mobile],
-      ["E-mail", p.email],
-      ["住所", addrLine(p.zipCompany,p.addrCompany1,p.addrCompany2)],
-    ]);
-
-    fillGrid(document.getElementById("c_install"), [
-      ["名称", p.installName],
-      ["電話", p.installTel],
-      ["住所", addrLine(p.zipInstall,p.addrInstall1,p.addrInstall2)],
-      ["営業時間", p.bizHours],
-      ["定休日", p.holiday],
-    ]);
-
-    fillGrid(document.getElementById("c_bill"), [
-      ["名称", p.billName],
-      ["支払方法", p.payMethod],
-      ["住所", addrLine(p.zipBill,p.addrBill1,p.addrBill2)],
-      ["課金開始日", p.chargeStart],
-      ["請求期間", p.billingTerm],
-    ]);
-
-    const initBox = document.getElementById("c_init");
-    initBox.innerHTML = "";
-    p.initItems.forEach(it=>{
-      const sub = (it.qty||0)*(it.unitInc||0);
-      const row = document.createElement("div");
-      row.className = "jpItem";
-      row.innerHTML = `<div>${it.name}　${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
-      initBox.appendChild(row);
-    });
-
-    fillGrid(document.getElementById("c_rec"), [
-      ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`],
-    ]);
-
-    const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
-    const grand = initTotal + p.recPlan.priceInc;
-    document.getElementById("c_grand").textContent = fmtJPY(grand);
-
-    confirmPage.style.display = "block";
-    confirmPage.setAttribute("aria-hidden","false");
-    window.scrollTo({top:0, behavior:"instant"});
-  });
-
-  document.getElementById("confirmBack").addEventListener("click", ()=>{
-    confirmPage.style.display = "none";
-    confirmPage.setAttribute("aria-hidden","true");
-  });
-
-  /***************
-   * SEND to GAS
-   ***************/
-  const sendBtn = document.getElementById("sendBtn");
-
-  sendBtn.addEventListener("click", async ()=>{
     sendBtn.disabled = true;
-    sendBtn.textContent = "送信中…";
+    document.getElementById("submitMsg").innerHTML = `<span class="muted">送信中…</span>`;
 
     try{
       const payload = buildPayload();
-
       const res = await fetch(GAS_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避免预检更稳
         body: JSON.stringify(payload),
-        redirect: "follow",
       });
 
-      const txt = await res.text();
-      let data = null;
-      try{ data = JSON.parse(txt); }catch(e){}
+      const text = await res.text();
+      let json;
+      try { json = JSON.parse(text); } catch(_){ json = { ok:false, raw:text }; }
 
-      if(!res.ok || !data || !data.ok){
-        throw new Error((data && data.error) ? data.error : `送信に失敗しました（HTTP ${res.status}）`);
+      if(json && json.ok){
+        document.getElementById("submitMsg").innerHTML =
+          `<span class="ok">送信完了：申込ID ${json.appId || ""}（PDF/XLSXは管理者メールへ）</span>`;
+      }else{
+        document.getElementById("submitMsg").innerHTML =
+          `<span class="err">送信失敗：${(json && (json.error||json.message)) || "不明なエラー"}</span>`;
       }
-
-      alert("送信完了致しました。ご申請ありがとうございます。");
-      confirmPage.style.display = "none";
-      confirmPage.setAttribute("aria-hidden","true");
-
-    }catch(err){
-      alert("送信に失敗しました。\n" + String(err));
+    }catch(e){
+      document.getElementById("submitMsg").innerHTML =
+        `<span class="err">送信失敗（ネットワーク/CORS）：${String(e)}</span>`;
     }finally{
       sendBtn.disabled = false;
-      sendBtn.textContent = "送信";
     }
+  });
+
+  document.getElementById("resetAll").addEventListener("click", ()=>{
+    if(!confirm("入力内容をリセットします。よろしいですか？")) return;
+    location.reload();
   });
 </script>
 </body>
