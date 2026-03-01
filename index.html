@@ -272,6 +272,7 @@
     <div class="topbar">
       <div class="brand">
         <div class="title">NJFREGI レジシステム申込フォーム</div>
+        <div class="sub">ステップ入力・住所自動入力・自動計算</div>
       </div>
 
       <div class="stepBlocks" id="stepBlocks" aria-label="ステップ">
@@ -599,7 +600,7 @@
 
 <script>
   /***************
-   * 必須設定
+   * 必須設定（更新后的GAS URL）
    ***************/
   const GAS_URL = "https://script.google.com/macros/s/AKfycbyrns2BuH1XrKTNEq9H0yo2aYC7dj8DPsK0xUMQHPYSUd5ljuldykmwW_mDK3cB1NGUA/exec";
   const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
@@ -1035,39 +1036,92 @@
   });
 
   /***************
-   * SEND to GAS
+   * SEND to GAS (使用iframe表单提交，避免CORS错误)
    ***************/
   const sendBtn = document.getElementById("sendBtn");
+
+  function submitViaForm(payload) {
+    return new Promise((resolve, reject) => {
+      try {
+        // 创建iframe
+        const iframeId = 'submitFrame_' + Date.now();
+        const iframe = document.createElement('iframe');
+        iframe.name = iframeId;
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+
+        // 创建表单
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = GAS_URL;
+        form.target = iframeId;
+        form.style.display = 'none';
+
+        // 添加所有字段
+        Object.keys(payload).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          
+          if (typeof payload[key] === 'object') {
+            input.value = JSON.stringify(payload[key]);
+          } else {
+            input.value = payload[key] || '';
+          }
+          
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+
+        // 设置超时
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('送信がタイムアウトしました'));
+        }, 30000);
+
+        // iframe加载完成事件
+        iframe.onload = function() {
+          clearTimeout(timeout);
+          cleanup();
+          resolve({ ok: true });
+        };
+
+        // 清理函数
+        function cleanup() {
+          try {
+            document.body.removeChild(form);
+            document.body.removeChild(iframe);
+          } catch (e) {}
+        }
+
+        // 提交表单
+        form.submit();
+
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 
   sendBtn.addEventListener("click", async ()=>{
     sendBtn.disabled = true;
     sendBtn.textContent = "送信中…";
 
-    try{
+    try {
       const payload = buildPayload();
-
-      const res = await fetch(GAS_URL, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify(payload),
-        redirect: "follow",
-      });
-
-      const txt = await res.text();
-      let data = null;
-      try{ data = JSON.parse(txt); }catch(e){}
-
-      if(!res.ok || !data || !data.ok){
-        throw new Error((data && data.error) ? data.error : `送信に失敗しました（HTTP ${res.status}）`);
-      }
-
+      console.log("发送数据:", payload);
+      
+      await submitViaForm(payload);
+      
       alert("送信完了致しました。ご申請ありがとうございます。");
       confirmPage.style.display = "none";
       confirmPage.setAttribute("aria-hidden","true");
-
-    }catch(err){
-      alert("送信に失敗しました。\n" + String(err));
-    }finally{
+      
+    } catch (err) {
+      console.error("发送错误:", err);
+      alert("送信に失敗しました。\nネットワーク接続を確認してください。");
+    } finally {
       sendBtn.disabled = false;
       sendBtn.textContent = "送信";
     }
