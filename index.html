@@ -602,7 +602,7 @@
   /***************
    * 必須設定（更新后的GAS URL）
    ***************/
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbyrns2BuH1XrKTNEq9H0yo2aYC7dj8DPsK0xUMQHPYSUd5ljuldykmwW_mDK3cB1NGUA/exec";
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbyurYZslBVrYvRhX5L2snFBsbXbC5UmRpOkr_d08yieklQMUBDuq-_5N9xqg2gm21CDHA/exec";
   const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
   const TAX_RATE = 0.10;
 
@@ -1104,7 +1104,12 @@
     });
   }
 
-  sendBtn.addEventListener("click", async ()=>{
+    /***************
+   * SEND to GAS (终极解决方案 - 使用JSONP)
+   ***************/
+  const sendBtn = document.getElementById("sendBtn");
+
+  sendBtn.addEventListener("click", function() {
     sendBtn.disabled = true;
     sendBtn.textContent = "送信中…";
 
@@ -1112,16 +1117,80 @@
       const payload = buildPayload();
       console.log("发送数据:", payload);
       
-      await submitViaForm(payload);
+      // 创建唯一的回调函数名
+      const callbackName = "jsonp_callback_" + Date.now();
       
-      alert("送信完了致しました。ご申請ありがとうございます。");
-      confirmPage.style.display = "none";
-      confirmPage.setAttribute("aria-hidden","true");
+      // 创建全局回调函数
+      window[callbackName] = function(response) {
+        try {
+          console.log("收到响应:", response);
+          
+          // 清理script标签
+          const script = document.getElementById(callbackName);
+          if (script) script.remove();
+          
+          // 检查响应
+          if (response && response.ok === true) {
+            alert("送信完了致しました。ご申請ありがとうございます。");
+            confirmPage.style.display = "none";
+            confirmPage.setAttribute("aria-hidden", "true");
+          } else {
+            throw new Error(response?.error || "送信に失敗しました");
+          }
+        } catch (err) {
+          alert("送信に失敗しました。\n" + err.message);
+        } finally {
+          // 清理
+          delete window[callbackName];
+          sendBtn.disabled = false;
+          sendBtn.textContent = "送信";
+        }
+      };
+
+      // 创建script标签进行JSONP请求
+      const script = document.createElement('script');
+      script.id = callbackName;
+      
+      // 构建URL - 将数据作为URL参数
+      const params = new URLSearchParams();
+      params.append('callback', callbackName);
+      
+      // 将payload转换为字符串并添加
+      Object.keys(payload).forEach(key => {
+        if (typeof payload[key] === 'object') {
+          params.append(key, JSON.stringify(payload[key]));
+        } else {
+          params.append(key, payload[key] || '');
+        }
+      });
+      
+      script.src = GAS_URL + '?' + params.toString();
+      
+      // 错误处理
+      script.onerror = function() {
+        alert("サーバーに接続できません。ネットワークを確認してください。");
+        delete window[callbackName];
+        document.getElementById(callbackName)?.remove();
+        sendBtn.disabled = false;
+        sendBtn.textContent = "送信";
+      };
+      
+      // 超时处理
+      setTimeout(() => {
+        if (sendBtn.disabled) {
+          delete window[callbackName];
+          document.getElementById(callbackName)?.remove();
+          alert("送信がタイムアウトしました。");
+          sendBtn.disabled = false;
+          sendBtn.textContent = "送信";
+        }
+      }, 10000);
+      
+      document.body.appendChild(script);
       
     } catch (err) {
       console.error("发送错误:", err);
-      alert("送信に失敗しました。\nネットワーク接続を確認してください。");
-    } finally {
+      alert("送信に失敗しました。\n" + err.message);
       sendBtn.disabled = false;
       sendBtn.textContent = "送信";
     }
