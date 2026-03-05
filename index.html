@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>NJFREGI レジシステム申込フォーム</title>
+
   <style>
     :root{
       --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#6b7280;
@@ -17,6 +18,7 @@
       font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
       background:var(--bg); color:var(--text);
     }
+
     header{
       position:sticky; top:0; z-index:10;
       background:linear-gradient(180deg, #ffffff, #ffffffcc);
@@ -25,6 +27,7 @@
       transition: transform .25s ease;
     }
     header.hide{ transform: translateY(-110%); }
+
     .wrap{max-width:860px; margin:0 auto; padding:12px 14px 28px}
     .topbar{display:flex; align-items:flex-end; justify-content:space-between; gap:12px;}
     .brand{display:flex; flex-direction:column; gap:6px}
@@ -36,6 +39,7 @@
     .brand .sub{
       font-size:12px; color:var(--muted);
     }
+
     .stepBlocks{
       display:flex; gap:8px; align-items:center; flex-wrap:nowrap; user-select:none;
     }
@@ -61,11 +65,13 @@
       color:#fff;
       box-shadow:0 10px 20px rgba(37,99,235,.18);
     }
+
     .progress{
       margin-top:10px; height:8px; border-radius:999px;
       background:#eef2ff; overflow:hidden; border:1px solid #e0e7ff;
     }
     .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--primary),#7c3aed); transition:width .25s ease}
+
     .card{
       background:var(--card);
       border:1px solid var(--border);
@@ -77,18 +83,8 @@
     h2{margin:0 0 10px; font-size:15px; font-weight:1000}
     .grid{display:grid; gap:10px}
     @media(min-width:720px){ .grid.cols2{grid-template-columns: 1fr 1fr;} }
-    label{
-      font-size:12px; 
-      color:var(--muted); 
-      display:block; 
-      margin:0 0 6px; 
-      font-weight:800;
-    }
-    .required::after {
-      content: " *";
-      color: var(--danger);
-      font-weight: bold;
-    }
+
+    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px; font-weight:800}
     input, select, textarea{
       width:100%;
       padding:12px 12px;
@@ -99,21 +95,12 @@
       font-size:14px;
       font-weight:800;
     }
-    input:invalid {
-      border-color: var(--danger);
-    }
-    input[readonly]{ 
-      background:#f9fafb; 
-      color:#111; 
-      border-color: var(--border);
-    }
-    input[readonly]:invalid {
-      border-color: var(--border);
-    }
+    input[readonly]{ background:#f9fafb; color:#111; }
     input:focus, select:focus, textarea:focus{
       border-color:#c7d2fe;
       box-shadow:0 0 0 4px rgba(99,102,241,.15)
     }
+
     .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .btn{
       appearance:none; border:0; border-radius:14px;
@@ -132,8 +119,10 @@
     }
     .btn.danger{background:var(--danger)}
     .btn[disabled]{opacity:.5; cursor:not-allowed; transform:none}
+
     .step{display:none}
     .step.active{display:block}
+
     .checklist{display:grid; gap:10px; margin-top:10px}
     .checkitem{
       display:flex; gap:10px; align-items:flex-start;
@@ -142,7 +131,9 @@
     .checkitem input{width:auto; margin-top:2px}
     .checkitem b{font-size:13px; font-weight:1000}
     .checkitem p{margin:4px 0 0; font-size:12px; color:var(--muted); line-height:1.45; font-weight:700}
+
     .divider{height:1px; background:var(--border); margin:12px 0}
+
     .deviceList{display:grid; gap:10px}
     .deviceCard{
       border:1px solid var(--border);
@@ -166,6 +157,7 @@
       font-variant-numeric: tabular-nums;
     }
     .muted{color:var(--muted)}
+
     .confirmPage{
       display:none;
       position:fixed; inset:0;
@@ -220,6 +212,7 @@
       padding-bottom:8px;
     }
     .jpItem:last-child{border-bottom:0; padding-bottom:0;}
+
     .jpGrand{
       margin-top:14px;
       padding:16px;
@@ -231,6 +224,7 @@
     }
     .jpGrandTitle{font-weight:1000; font-size:15px;}
     .jpGrandValue{margin-top:8px; font-size:36px; font-weight:1000; letter-spacing:.5px;}
+
     .sendBar{
       position:fixed; left:0; right:0; bottom:0;
       background:linear-gradient(180deg,#ffffffcc,#ffffff);
@@ -264,17 +258,9 @@
     }
     .ok{color:var(--ok); font-weight:1000}
     .err{color:var(--danger); font-weight:1000}
-    .validation-message {
-      font-size: 11px;
-      color: var(--danger);
-      margin-top: 4px;
-      display: none;
-    }
-    input:invalid + .validation-message {
-      display: block;
-    }
   </style>
 </head>
+
 <body>
 <header id="siteHeader">
   <div class="wrap">
@@ -283,30 +269,77 @@
         <div class="title">NJFREGI レジシステム申込フォーム</div>
         <div class="sub">ステップ入力・住所自動入力・自動計算</div>
       </div>
-      <div class="stepBlocks" id="stepBlocks">
+
+      <div class="stepBlocks" id="stepBlocks" aria-label="ステップ">
         <div class="sb" data-i="0">1</div>
         <div class="sb" data-i="1">2</div>
         <div class="sb" data-i="2">3</div>
         <div class="sb" data-i="3">4</div>
       </div>
     </div>
+
     <div class="progress"><div class="bar" id="bar"></div></div>
   </div>
 </header>
 
 <main class="wrap" id="mainWrap">
+
   <!-- Step 1 -->
   <section class="card step active" id="step1">
     <h2>重要事項確認（すべてチェック必須）</h2>
+
     <div class="checklist" id="checks">
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>契約期間は2年、満了後は1年ごとに自動更新</b><p>契約期間および自動更新ルールを理解しました。</p></div></div>
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>利用開始日：機器の設置（設定含む）完了日</b><p>利用開始日は申込日より後になる場合があることを理解しました。</p></div></div>
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>最低利用期間24ヶ月、途中解約は残期間費用が発生</b><p>途中解約時の費用ルールを理解しました。</p></div></div>
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>推奨外機器の動作保証は対象外</b><p>推奨外機器の利用に伴う不具合はお客様責任となることを理解しました。</p></div></div>
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>データ保存期間は最大24ヶ月（25ヶ月以降削除の可能性）</b><p>必要に応じてお客様側でバックアップが必要なことを理解しました。</p></div></div>
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>解約は1ヶ月前までに書面で申請</b><p>解約手続き方法を理解しました。</p></div></div>
-      <div class="checkitem"><input type="checkbox" data-required="1"><div><b>個人情報の利用目的に同意</b><p>個人情報は適切に管理されることを理解しました。</p></div></div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>契約期間は2年、満了後は1年ごとに自動更新</b>
+          <p>契約期間および自動更新ルールを理解しました。</p>
+        </div>
+      </div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>利用開始日：機器の設置（設定含む）完了日</b>
+          <p>利用開始日は申込日より後になる場合があることを理解しました。</p>
+        </div>
+      </div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>最低利用期間24ヶ月、途中解約は残期間費用が発生</b>
+          <p>途中解約時の費用ルールを理解しました。</p>
+        </div>
+      </div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>推奨外機器の動作保証は対象外</b>
+          <p>推奨外機器の利用に伴う不具合はお客様責任となることを理解しました。</p>
+        </div>
+      </div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>データ保存期間は最大24ヶ月（25ヶ月以降削除の可能性）</b>
+          <p>必要に応じてお客様側でバックアップが必要なことを理解しました。</p>
+        </div>
+      </div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>解約は1ヶ月前までに書面で申請</b>
+          <p>解約手続き方法を理解しました。</p>
+        </div>
+      </div>
+      <div class="checkitem">
+        <input type="checkbox" data-required="1">
+        <div>
+          <b>個人情報の利用目的に同意（精算・注文処理、改善、問合せ対応、法令対応）</b>
+          <p>個人情報は適切に管理されることを理解しました。</p>
+        </div>
+      </div>
     </div>
+
     <div class="row" style="margin-top:14px;">
       <button class="btn" id="to2" disabled>次へ</button>
     </div>
@@ -318,52 +351,57 @@
   <!-- Step 2 -->
   <section class="card step" id="step2">
     <h2>基本情報（ご契約者）</h2>
+
     <div class="grid cols2">
       <div>
-        <label class="required">申込日</label>
-        <input id="applyDate" type="date" readonly required>
+        <label>申込日</label>
+        <input id="applyDate" type="date" readonly>
       </div>
       <div>
-        <label class="required">顧客コード</label>
-        <input id="customerCode" readonly required>
+        <label>顧客コード</label>
+        <input id="customerCode" readonly>
       </div>
       <div>
-        <label class="required">社名 / 屋号 / 店舗名</label>
-        <input id="companyName" placeholder="例：株式会社BBC" required>
+        <label>社名 / 屋号 / 店舗名</label>
+        <input id="companyName" placeholder="例：株式会社BBC">
       </div>
       <div>
-        <label class="required">担当者名</label>
-        <input id="personName" placeholder="例：丹野 龍介" required>
+        <label>担当者名</label>
+        <input id="personName" placeholder="例：丹野 龍介">
+      </div>
+
+      <div>
+        <label>携帯番号</label>
+        <input id="mobile" inputmode="tel" placeholder="090-xxxx-xxxx">
       </div>
       <div>
-        <label class="required">携帯番号</label>
-        <input id="mobile" inputmode="tel" placeholder="090-xxxx-xxxx" required pattern="[0-9-]+">
-      </div>
-      <div>
-        <label class="required">E-mail</label>
-        <input id="email" type="email" placeholder="name@example.com" required>
+        <label>E-mail</label>
+        <input id="email" type="email" placeholder="name@example.com">
       </div>
     </div>
+
     <div class="divider"></div>
+
     <h2>ご契約者住所</h2>
     <div class="grid cols2">
       <div>
-        <label class="required">郵便番号（7桁）</label>
-        <input id="zipCompany" inputmode="numeric" placeholder="例：2730005" required pattern="\d{7}">
+        <label>郵便番号（7桁）</label>
+        <input id="zipCompany" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
         <button class="btn ghost" id="zipCompanyBtn" type="button">住所自動入力</button>
         <span id="zipCompanyMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
       </div>
       <div style="grid-column:1/-1">
-        <label class="required">住所（自動入力）</label>
-        <input id="addrCompany1" placeholder="例：千葉県船橋市本町1丁目" required>
+        <label>住所（自動入力）</label>
+        <input id="addrCompany1" placeholder="例：千葉県船橋市本町1丁目">
       </div>
       <div style="grid-column:1/-1">
-        <label class="required">番地・建物名</label>
-        <input id="addrCompany2" placeholder="例：11-25 3F" required>
+        <label>番地・建物名</label>
+        <input id="addrCompany2" placeholder="例：11-25 3F">
       </div>
     </div>
+
     <div class="row" style="margin-top:14px;">
       <button class="btn secondary" id="back1">戻る</button>
       <button class="btn" id="to3">次へ</button>
@@ -373,94 +411,94 @@
   <!-- Step 3 -->
   <section class="card step" id="step3">
     <h2>設置先 / 請求先</h2>
+
     <div class="row" style="margin-bottom:10px">
       <button class="btn ghost" id="copyCompanyToInstall" type="button">同上：ご契約者住所を設置先へ</button>
     </div>
+
     <div class="grid cols2">
       <div>
-        <label class="required">設置先名称</label>
-        <input id="installName" placeholder="例：麻辣湯倶楽部" required>
+        <label>設置先名称</label>
+        <input id="installName" placeholder="例：麻辣湯倶楽部">
       </div>
       <div>
-        <label class="required">電話番号</label>
-        <input id="installTel" inputmode="tel" placeholder="例：047-xxx-xxxx" required pattern="[0-9-]+">
+        <label>電話番号</label>
+        <input id="installTel" inputmode="tel" placeholder="例：047-xxx-xxxx">
       </div>
       <div>
-        <label class="required">郵便番号（7桁）</label>
-        <input id="zipInstall" inputmode="numeric" placeholder="例：2730005" required pattern="\d{7}">
+        <label>郵便番号（7桁）</label>
+        <input id="zipInstall" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
         <button class="btn ghost" id="zipInstallBtn" type="button">住所自動入力</button>
         <span id="zipInstallMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
       </div>
       <div style="grid-column:1/-1">
-        <label class="required">住所（自動入力）</label>
-        <input id="addrInstall1" required>
+        <label>住所（自動入力）</label>
+        <input id="addrInstall1">
       </div>
       <div style="grid-column:1/-1">
-        <label class="required">番地・建物名</label>
-        <input id="addrInstall2" required>
+        <label>番地・建物名</label>
+        <input id="addrInstall2">
       </div>
+
       <div>
-        <label class="required">営業時間</label>
-        <select id="bizHours" required>
+        <label>営業時間</label>
+        <select id="bizHours">
           <option value="11:00-23:00" selected>11:00-23:00</option>
-          <option value="10:00-22:00">10:00-22:00</option>
-          <option value="9:00-21:00">9:00-21:00</option>
         </select>
       </div>
       <div>
-        <label class="required">定休日</label>
-        <select id="holiday" required>
+        <label>定休日</label>
+        <select id="holiday">
           <option value="なし" selected>なし</option>
-          <option value="月曜日">月曜日</option>
-          <option value="火曜日">火曜日</option>
-          <option value="水曜日">水曜日</option>
-          <option value="木曜日">木曜日</option>
-          <option value="金曜日">金曜日</option>
-          <option value="土曜日">土曜日</option>
-          <option value="日曜日">日曜日</option>
         </select>
       </div>
     </div>
+
     <div class="divider"></div>
+
     <div class="row" style="margin-bottom:10px">
       <button class="btn ghost" id="copyInstallToBill" type="button">同上：設置先を請求先へ</button>
     </div>
+
     <div class="grid cols2">
       <div>
-        <label class="required">請求先名称</label>
-        <input id="billName" placeholder="例：麻辣湯倶楽部" required>
+        <label>請求先名称</label>
+        <input id="billName" placeholder="例：麻辣湯倶楽部">
       </div>
       <div>
-        <label class="required">支払方法</label>
-        <input value="銀行振込" readonly required>
+        <label>支払方法</label>
+        <input value="銀行振込" readonly>
       </div>
+
       <div>
-        <label class="required">郵便番号（7桁）</label>
-        <input id="zipBill" inputmode="numeric" placeholder="例：2730005" required pattern="\d{7}">
+        <label>郵便番号（7桁）</label>
+        <input id="zipBill" inputmode="numeric" placeholder="例：2730005">
       </div>
       <div class="row" style="align-items:flex-end">
         <button class="btn ghost" id="zipBillBtn" type="button">住所自動入力</button>
         <span id="zipBillMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
       </div>
       <div style="grid-column:1/-1">
-        <label class="required">住所（自動入力）</label>
-        <input id="addrBill1" required>
+        <label>住所（自動入力）</label>
+        <input id="addrBill1">
       </div>
       <div style="grid-column:1/-1">
-        <label class="required">番地・建物名</label>
-        <input id="addrBill2" required>
+        <label>番地・建物名</label>
+        <input id="addrBill2">
+      </div>
+
+      <div>
+        <label>課金開始日</label>
+        <input id="chargeStart" type="date" readonly>
       </div>
       <div>
-        <label class="required">課金開始日</label>
-        <input id="chargeStart" type="date" readonly required>
-      </div>
-      <div>
-        <label class="required">請求期間</label>
-        <input id="billingTerm" readonly required>
+        <label>請求期間</label>
+        <input id="billingTerm" readonly>
       </div>
     </div>
+
     <div class="row" style="margin-top:14px;">
       <button class="btn secondary" id="back2">戻る</button>
       <button class="btn" id="to4">次へ</button>
@@ -470,546 +508,617 @@
   <!-- Step 4 -->
   <section class="card step" id="step4">
     <h2>機器・サービス</h2>
+
     <div class="divider"></div>
     <h2>初期費用（機器）</h2>
+
     <div class="deviceList" id="deviceList"></div>
+
     <div class="divider"></div>
+
     <h2>利用料</h2>
     <div class="deviceCard">
-      <div class="deviceTop"><div>基本利用料</div><div class="price" id="recPriceText">月額 ¥ 8,800（税込）</div></div>
+      <div class="deviceTop">
+        <div>基本利用料</div>
+        <div class="price" id="recPriceText">月額 ¥ 8,800（税込）</div>
+      </div>
       <div class="qtyRow">
-        <label style="margin:0; width:140px;" class="required">プラン</label>
-        <select id="recPlan" required>
+        <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">プラン</label>
+        <select id="recPlan">
           <option value="monthly" selected>月額 8,800（税込）</option>
           <option value="yearly">年額 88,000（税込）</option>
         </select>
       </div>
     </div>
+
     <div class="divider"></div>
-    <div class="jpGrand"><div class="jpGrandTitle">完工時お支払額（合計）</div><div class="jpGrandValue" id="grand">¥ 0</div></div>
+
+    <div class="jpGrand">
+      <div class="jpGrandTitle">完工時お支払額（合計）</div>
+      <div class="jpGrandValue" id="grand">¥ 0</div>
+    </div>
+
     <div class="row" style="margin-top:14px;">
       <button class="btn secondary" id="back3">戻る</button>
       <button class="btn" id="goConfirm">申込内容を確認</button>
     </div>
+
+    <div id="submitMsg" style="margin-top:10px; font-size:12px; font-weight:900; color:var(--muted)"></div>
   </section>
 </main>
 
 <!-- Confirm Page -->
 <section class="confirmPage" id="confirmPage" aria-hidden="true">
   <div class="confirmWrap">
-    <div class="confirmHeader"><div class="confirmTitle">申込内容の確認</div></div>
-    <div class="jpSection"><div class="jpSecTitle">ご契約者</div><div class="jpGrid" id="c_contract"></div></div>
-    <div class="jpSection"><div class="jpSecTitle">設置先</div><div class="jpGrid" id="c_install"></div></div>
-    <div class="jpSection"><div class="jpSecTitle">請求先</div><div class="jpGrid" id="c_bill"></div></div>
-    <div class="jpSection"><div class="jpSecTitle">初期費用（機器）</div><div class="jpList" id="c_init"></div></div>
-    <div class="jpSection"><div class="jpSecTitle">利用料</div><div class="jpGrid" id="c_rec"></div></div>
-    <div class="jpGrand"><div class="jpGrandTitle">完工時お支払額（合計）</div><div class="jpGrandValue" id="c_grand">-</div></div>
+    <div class="confirmHeader">
+      <div class="confirmTitle">申込内容の確認</div>
+    </div>
+
+    <div class="jpSection">
+      <div class="jpSecTitle">ご契約者</div>
+      <div class="jpGrid" id="c_contract"></div>
+    </div>
+
+    <div class="jpSection">
+      <div class="jpSecTitle">設置先</div>
+      <div class="jpGrid" id="c_install"></div>
+    </div>
+
+    <div class="jpSection">
+      <div class="jpSecTitle">請求先</div>
+      <div class="jpGrid" id="c_bill"></div>
+    </div>
+
+    <div class="jpSection">
+      <div class="jpSecTitle">初期費用（機器）</div>
+      <div class="jpList" id="c_init"></div>
+    </div>
+
+    <div class="jpSection">
+      <div class="jpSecTitle">利用料</div>
+      <div class="jpGrid" id="c_rec"></div>
+    </div>
+
+    <div class="jpGrand">
+      <div class="jpGrandTitle">完工時お支払額（合計）</div>
+      <div class="jpGrandValue" id="c_grand">-</div>
+    </div>
   </div>
-  <div class="sendBar"><div class="inner"><button class="backBtn" id="confirmBack">戻る</button><button class="sendBtn" id="sendBtn">送信</button></div></div>
+
+  <div class="sendBar">
+    <div class="inner">
+      <button class="backBtn" id="confirmBack">戻る</button>
+      <button class="sendBtn" id="sendBtn">送信</button>
+    </div>
+  </div>
 </section>
 
 <script>
-/***************
- * 必須設定 - 请替换为您的GAS URL
- ***************/
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxfnsAwte03U8TijcxWpisrtlVtqv-NtBU4YGVRUWKAbIsqUW7_QU_MWZjnai1s-uLIYA/exec";
-const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
-const TAX_RATE = 0.10;
+  /***************
+   * 必須設定 - 请替换为您的GAS URL（版本26）
+   ***************/
+  const GAS_URL = "https://script.google.com/macros/s/AKfycbxfnsAwte03U8TijcxWpisrtlVtqv-NtBU4YGVRUWKAbIsqUW7_QU_MWZjnai1s-uLIYA/exec";
+  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
+  const TAX_RATE = 0.10;
 
-// 验证函数
-function validateStep2() {
-  const requiredFields = [
-    'companyName', 'personName', 'mobile', 'email', 
-    'zipCompany', 'addrCompany1', 'addrCompany2'
-  ];
-  
-  for (let field of requiredFields) {
-    const element = document.getElementById(field);
-    if (!element.value || element.value.trim() === '') {
-      alert('必須項目をすべて入力してください。');
-      element.focus();
-      return false;
-    }
+  /***************
+   * Step control
+   ***************/
+  const headerEl = document.getElementById("siteHeader");
+  const steps = ["step1","step2","step3","step4"].map(id=>document.getElementById(id));
+  let stepIndex = 0;
+
+  const bar = document.getElementById("bar");
+  const stepBlocks = [...document.querySelectorAll("#stepBlocks .sb")];
+
+  function setStep(i){
+    stepIndex = Math.max(0, Math.min(steps.length-1, i));
+    steps.forEach((s,idx)=>s.classList.toggle("active", idx===stepIndex));
+    stepBlocks.forEach((b, idx) => {
+      b.classList.toggle("done", idx < stepIndex);
+      b.classList.toggle("active", idx === stepIndex);
+    });
+    bar.style.width = `${(stepIndex)/(steps.length-1)*100}%`;
+    window.scrollTo({top:0, behavior:"smooth"});
   }
-  
-  // 验证邮箱格式
-  const email = document.getElementById('email').value;
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailPattern.test(email)) {
-    alert('有効なメールアドレスを入力してください。');
-    return false;
+  setStep(0);
+
+  /***************
+   * Header auto-hide on scroll & input focus
+   ***************/
+  let lastY = 0;
+  window.addEventListener("scroll", ()=>{
+    const y = window.scrollY || 0;
+    if(y > lastY + 8 && y > 60) headerEl.classList.add("hide");
+    if(y < lastY - 8) headerEl.classList.remove("hide");
+    lastY = y;
+  }, {passive:true});
+
+  function bindFocusHide(){
+    const els = document.querySelectorAll("input,select,textarea");
+    els.forEach(el=>{
+      el.addEventListener("focus", ()=>headerEl.classList.add("hide"));
+      el.addEventListener("blur", ()=>{});
+    });
   }
-  
-  // 验证电话号码格式
-  const mobile = document.getElementById('mobile').value;
-  const phonePattern = /^[0-9-]+$/;
-  if (!phonePattern.test(mobile)) {
-    alert('有効な電話番号を入力してください。');
-    return false;
+  bindFocusHide();
+
+  /***************
+   * Step1 checklist gate
+   ***************/
+  const checks = [...document.querySelectorAll("#checks input[type=checkbox][data-required='1']")];
+  const to2 = document.getElementById("to2");
+  const checkHint = document.getElementById("checkHint");
+  function refreshChecklist(){
+    const ok = checks.every(c=>c.checked);
+    to2.disabled = !ok;
+    checkHint.innerHTML = ok
+      ? `<span class="ok">確認が完了しました。次へ進めます。</span>`
+      : `上記の重要事項をすべてチェックしてください。`;
   }
-  
-  return true;
-}
+  checks.forEach(c=>c.addEventListener("change", refreshChecklist));
+  refreshChecklist();
 
-function validateStep3() {
-  const requiredFields = [
-    'installName', 'installTel', 'zipInstall', 'addrInstall1', 'addrInstall2',
-    'billName', 'zipBill', 'addrBill1', 'addrBill2'
-  ];
-  
-  for (let field of requiredFields) {
-    const element = document.getElementById(field);
-    if (!element.value || element.value.trim() === '') {
-      alert('必須項目をすべて入力してください。');
-      element.focus();
-      return false;
-    }
+  to2.addEventListener("click", ()=>setStep(1));
+  document.getElementById("back1").addEventListener("click", ()=>setStep(0));
+  document.getElementById("to3").addEventListener("click", ()=>setStep(2));
+  document.getElementById("back2").addEventListener("click", ()=>setStep(1));
+  document.getElementById("to4").addEventListener("click", ()=>setStep(3));
+  document.getElementById("back3").addEventListener("click", ()=>setStep(2));
+
+  /***************
+   * Defaults: applyDate, customerCode, chargeStart(next month 1st), billingTerm(+1 year)
+   ***************/
+  function pad2(n){ return String(n).padStart(2,"0"); }
+  function formatYMD(d){
+    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
   }
-  
-  return true;
-}
-
-function validateStep4() {
-  // 检查是否至少选择了一个设备
-  const hasDevice = devices.some(d => d.qty > 0);
-  if (!hasDevice) {
-    alert('少なくとも1つの機器を選択してください。');
-    return false;
+  function formatYYYYMMDD(d){
+    return `${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`;
   }
-  return true;
-}
-
-function validateAll() {
-  if (!validateStep2() || !validateStep3() || !validateStep4()) {
-    return false;
+  function nextMonthFirst(d){
+    return new Date(d.getFullYear(), d.getMonth()+1, 1);
   }
-  return true;
-}
-
-// Step control
-const steps = ["step1","step2","step3","step4"].map(id=>document.getElementById(id));
-let stepIndex = 0;
-const stepBlocks = [...document.querySelectorAll("#stepBlocks .sb")];
-const bar = document.getElementById("bar");
-
-function setStep(i){
-  stepIndex = Math.max(0, Math.min(steps.length-1, i));
-  steps.forEach((s,idx)=>s.classList.toggle("active", idx===stepIndex));
-  stepBlocks.forEach((b, idx) => {
-    b.classList.toggle("done", idx < stepIndex);
-    b.classList.toggle("active", idx === stepIndex);
-  });
-  bar.style.width = `${(stepIndex)/(steps.length-1)*100}%`;
-  window.scrollTo({top:0, behavior:"smooth"});
-}
-setStep(0);
-
-// Header auto-hide
-const headerEl = document.getElementById("siteHeader");
-let lastY = 0;
-window.addEventListener("scroll", ()=>{
-  const y = window.scrollY || 0;
-  if(y > lastY + 8 && y > 60) headerEl.classList.add("hide");
-  if(y < lastY - 8) headerEl.classList.remove("hide");
-  lastY = y;
-}, {passive:true});
-
-// Step1 checklist
-const checks = [...document.querySelectorAll("#checks input[type=checkbox][data-required='1']")];
-const to2 = document.getElementById("to2");
-const checkHint = document.getElementById("checkHint");
-function refreshChecklist(){
-  const ok = checks.every(c=>c.checked);
-  to2.disabled = !ok;
-  checkHint.innerHTML = ok ? '<span class="ok">確認が完了しました。次へ進めます。</span>' : '上記の重要事項をすべてチェックしてください。';
-}
-checks.forEach(c=>c.addEventListener("change", refreshChecklist));
-refreshChecklist();
-
-// Navigation with validation
-to2.addEventListener("click", ()=>setStep(1));
-document.getElementById("back1").addEventListener("click", ()=>setStep(0));
-document.getElementById("to3").addEventListener("click", (e)=>{
-  if (validateStep2()) {
-    setStep(2);
-  } else {
-    e.preventDefault();
+  function formatTerm(startDate){
+    const s = startDate;
+    const e = new Date(s.getFullYear()+1, s.getMonth(), s.getDate()-1);
+    return `${formatYMD(s)} ～ ${formatYMD(e)}`;
   }
-});
-document.getElementById("back2").addEventListener("click", ()=>setStep(1));
-document.getElementById("to4").addEventListener("click", (e)=>{
-  if (validateStep3()) {
-    setStep(3);
-  } else {
-    e.preventDefault();
-  }
-});
-document.getElementById("back3").addEventListener("click", ()=>setStep(2));
 
-// Date functions
-function pad2(n){ return String(n).padStart(2,"0"); }
-function formatYMD(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
-function formatYYYYMMDD(d){ return `${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`; }
-function nextMonthFirst(d){ return new Date(d.getFullYear(), d.getMonth()+1, 1); }
-function formatTerm(startDate){
-  const s = startDate;
-  const e = new Date(s.getFullYear()+1, s.getMonth(), s.getDate()-1);
-  return `${formatYMD(s)} ～ ${formatYMD(e)}`;
-}
+  const today = new Date();
+  document.getElementById("applyDate").value = formatYMD(today);
+  document.getElementById("customerCode").value = `${formatYYYYMMDD(today)}001`;
 
-// Set default dates
-const today = new Date();
-document.getElementById("applyDate").value = formatYMD(today);
-document.getElementById("customerCode").value = `${formatYYYYMMDD(today)}001`;
-const chargeStartEl = document.getElementById("chargeStart");
-const billingTermEl = document.getElementById("billingTerm");
-const cs = nextMonthFirst(today);
-chargeStartEl.value = formatYMD(cs);
-billingTermEl.value = formatTerm(cs);
+  const chargeStartEl = document.getElementById("chargeStart");
+  const billingTermEl = document.getElementById("billingTerm");
 
-// ZipCloud lookup
-async function lookupZip(zip, msgEl, addr1El){
-  const z = String(zip||"").replace(/[^\d]/g,"");
-  if(z.length !== 7){
-    msgEl.textContent = "郵便番号は7桁で入力してください";
-    msgEl.className = "err";
-    return;
-  }
-  msgEl.textContent = "検索中…";
-  msgEl.className = "muted";
-  try{
-    const url = `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${encodeURIComponent(z)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if(data.status !== 200 || !data.results || !data.results.length){
-      msgEl.textContent = "該当する住所が見つかりません";
+  const cs = nextMonthFirst(today);
+  chargeStartEl.value = formatYMD(cs);
+  billingTermEl.value = formatTerm(cs);
+
+  /***************
+   * ZipCloud address lookup
+   ***************/
+  async function lookupZip(zip, msgEl, addr1El){
+    const z = String(zip||"").replace(/[^\d]/g,"");
+    if(z.length !== 7){
+      msgEl.textContent = "郵便番号は7桁で入力してください";
       msgEl.className = "err";
       return;
     }
-    const r = data.results[0];
-    const addr = `${r.address1}${r.address2}${r.address3}`;
-    addr1El.value = addr;
-    msgEl.textContent = "住所を自動入力しました";
-    msgEl.className = "ok";
-  }catch(e){
-    msgEl.textContent = "検索に失敗しました（ネットワーク）";
-    msgEl.className = "err";
+    msgEl.textContent = "検索中…";
+    msgEl.className = "muted";
+    try{
+      const url = `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${encodeURIComponent(z)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if(data.status !== 200 || !data.results || !data.results.length){
+        msgEl.textContent = "該当する住所が見つかりません";
+        msgEl.className = "err";
+        return;
+      }
+      const r = data.results[0];
+      const addr = `${r.address1}${r.address2}${r.address3}`;
+      addr1El.value = addr;
+      msgEl.textContent = "住所を自動入力しました";
+      msgEl.className = "ok";
+    }catch(e){
+      msgEl.textContent = "検索に失敗しました（ネットワーク）";
+      msgEl.className = "err";
+    }
   }
-}
 
-// Zip lookup buttons
-document.getElementById("zipCompanyBtn").addEventListener("click", ()=>{
-  lookupZip(document.getElementById("zipCompany").value, document.getElementById("zipCompanyMsg"), document.getElementById("addrCompany1"));
-});
-document.getElementById("zipInstallBtn").addEventListener("click", ()=>{
-  lookupZip(document.getElementById("zipInstall").value, document.getElementById("zipInstallMsg"), document.getElementById("addrInstall1"));
-});
-document.getElementById("zipBillBtn").addEventListener("click", ()=>{
-  lookupZip(document.getElementById("zipBill").value, document.getElementById("zipBillMsg"), document.getElementById("addrBill1"));
-});
-
-// Copy buttons
-document.getElementById("copyCompanyToInstall").addEventListener("click", ()=>{
-  document.getElementById("zipInstall").value = document.getElementById("zipCompany").value;
-  document.getElementById("addrInstall1").value = document.getElementById("addrCompany1").value;
-  document.getElementById("addrInstall2").value = document.getElementById("addrCompany2").value;
-  document.getElementById("installName").value = document.getElementById("companyName").value || "";
-});
-document.getElementById("copyInstallToBill").addEventListener("click", ()=>{
-  document.getElementById("zipBill").value = document.getElementById("zipInstall").value;
-  document.getElementById("addrBill1").value = document.getElementById("addrInstall1").value;
-  document.getElementById("addrBill2").value = document.getElementById("addrInstall2").value;
-  document.getElementById("billName").value = document.getElementById("installName").value || "";
-});
-
-// Money formatter
-function fmtJPY(n){
-  const v = Math.round(Number(n||0));
-  return "¥ " + String(v).replace(/\B(?=(\d{3})+(?!\d))/g,",");
-}
-
-// Devices
-const devices = [
-  { key:"register", name:"レジスター", unitInc: 99000, qty: 1 },
-  { key:"tablet", name:"タブレット", unitInc: 32900, qty: 0 },
-  { key:"kds", name:"キッチンモニター", unitInc: 66000, qty: 0 },
-  { key:"printer", name:"プリンター", unitInc: 33000, qty: 0 },
-  { key:"drawer", name:"キャッシュドロア", unitInc: 22000, qty: 0 },
-];
-
-const deviceListEl = document.getElementById("deviceList");
-
-function renderDevices(){
-  deviceListEl.innerHTML = "";
-  devices.forEach((it, idx)=>{
-    const card = document.createElement("div");
-    card.className = "deviceCard";
-    card.innerHTML = `
-      <div class="deviceTop"><div>${it.name}</div><div class="price">${fmtJPY(it.unitInc)}（税込）</div></div>
-      <div class="qtyRow"><label style="margin:0; width:140px;">数量</label>
-      <input type="number" min="0" step="1" class="num" value="${it.qty}" data-i="${idx}"></div>
-    `;
-    deviceListEl.appendChild(card);
+  document.getElementById("zipCompanyBtn").addEventListener("click", ()=>{
+    lookupZip(
+      document.getElementById("zipCompany").value,
+      document.getElementById("zipCompanyMsg"),
+      document.getElementById("addrCompany1")
+    );
   });
-  deviceListEl.querySelectorAll("input[data-i]").forEach(inp => {
-    inp.addEventListener("input", (e) => {
-      const i = Number(inp.dataset.i);
-      const val = parseInt(e.target.value, 10);
-      devices[i].qty = isNaN(val) || val < 0 ? 0 : val;
-      calcGrand();
+  document.getElementById("zipInstallBtn").addEventListener("click", ()=>{
+    lookupZip(
+      document.getElementById("zipInstall").value,
+      document.getElementById("zipInstallMsg"),
+      document.getElementById("addrInstall1")
+    );
+  });
+  document.getElementById("zipBillBtn").addEventListener("click", ()=>{
+    lookupZip(
+      document.getElementById("zipBill").value,
+      document.getElementById("zipBillMsg"),
+      document.getElementById("addrBill1")
+    );
+  });
+
+  /***************
+   * "同上" copy
+   ***************/
+  document.getElementById("copyCompanyToInstall").addEventListener("click", ()=>{
+    document.getElementById("zipInstall").value = document.getElementById("zipCompany").value;
+    document.getElementById("addrInstall1").value = document.getElementById("addrCompany1").value;
+    document.getElementById("addrInstall2").value = document.getElementById("addrCompany2").value;
+    document.getElementById("installName").value = document.getElementById("companyName").value || "";
+  });
+  document.getElementById("copyInstallToBill").addEventListener("click", ()=>{
+    document.getElementById("zipBill").value = document.getElementById("zipInstall").value;
+    document.getElementById("addrBill1").value = document.getElementById("addrInstall1").value;
+    document.getElementById("addrBill2").value = document.getElementById("addrInstall2").value;
+    document.getElementById("billName").value = document.getElementById("installName").value || "";
+  });
+
+  /***************
+   * Money formatter
+   ***************/
+  function fmtJPY(n){
+    const v = Math.round(Number(n||0));
+    return "¥ " + String(v).replace(/\B(?=(\d{3})+(?!\d))/g,",");
+  }
+
+  /***************
+   * Devices (税込単価表示 + 数量入力)
+   ***************/
+  const devices = [
+    { key:"register", name:"レジスター", unitInc: 99000, qty: 1 },
+    { key:"tablet", name:"タブレット", unitInc: 32900, qty: 0 },
+    { key:"kds", name:"キッチンモニター", unitInc: 66000, qty: 0 },
+    { key:"printer", name:"プリンター", unitInc: 33000, qty: 0 },
+    { key:"drawer", name:"キャッシュドロア", unitInc: 22000, qty: 0 },
+  ];
+
+  const deviceListEl = document.getElementById("deviceList");
+
+  function renderDevices(){
+    deviceListEl.innerHTML = "";
+    devices.forEach((it, idx)=>{
+      const card = document.createElement("div");
+      card.className = "deviceCard";
+      card.innerHTML = `
+        <div class="deviceTop">
+          <div>${it.name}</div>
+          <div class="price">${fmtJPY(it.unitInc)}（税込）</div>
+        </div>
+        <div class="qtyRow">
+          <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">数量</label>
+          <input type="number" min="0" step="1" class="num" value="${it.qty}" data-i="${idx}" aria-label="qty">
+        </div>
+      `;
+      deviceListEl.appendChild(card);
     });
-    inp.addEventListener("blur", (e) => {
-      const i = Number(inp.dataset.i);
-      if (e.target.value === "" || isNaN(parseInt(e.target.value, 10))) {
-        devices[i].qty = 0;
-        e.target.value = 0;
+
+    deviceListEl.querySelectorAll("input[data-i]").forEach(inp => {
+      inp.addEventListener("input", (e) => {
+        const i = Number(inp.dataset.i);
+        const val = parseInt(e.target.value, 10);
+        devices[i].qty = isNaN(val) || val < 0 ? 0 : val;
         calcGrand();
-      }
-    });
-  });
-  calcGrand();
-}
-
-// Rec plan
-const recPlanEl = document.getElementById("recPlan");
-const recPriceText = document.getElementById("recPriceText");
-
-function getRecPlan(){
-  if(recPlanEl.value === "yearly") return { plan:"年額", priceInc: 88000 };
-  return { plan:"月額", priceInc: 8800 };
-}
-
-recPlanEl.addEventListener("change", ()=>{
-  const p = getRecPlan();
-  recPriceText.textContent = `${p.plan} ${fmtJPY(p.priceInc)}（税込）`;
-  calcGrand();
-});
-
-function calcGrand(){
-  const initTotal = devices.reduce((a, it) => a + (Number(it.qty)||0) * (Number(it.unitInc)||0), 0);
-  const rp = getRecPlan();
-  const grand = initTotal + (Number(rp.priceInc)||0);
-  document.getElementById("grand").textContent = fmtJPY(grand);
-}
-
-// Confirm page
-const confirmPage = document.getElementById("confirmPage");
-
-function addrLine(z,a1,a2){
-  return `〒${(z||"")} ${(a1||"")} ${(a2||"")}`.replace(/\s+/g," ").trim();
-}
-
-function buildPayload(){
-  const rp = getRecPlan();
-  const initItems = devices.map(d=>({ name: d.name, qty: d.qty, unitInc: d.unitInc })).filter(x => (x.qty||0) > 0);
-  return {
-    apiKey: API_KEY,
-    applyDate: document.getElementById("applyDate").value,
-    customerCode: document.getElementById("customerCode").value,
-    companyName: document.getElementById("companyName").value,
-    personName: document.getElementById("personName").value,
-    mobile: document.getElementById("mobile").value,
-    email: document.getElementById("email").value,
-    zipCompany: document.getElementById("zipCompany").value,
-    addrCompany1: document.getElementById("addrCompany1").value,
-    addrCompany2: document.getElementById("addrCompany2").value,
-    installName: document.getElementById("installName").value,
-    installTel: document.getElementById("installTel").value,
-    zipInstall: document.getElementById("zipInstall").value,
-    addrInstall1: document.getElementById("addrInstall1").value,
-    addrInstall2: document.getElementById("addrInstall2").value,
-    bizHours: document.getElementById("bizHours").value,
-    holiday: document.getElementById("holiday").value,
-    billName: document.getElementById("billName").value,
-    payMethod: "銀行振込",
-    zipBill: document.getElementById("zipBill").value,
-    addrBill1: document.getElementById("addrBill1").value,
-    addrBill2: document.getElementById("addrBill2").value,
-    chargeStart: chargeStartEl.value,
-    billingTerm: billingTermEl.value,
-    taxRate: TAX_RATE,
-    initItems,
-    recPlan: rp,
-  };
-}
-
-document.getElementById("goConfirm").addEventListener("click", (e)=>{
-  if (!validateStep4()) {
-    e.preventDefault();
-    return;
-  }
-  
-  const p = buildPayload();
-  
-  // Fill contract
-  const contractGrid = document.getElementById("c_contract");
-  contractGrid.innerHTML = "";
-  [
-    ["申込日", p.applyDate],
-    ["顧客コード", p.customerCode],
-    ["社名/屋号", p.companyName],
-    ["担当者", p.personName],
-    ["携帯", p.mobile],
-    ["E-mail", p.email],
-    ["住所", addrLine(p.zipCompany, p.addrCompany1, p.addrCompany2)]
-  ].forEach(([label, value]) => {
-    const labelDiv = document.createElement("div"); labelDiv.className = "jpLabel"; labelDiv.textContent = label;
-    const valueDiv = document.createElement("div"); valueDiv.className = "jpVal"; valueDiv.textContent = value || "未入力";
-    contractGrid.appendChild(labelDiv); contractGrid.appendChild(valueDiv);
-  });
-
-  // Fill install
-  const installGrid = document.getElementById("c_install");
-  installGrid.innerHTML = "";
-  [
-    ["名称", p.installName],
-    ["電話", p.installTel],
-    ["住所", addrLine(p.zipInstall, p.addrInstall1, p.addrInstall2)],
-    ["営業時間", p.bizHours],
-    ["定休日", p.holiday]
-  ].forEach(([label, value]) => {
-    const labelDiv = document.createElement("div"); labelDiv.className = "jpLabel"; labelDiv.textContent = label;
-    const valueDiv = document.createElement("div"); valueDiv.className = "jpVal"; valueDiv.textContent = value || "未入力";
-    installGrid.appendChild(labelDiv); installGrid.appendChild(valueDiv);
-  });
-
-  // Fill bill
-  const billGrid = document.getElementById("c_bill");
-  billGrid.innerHTML = "";
-  [
-    ["名称", p.billName],
-    ["支払方法", p.payMethod],
-    ["住所", addrLine(p.zipBill, p.addrBill1, p.addrBill2)],
-    ["課金開始日", p.chargeStart],
-    ["請求期間", p.billingTerm]
-  ].forEach(([label, value]) => {
-    const labelDiv = document.createElement("div"); labelDiv.className = "jpLabel"; labelDiv.textContent = label;
-    const valueDiv = document.createElement("div"); valueDiv.className = "jpVal"; valueDiv.textContent = value || "未入力";
-    billGrid.appendChild(labelDiv); billGrid.appendChild(valueDiv);
-  });
-
-  // Fill init items
-  const initBox = document.getElementById("c_init");
-  initBox.innerHTML = "";
-  if (p.initItems.length === 0) {
-    initBox.innerHTML = '<div class="jpItem"><div>選択された機器はありません</div><div>¥ 0</div></div>';
-  } else {
-    p.initItems.forEach(it=>{
-      const sub = (it.qty||0)*(it.unitInc||0);
-      const row = document.createElement("div"); row.className = "jpItem";
-      row.innerHTML = `<div>${it.name} ${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
-      initBox.appendChild(row);
-    });
-  }
-
-  // Fill rec
-  const recGrid = document.getElementById("c_rec");
-  recGrid.innerHTML = "";
-  const recLabel = document.createElement("div"); recLabel.className = "jpLabel"; recLabel.textContent = "基本利用料";
-  const recValue = document.createElement("div"); recValue.className = "jpVal"; recValue.textContent = `${p.recPlan.plan} ${fmtJPY(p.recPlan.priceInc)}`;
-  recGrid.appendChild(recLabel); recGrid.appendChild(recValue);
-
-  const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
-  document.getElementById("c_grand").textContent = fmtJPY(initTotal + p.recPlan.priceInc);
-
-  confirmPage.style.display = "block";
-});
-
-document.getElementById("confirmBack").addEventListener("click", ()=>{
-  confirmPage.style.display = "none";
-});
-
-// 送信按钮 - 使用JSONP方式连接GAS
-const sendBtn = document.getElementById("sendBtn");
-sendBtn.addEventListener("click", function(e) {
-  if (!validateAll()) {
-    e.preventDefault();
-    return;
-  }
-  
-  sendBtn.disabled = true;
-  sendBtn.textContent = "送信中…";
-
-  try {
-    const payload = buildPayload();
-    console.log("发送数据:", payload);
-    
-    const callbackName = "jsonp_callback_" + Date.now();
-    
-    window[callbackName] = function(response) {
-      try {
-        console.log("收到响应:", response);
-        
-        const script = document.getElementById(callbackName);
-        if (script) script.remove();
-        
-        if (response && response.ok === true) {
-          alert("送信完了致しました。ご申請ありがとうございます。");
-          confirmPage.style.display = "none";
-          confirmPage.setAttribute("aria-hidden", "true");
-        } else {
-          throw new Error(response?.error || "送信に失敗しました");
+      });
+      
+      inp.addEventListener("blur", (e) => {
+        const i = Number(inp.dataset.i);
+        if (e.target.value === "" || isNaN(parseInt(e.target.value, 10))) {
+          devices[i].qty = 0;
+          e.target.value = 0;
+          calcGrand();
         }
-      } catch (err) {
-        alert("送信に失敗しました。\n" + err.message);
-      } finally {
-        delete window[callbackName];
-        sendBtn.disabled = false;
-        sendBtn.textContent = "送信";
-      }
-    };
-
-    const script = document.createElement('script');
-    script.id = callbackName;
-    
-    const params = new URLSearchParams();
-    params.append('callback', callbackName);
-    
-    Object.keys(payload).forEach(key => {
-      if (typeof payload[key] === 'object') {
-        params.append(key, JSON.stringify(payload[key]));
-      } else {
-        params.append(key, payload[key] || '');
-      }
+      });
     });
+
+    calcGrand();
+  }
+
+  /***************
+   * Rec plan (monthly/yearly)
+   ***************/
+  const recPlanEl = document.getElementById("recPlan");
+  const recPriceText = document.getElementById("recPriceText");
+
+  function getRecPlan(){
+    if(recPlanEl.value === "yearly"){
+      return { plan:"年額", priceInc: 88000 };
+    }
+    return { plan:"月額", priceInc: 8800 };
+  }
+
+  recPlanEl.addEventListener("change", ()=>{
+    const p = getRecPlan();
+    recPriceText.textContent = `${p.plan} ${fmtJPY(p.priceInc)}（税込）`;
+    calcGrand();
+  });
+
+  function calcGrand(){
+    const initTotal = devices.reduce((a, it) => {
+      const qty = Number(it.qty) || 0;
+      const price = Number(it.unitInc) || 0;
+      return a + (qty * price);
+    }, 0);
     
-    script.src = GAS_URL + '?' + params.toString();
+    const rp = getRecPlan();
+    const price = Number(rp.priceInc) || 0;
+    const grand = initTotal + price;
     
-    script.onerror = function() {
-      alert("サーバーに接続できません。ネットワークを確認してください。");
-      delete window[callbackName];
-      document.getElementById(callbackName)?.remove();
-      sendBtn.disabled = false;
-      sendBtn.textContent = "送信";
+    document.getElementById("grand").textContent = fmtJPY(grand);
+  }
+
+  /***************
+   * Confirm page render
+   ***************/
+  const confirmPage = document.getElementById("confirmPage");
+
+  function addrLine(z,a1,a2){
+    return `〒${(z||"")} ${(a1||"")} ${(a2||"")}`.replace(/\s+/g," ").trim();
+  }
+
+  function buildPayload(){
+    const rp = getRecPlan();
+    const initItems = devices.map(d=>({
+      name: d.name,
+      qty: d.qty,
+      unitInc: d.unitInc
+    })).filter(x => (x.qty||0) > 0 || x.unitInc === 0);
+
+    return {
+      apiKey: API_KEY,
+      applyDate: document.getElementById("applyDate").value,
+      customerCode: document.getElementById("customerCode").value,
+      companyName: (document.getElementById("companyName").value||"").trim(),
+      personName: (document.getElementById("personName").value||"").trim(),
+      mobile: (document.getElementById("mobile").value||"").trim(),
+      email: (document.getElementById("email").value||"").trim(),
+      zipCompany: (document.getElementById("zipCompany").value||"").trim(),
+      addrCompany1: (document.getElementById("addrCompany1").value||"").trim(),
+      addrCompany2: (document.getElementById("addrCompany2").value||"").trim(),
+      installName: (document.getElementById("installName").value||"").trim(),
+      installTel: (document.getElementById("installTel").value||"").trim(),
+      zipInstall: (document.getElementById("zipInstall").value||"").trim(),
+      addrInstall1: (document.getElementById("addrInstall1").value||"").trim(),
+      addrInstall2: (document.getElementById("addrInstall2").value||"").trim(),
+      bizHours: document.getElementById("bizHours").value,
+      holiday: document.getElementById("holiday").value,
+      billName: (document.getElementById("billName").value||"").trim(),
+      payMethod: "銀行振込",
+      zipBill: (document.getElementById("zipBill").value||"").trim(),
+      addrBill1: (document.getElementById("addrBill1").value||"").trim(),
+      addrBill2: (document.getElementById("addrBill2").value||"").trim(),
+      chargeStart: chargeStartEl.value,
+      billingTerm: billingTermEl.value,
+      taxRate: TAX_RATE,
+      initItems,
+      recPlan: rp,
     };
-    
-    setTimeout(() => {
-      if (sendBtn.disabled) {
+  }
+
+  document.getElementById("goConfirm").addEventListener("click", ()=>{
+    const csV = chargeStartEl.value;
+    if(csV){
+      const d = new Date(csV + "T00:00:00");
+      billingTermEl.value = formatTerm(d);
+    }
+
+    const p = buildPayload();
+
+    // 填充契約者情報
+    const contractGrid = document.getElementById("c_contract");
+    contractGrid.innerHTML = "";
+    const contractPairs = [
+      ["申込日", p.applyDate],
+      ["顧客コード", p.customerCode],
+      ["社名/屋号", p.companyName],
+      ["担当者", p.personName],
+      ["携帯", p.mobile],
+      ["E-mail", p.email],
+      ["住所", addrLine(p.zipCompany, p.addrCompany1, p.addrCompany2)]
+    ];
+    contractPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value || "未入力";
+      contractGrid.appendChild(labelDiv);
+      contractGrid.appendChild(valueDiv);
+    });
+
+    // 填充設置先情報
+    const installGrid = document.getElementById("c_install");
+    installGrid.innerHTML = "";
+    const installPairs = [
+      ["名称", p.installName],
+      ["電話", p.installTel],
+      ["住所", addrLine(p.zipInstall, p.addrInstall1, p.addrInstall2)],
+      ["営業時間", p.bizHours],
+      ["定休日", p.holiday]
+    ];
+    installPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value || "未入力";
+      installGrid.appendChild(labelDiv);
+      installGrid.appendChild(valueDiv);
+    });
+
+    // 填充請求先情報
+    const billGrid = document.getElementById("c_bill");
+    billGrid.innerHTML = "";
+    const billPairs = [
+      ["名称", p.billName],
+      ["支払方法", p.payMethod],
+      ["住所", addrLine(p.zipBill, p.addrBill1, p.addrBill2)],
+      ["課金開始日", p.chargeStart],
+      ["請求期間", p.billingTerm]
+    ];
+    billPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value || "未入力";
+      billGrid.appendChild(labelDiv);
+      billGrid.appendChild(valueDiv);
+    });
+
+    // 填充初期費用
+    const initBox = document.getElementById("c_init");
+    initBox.innerHTML = "";
+    if (p.initItems.length === 0) {
+      const emptyMsg = document.createElement("div");
+      emptyMsg.className = "jpItem";
+      emptyMsg.innerHTML = "<div>選択された機器はありません</div><div>¥ 0</div>";
+      initBox.appendChild(emptyMsg);
+    } else {
+      p.initItems.forEach(it=>{
+        const sub = (it.qty||0)*(it.unitInc||0);
+        const row = document.createElement("div");
+        row.className = "jpItem";
+        row.innerHTML = `<div>${it.name}　${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
+        initBox.appendChild(row);
+      });
+    }
+
+    // 填充利用料
+    const recGrid = document.getElementById("c_rec");
+    recGrid.innerHTML = "";
+    const recPairs = [
+      ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`]
+    ];
+    recPairs.forEach(([label, value]) => {
+      const labelDiv = document.createElement("div");
+      labelDiv.className = "jpLabel";
+      labelDiv.textContent = label;
+      const valueDiv = document.createElement("div");
+      valueDiv.className = "jpVal";
+      valueDiv.textContent = value;
+      recGrid.appendChild(labelDiv);
+      recGrid.appendChild(valueDiv);
+    });
+
+    const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
+    const grand = initTotal + p.recPlan.priceInc;
+    document.getElementById("c_grand").textContent = fmtJPY(grand);
+
+    confirmPage.style.display = "block";
+    confirmPage.setAttribute("aria-hidden","false");
+    window.scrollTo({top:0, behavior:"instant"});
+  });
+
+  document.getElementById("confirmBack").addEventListener("click", ()=>{
+    confirmPage.style.display = "none";
+    confirmPage.setAttribute("aria-hidden","true");
+  });
+
+  /***************
+   * SEND to GAS (JSONP方式 - 这个版本能正常工作)
+   ***************/
+  const sendBtn = document.getElementById("sendBtn");
+
+  sendBtn.addEventListener("click", function() {
+    sendBtn.disabled = true;
+    sendBtn.textContent = "送信中…";
+
+    try {
+      const payload = buildPayload();
+      console.log("发送数据:", payload);
+      
+      const callbackName = "jsonp_callback_" + Date.now();
+      
+      window[callbackName] = function(response) {
+        try {
+          console.log("收到响应:", response);
+          
+          const script = document.getElementById(callbackName);
+          if (script) script.remove();
+          
+          if (response && response.ok === true) {
+            alert("送信完了致しました。ご申請ありがとうございます。");
+            confirmPage.style.display = "none";
+            confirmPage.setAttribute("aria-hidden", "true");
+          } else {
+            throw new Error(response?.error || "送信に失敗しました");
+          }
+        } catch (err) {
+          alert("送信に失敗しました。\n" + err.message);
+        } finally {
+          delete window[callbackName];
+          sendBtn.disabled = false;
+          sendBtn.textContent = "送信";
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = callbackName;
+      
+      const params = new URLSearchParams();
+      params.append('callback', callbackName);
+      
+      Object.keys(payload).forEach(key => {
+        if (typeof payload[key] === 'object') {
+          params.append(key, JSON.stringify(payload[key]));
+        } else {
+          params.append(key, payload[key] || '');
+        }
+      });
+      
+      script.src = GAS_URL + '?' + params.toString();
+      
+      script.onerror = function() {
+        alert("サーバーに接続できません。ネットワークを確認してください。");
         delete window[callbackName];
         document.getElementById(callbackName)?.remove();
-        alert("送信がタイムアウトしました。");
         sendBtn.disabled = false;
         sendBtn.textContent = "送信";
-      }
-    }, 10000);
-    
-    document.body.appendChild(script);
-    
-  } catch (err) {
-    console.error("发送错误:", err);
-    alert("送信に失敗しました。\n" + err.message);
-    sendBtn.disabled = false;
-    sendBtn.textContent = "送信";
-  }
-});
+      };
+      
+      setTimeout(() => {
+        if (sendBtn.disabled) {
+          delete window[callbackName];
+          document.getElementById(callbackName)?.remove();
+          alert("送信がタイムアウトしました。");
+          sendBtn.disabled = false;
+          sendBtn.textContent = "送信";
+        }
+      }, 10000);
+      
+      document.body.appendChild(script);
+      
+    } catch (err) {
+      console.error("发送错误:", err);
+      alert("送信に失敗しました。\n" + err.message);
+      sendBtn.disabled = false;
+      sendBtn.textContent = "送信";
+    }
+  });
 
-// Initialize
-document.addEventListener("DOMContentLoaded", function() {
-  renderDevices();
-  const rp = getRecPlan();
-  recPriceText.textContent = `${rp.plan} ${fmtJPY(rp.priceInc)} (税込)`;
-  calcGrand();
-});
+  // 页面加载完成后执行初始化
+  document.addEventListener("DOMContentLoaded", function() {
+    renderDevices();
+    const rp = getRecPlan();
+    recPriceText.textContent = `${rp.plan} ${fmtJPY(rp.priceInc)} (税込)`;
+    calcGrand();
+  });
 </script>
 </body>
 </html>
