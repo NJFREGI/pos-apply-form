@@ -1,1124 +1,866 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NJFREGI レジシステム申込フォーム</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>申請レジシステム | GAS版</title>
+    <!-- スタイルシート -->
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-  <style>
-    :root{
-      --bg:#f6f7fb; --card:#fff; --text:#111; --muted:#6b7280;
-      --primary:#2563eb; --primary2:#1d4ed8; --ok:#16a34a; --danger:#dc2626;
-      --border:#e5e7eb; --shadow:0 10px 30px rgba(0,0,0,.06);
-      --radius:16px;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
-      background:var(--bg); color:var(--text);
-    }
+        body {
+            font-family: 'Helvetica Neue', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+            background-color: #f8f9fa;
+            padding: 16px 12px;
+            color: #1e2a3a;
+            line-height: 1.5;
+        }
 
-    header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(180deg, #ffffff, #ffffffcc);
-      backdrop-filter: blur(10px);
-      border-bottom:1px solid var(--border);
-      transition: transform .25s ease;
-    }
-    header.hide{ transform: translateY(-110%); }
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            padding: 24px 16px;
+        }
 
-    .wrap{max-width:860px; margin:0 auto; padding:12px 14px 28px}
-    .topbar{display:flex; align-items:flex-end; justify-content:space-between; gap:12px;}
-    .brand{display:flex; flex-direction:column; gap:6px}
-    .brand .title{
-      font-weight:1000;
-      font-size:16px;
-      line-height:1.2;
-    }
-    .brand .sub{
-      font-size:12px; color:var(--muted);
-    }
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            border-left: 6px solid #c0392b;
+            padding-left: 14px;
+            margin-bottom: 22px;
+            color: #2c3e50;
+        }
 
-    .stepBlocks{
-      display:flex; gap:8px; align-items:center; flex-wrap:nowrap; user-select:none;
-    }
-    .sb{
-      width:42px; height:28px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#fff;
-      color:var(--muted);
-      font-weight:900;
-      font-size:12px;
-      display:flex; align-items:center; justify-content:center;
-      transition: all .2s ease;
-    }
-    .sb.done{
-      background:#eef2ff;
-      border-color:#c7d2fe;
-      color:#374151;
-    }
-    .sb.active{
-      background:var(--primary);
-      border-color:var(--primary2);
-      color:#fff;
-      box-shadow:0 10px 20px rgba(37,99,235,.18);
-    }
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: #ecf0f1;
+            padding: 8px 14px;
+            border-radius: 30px;
+            margin: 24px 0 16px 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    .progress{
-      margin-top:10px; height:8px; border-radius:999px;
-      background:#eef2ff; overflow:hidden; border:1px solid #e0e7ff;
-    }
-    .bar{height:100%; width:0%; background:linear-gradient(90deg,var(--primary),#7c3aed); transition:width .25s ease}
+        .check-group {
+            background-color: #fef9e7;
+            border: 1px solid #f1c40f;
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 8px;
+        }
 
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:14px;
-      margin-top:12px;
-    }
-    h2{margin:0 0 10px; font-size:15px; font-weight:1000}
-    .grid{display:grid; gap:10px}
-    @media(min-width:720px){ .grid.cols2{grid-template-columns: 1fr 1fr;} }
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
 
-    label{font-size:12px; color:var(--muted); display:block; margin:0 0 6px; font-weight:800}
-    input, select, textarea{
-      width:100%;
-      padding:12px 12px;
-      border-radius:12px;
-      border:1px solid var(--border);
-      background:#fff;
-      outline:none;
-      font-size:14px;
-      font-weight:800;
-    }
-    input[readonly]{ background:#f9fafb; color:#111; }
-    input:focus, select:focus, textarea:focus{
-      border-color:#c7d2fe;
-      box-shadow:0 0 0 4px rgba(99,102,241,.15)
-    }
+        .check-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: #e67e22;
+        }
 
-    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-    .btn{
-      appearance:none; border:0; border-radius:14px;
-      padding:12px 14px; font-size:14px; font-weight:1000;
-      background:var(--primary); color:#fff; cursor:pointer;
-      box-shadow:0 10px 20px rgba(37,99,235,.18);
-    }
-    .btn:active{transform:translateY(1px)}
-    .btn.secondary{
-      background:#fff; color:var(--text);
-      border:1px solid var(--border); box-shadow:none
-    }
-    .btn.ghost{
-      background:transparent; color:var(--primary);
-      border:1px dashed #c7d2fe; box-shadow:none
-    }
-    .btn.danger{background:var(--danger)}
-    .btn[disabled]{opacity:.5; cursor:not-allowed; transform:none}
+        .required-badge {
+            background-color: #e74c3c;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 30px;
+            margin-left: 8px;
+        }
 
-    .step{display:none}
-    .step.active{display:block}
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
 
-    .checklist{display:grid; gap:10px; margin-top:10px}
-    .checkitem{
-      display:flex; gap:10px; align-items:flex-start;
-      padding:12px; border-radius:14px; border:1px solid var(--border); background:#fff;
-    }
-    .checkitem input{width:auto; margin-top:2px}
-    .checkitem b{font-size:13px; font-weight:1000}
-    .checkitem p{margin:4px 0 0; font-size:12px; color:var(--muted); line-height:1.45; font-weight:700}
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-    .divider{height:1px; background:var(--border); margin:12px 0}
+        .field label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
 
-    .deviceList{display:grid; gap:10px}
-    .deviceCard{
-      border:1px solid var(--border);
-      border-radius:16px;
-      background:#fff;
-      padding:12px;
-      display:grid;
-      gap:8px;
-    }
-    .deviceTop{
-      display:flex; justify-content:space-between; gap:12px; align-items:center;
-      font-weight:1000;
-    }
-    .price{color:#111}
-    .qtyRow{
-      display:flex; gap:10px; align-items:center;
-    }
-    .qtyRow input{
-      max-width:140px;
-      text-align:right;
-      font-variant-numeric: tabular-nums;
-    }
-    .muted{color:var(--muted)}
+        input, select {
+            padding: 14px 16px;
+            border: 1.5px solid #d5dbdb;
+            border-radius: 16px;
+            font-size: 1rem;
+            background-color: white;
+            transition: 0.15s;
+            font-family: inherit;
+        }
 
-    .confirmPage{
-      display:none;
-      position:fixed; inset:0;
-      background:linear-gradient(180deg,#eef2ff,#f6f7fb);
-      z-index:9999;
-      overflow:auto;
-      padding-bottom:90px;
-    }
-    .confirmWrap{max-width:860px; margin:0 auto; padding:14px}
-    .confirmHeader{
-      display:flex; justify-content:space-between; align-items:center; gap:10px;
-      margin-bottom:12px;
-    }
-    .confirmTitle{
-      font-weight:1000; font-size:18px;
-      padding:10px 12px;
-      border-radius:16px;
-      background:#fff;
-      border:1px solid #c7d2fe;
-      box-shadow:0 10px 30px rgba(0,0,0,.06);
-    }
-    .jpSection{
-      margin-top:12px;
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:18px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .jpSecTitle{
-      background:#eef2ff;
-      border-bottom:1px solid #c7d2fe;
-      padding:10px 12px;
-      font-weight:1000;
-    }
-    .jpGrid{
-      display:grid;
-      grid-template-columns: 140px 1fr;
-      gap:8px 10px;
-      padding:12px;
-    }
-    .jpLabel{color:var(--muted); font-weight:900; font-size:13px;}
-    .jpVal{font-weight:1000; font-size:14px;}
-    .jpList{
-      padding:12px;
-      display:grid; gap:10px;
-    }
-    .jpItem{
-      display:flex; justify-content:space-between; gap:12px;
-      font-weight:1000;
-      border-bottom:1px dashed #e5e7eb;
-      padding-bottom:8px;
-    }
-    .jpItem:last-child{border-bottom:0; padding-bottom:0;}
+        input:focus, select:focus {
+            outline: none;
+            border-color: #e67e22;
+            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
+        }
 
-    .jpGrand{
-      margin-top:14px;
-      padding:16px;
-      border-radius:20px;
-      border:1px solid #c7d2fe;
-      background:linear-gradient(180deg,#eef2ff,#ffffff);
-      text-align:center;
-      box-shadow:var(--shadow);
-    }
-    .jpGrandTitle{font-weight:1000; font-size:15px;}
-    .jpGrandValue{margin-top:8px; font-size:36px; font-weight:1000; letter-spacing:.5px;}
+        .row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-    .sendBar{
-      position:fixed; left:0; right:0; bottom:0;
-      background:linear-gradient(180deg,#ffffffcc,#ffffff);
-      border-top:1px solid var(--border);
-      backdrop-filter: blur(10px);
-      padding:10px 12px;
-      z-index:10000;
-    }
-    .sendBar .inner{max-width:860px; margin:0 auto; display:flex; gap:10px; align-items:center;}
-    .sendBtn{
-      flex:1;
-      height:52px;
-      border-radius:16px;
-      background:var(--primary);
-      color:#fff;
-      font-weight:1000;
-      font-size:16px;
-      border:0;
-      box-shadow:0 12px 24px rgba(37,99,235,.22);
-      cursor:pointer;
-    }
-    .sendBtn:disabled{opacity:.5; cursor:not-allowed;}
-    .backBtn{
-      height:52px;
-      padding:0 16px;
-      border-radius:16px;
-      background:#fff;
-      border:1px solid var(--border);
-      font-weight:1000;
-      cursor:pointer;
-    }
-    .ok{color:var(--ok); font-weight:1000}
-    .err{color:var(--danger); font-weight:1000}
-  </style>
+        .postal-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .postal-group input {
+            flex: 1;
+        }
+
+        .auto-generate-btn {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
+            transition: all 0.2s;
+        }
+
+        .auto-generate-btn:active {
+            background-color: #b85e0e;
+            transform: scale(0.97);
+        }
+
+        .street-address {
+            background-color: #e9eef2;
+            border-radius: 16px;
+            padding: 14px 16px;
+            font-size: 1rem;
+            color: #2c3e50;
+            word-break: break-all;
+            border: 1px dashed #7f8c8d;
+            min-height: 60px;
+        }
+
+        .same-button {
+            background-color: #34495e;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            align-self: flex-start;
+            font-size: 0.95rem;
+            margin: 5px 0;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .same-button:active {
+            background-color: #1e2b37;
+            transform: scale(0.97);
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .order-table th {
+            background-color: #f39c12;
+            color: white;
+            font-weight: 600;
+            padding: 12px 4px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .order-table td {
+            padding: 12px 4px;
+            text-align: center;
+            border-bottom: 1px solid #e3e7ea;
+        }
+
+        .order-table input[type="number"] {
+            width: 70px;
+            padding: 10px 6px;
+            text-align: center;
+            border-radius: 30px;
+            border: 1px solid #bdc3c7;
+            margin: 0 auto;
+        }
+
+        .order-table input[type="number"]:focus {
+            outline: 2px solid #f39c12;
+            border-color: transparent;
+        }
+
+        .unit-price {
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .total-row {
+            background-color: #fef5e7;
+            font-weight: 700;
+        }
+
+        .total-row td {
+            border-bottom: none;
+            padding: 16px 4px;
+            font-size: 1.1rem;
+        }
+
+        .info-note {
+            background-color: #e8f0fe;
+            border-radius: 16px;
+            padding: 12px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin: 20px 0 5px;
+            border-left: 5px solid #3498db;
+        }
+
+        .email-section {
+            background-color: #f1f9f0;
+            border-radius: 18px;
+            padding: 18px;
+            margin: 24px 0 12px;
+            border: 1px solid #2ecc71;
+        }
+
+        .email-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .email-field label {
+            font-weight: 700;
+            color: #27ae60;
+        }
+
+        .email-field input {
+            background-color: #f9fff9;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .export-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #3498db;
+            color: white;
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .export-btn:active {
+            background-color: #1f618d;
+            transform: scale(0.98);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: #27ae60;
+            color: white;
+            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
+        }
+
+        .submit-btn:active {
+            background-color: #1e8449;
+            transform: scale(0.98);
+        }
+
+        .submit-btn:disabled {
+            background-color: #95a5a6;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        hr {
+            border: 1px solid #eee;
+            margin: 24px 0 8px;
+        }
+
+        .small-note {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #e67e22;
+            font-weight: 600;
+            background-color: #fff3e0;
+            border-radius: 40px;
+            margin: 10px 0;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 16px;
+            border-radius: 40px;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 16px;
+            border-radius: 40px;
+            text-align: center;
+            margin: 10px 0;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .postal-hint {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 4px;
+        }
+    </style>
 </head>
-
 <body>
-<header id="siteHeader">
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="title">NJFREGI レジシステム申込フォーム</div>
-        <div class="sub">ステップ入力・住所自動入力・自動計算</div>
-      </div>
+    <div class="container">
+        <h2>📋 申請レジシステム<br><span style="font-size:0.9rem;">(GAS自動送信版)</span></h2>
 
-      <div class="stepBlocks" id="stepBlocks" aria-label="ステップ">
-        <div class="sb" data-i="0">1</div>
-        <div class="sb" data-i="1">2</div>
-        <div class="sb" data-i="2">3</div>
-        <div class="sb" data-i="3">4</div>
-      </div>
-    </div>
-
-    <div class="progress"><div class="bar" id="bar"></div></div>
-  </div>
-</header>
-
-<main class="wrap" id="mainWrap">
-
-  <!-- Step 1 -->
-  <section class="card step active" id="step1">
-    <h2>重要事項確認（すべてチェック必須）</h2>
-
-    <div class="checklist" id="checks">
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>契約期間は2年、満了後は1年ごとに自動更新</b>
-          <p>契約期間および自動更新ルールを理解しました。</p>
+        <!-- 1. 上記事項確認 -->
+        <div class="section-title"><span>✅ 1. 上記事項確認</span></div>
+        <div class="check-group">
+            <div class="check-item">
+                <input type="checkbox" id="confirm1" checked>
+                <label for="confirm1" class="label-text">利用規約および個人情報の取り扱いに同意する <span class="required-badge">必須</span></label>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="confirm2">
+                <label for="confirm2" class="label-text">申請内容が事実であることを確認しました</label>
+            </div>
+            <div class="check-item">
+                <input type="checkbox" id="confirm3">
+                <label for="confirm3" class="label-text">本人確認書類のアップロードが完了</label>
+            </div>
         </div>
-      </div>
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>利用開始日：機器の設置（設定含む）完了日</b>
-          <p>利用開始日は申込日より後になる場合があることを理解しました。</p>
+
+        <!-- 2. 住所情報 -->
+        <div class="section-title"><span>🏠 2. 住所情報</span></div>
+        <div class="form-grid">
+            <div class="field">
+                <label>〒 郵便番号 (ハイフンなし)</label>
+                <div class="postal-group">
+                    <input type="text" id="postal" placeholder="1000001" maxlength="7" inputmode="numeric" value="1000001">
+                    <button class="auto-generate-btn" id="genAddressBtn">住所生成</button>
+                </div>
+                <div class="postal-hint">例: 1000001 → 東京都千代田区</div>
+            </div>
+
+            <div class="field">
+                <label>街区住所 (自動生成)</label>
+                <div class="street-address" id="generatedStreet">東京都千代田区千代田</div>
+                <div class="small-note">※ダブルクリックで店舗住所にコピー</div>
+            </div>
+
+            <div class="field">
+                <label>詳細番地・マンション名・号室 (手入力)</label>
+                <input type="text" id="detailAddress" placeholder="1-1 皇居内 / ○○ビル 3F" value="1-1 大手町ビル 5F">
+            </div>
+
+            <div class="row-2col" style="margin-top: 10px;">
+                <div class="field">
+                    <label>🏢 契約店舗住所</label>
+                    <input type="text" id="shopAddress" placeholder="店舗住所を入力" value="東京都中央区日本橋2-3-4">
+                </div>
+                <div class="field">
+                    <label>🏭 会社住所</label>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <input type="text" id="companyAddress" placeholder="会社住所" value="東京都港区赤坂9-7-1" style="flex:2;">
+                        <button class="same-button" id="sameAsShopBtn">同上</button>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>最低利用期間24ヶ月、途中解約は残期間費用が発生</b>
-          <p>途中解約時の費用ルールを理解しました。</p>
+
+        <!-- 3. 商品/サービス -->
+        <div class="section-title"><span>🛒 3. デバイス＆サービス</span></div>
+        <div class="info-note">⚡ 単価は固定。数量を変更すると自動合計</div>
+        <table class="order-table" id="orderTable">
+            <thead>
+                <tr>
+                    <th>商品/サービス</th>
+                    <th>単価(円)</th>
+                    <th>数量</th>
+                    <th>小計(円)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>POSレジ端末 Pro</td>
+                    <td class="unit-price" data-price="59800">59,800</td>
+                    <td><input type="number" min="0" value="1" class="item-qty" id="qty1"></td>
+                    <td class="item-subtotal" id="subtotal1">59,800</td>
+                </tr>
+                <tr>
+                    <td>バーコードスキャナ</td>
+                    <td class="unit-price" data-price="12800">12,800</td>
+                    <td><input type="number" min="0" value="0" class="item-qty" id="qty2"></td>
+                    <td class="item-subtotal" id="subtotal2">0</td>
+                </tr>
+                <tr>
+                    <td>レシートプリンター</td>
+                    <td class="unit-price" data-price="19800">19,800</td>
+                    <td><input type="number" min="0" value="1" class="item-qty" id="qty3"></td>
+                    <td class="item-subtotal" id="subtotal3">19,800</td>
+                </tr>
+                <tr>
+                    <td>クラウド基本利用料(月)</td>
+                    <td class="unit-price" data-price="3000">3,000</td>
+                    <td><input type="number" min="0" value="12" class="item-qty" id="qty4"></td>
+                    <td class="item-subtotal" id="subtotal4">36,000</td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="3" style="text-align:right;">合計金額 (税抜):</td>
+                    <td id="grandTotal">115,600</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 4. メール送信先 -->
+        <div class="email-section">
+            <div class="email-field">
+                <label>📧 liu922506@gmail.com <span class="required-badge">必須</span></label>
+                <input type="email" id="recipientEmail" placeholder="yourname@gmail.com" value="" required>
+                <div class="small-note">※ このアドレスにCSV/TXTファイルが添付されて届きます</div>
+            </div>
         </div>
-      </div>
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>推奨外機器の動作保証は対象外</b>
-          <p>推奨外機器の利用に伴う不具合はお客様責任となることを理解しました。</p>
+
+        <!-- 5. ステータス表示 -->
+        <div id="loading" class="loading">
+            <span>⏳ 送信中... しばらくお待ちください</span>
         </div>
-      </div>
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>データ保存期間は最大24ヶ月（25ヶ月以降削除の可能性）</b>
-          <p>必要に応じてお客様側でバックアップが必要なことを理解しました。</p>
+        <div id="successMessage" class="success-message">
+            <span>✅ メールを送信しました！</span>
         </div>
-      </div>
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>解約は1ヶ月前までに書面で申請</b>
-          <p>解約手続き方法を理解しました。</p>
+        <div id="errorMessage" class="error-message">
+            <span>❌ エラーが発生しました</span>
         </div>
-      </div>
-      <div class="checkitem">
-        <input type="checkbox" data-required="1">
-        <div>
-          <b>個人情報の利用目的に同意（精算・注文処理、改善、問合せ対応、法令対応）</b>
-          <p>個人情報は適切に管理されることを理解しました。</p>
+
+        <!-- 6. ボタン群 -->
+        <div class="button-group">
+            <button class="export-btn" id="generateCsvBtn">📥 CSVファイルを生成</button>
+            <button class="export-btn" id="generateTxtBtn">📥 テキストファイルを生成</button>
+            <button class="submit-btn" id="sendToGASBtn">📧 GASでメール送信</button>
         </div>
-      </div>
-    </div>
 
-    <div class="row" style="margin-top:14px;">
-      <button class="btn" id="to2" disabled>次へ</button>
-    </div>
-    <div id="checkHint" style="margin-top:8px; font-weight:900; color:var(--muted); font-size:12px;">
-      上記の重要事項をすべてチェックしてください。
-    </div>
-  </section>
-
-  <!-- Step 2 -->
-  <section class="card step" id="step2">
-    <h2>基本情報（ご契約者）</h2>
-
-    <div class="grid cols2">
-      <div>
-        <label>申込日</label>
-        <input id="applyDate" type="date" readonly>
-      </div>
-      <div>
-        <label>顧客コード</label>
-        <input id="customerCode" readonly>
-      </div>
-      <div>
-        <label>社名 / 屋号 / 店舗名</label>
-        <input id="companyName" placeholder="例：株式会社BBC">
-      </div>
-      <div>
-        <label>担当者名</label>
-        <input id="personName" placeholder="例：丹野 龍介">
-      </div>
-
-      <div>
-        <label>携帯番号</label>
-        <input id="mobile" inputmode="tel" placeholder="090-xxxx-xxxx">
-      </div>
-      <div>
-        <label>E-mail</label>
-        <input id="email" type="email" placeholder="name@example.com">
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <h2>ご契約者住所</h2>
-    <div class="grid cols2">
-      <div>
-        <label>郵便番号（7桁）</label>
-        <input id="zipCompany" inputmode="numeric" placeholder="例：2730005">
-      </div>
-      <div class="row" style="align-items:flex-end">
-        <button class="btn ghost" id="zipCompanyBtn" type="button">住所自動入力</button>
-        <span id="zipCompanyMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>住所（自動入力）</label>
-        <input id="addrCompany1" placeholder="例：千葉県船橋市本町1丁目">
-      </div>
-      <div style="grid-column:1/-1">
-        <label>番地・建物名</label>
-        <input id="addrCompany2" placeholder="例：11-25 3F">
-      </div>
-    </div>
-
-    <div class="row" style="margin-top:14px;">
-      <button class="btn secondary" id="back1">戻る</button>
-      <button class="btn" id="to3">次へ</button>
-    </div>
-  </section>
-
-  <!-- Step 3 -->
-  <section class="card step" id="step3">
-    <h2>設置先 / 請求先</h2>
-
-    <div class="row" style="margin-bottom:10px">
-      <button class="btn ghost" id="copyCompanyToInstall" type="button">同上：ご契約者住所を設置先へ</button>
-    </div>
-
-    <div class="grid cols2">
-      <div>
-        <label>設置先名称</label>
-        <input id="installName" placeholder="例：麻辣湯倶楽部">
-      </div>
-      <div>
-        <label>電話番号</label>
-        <input id="installTel" inputmode="tel" placeholder="例：047-xxx-xxxx">
-      </div>
-      <div>
-        <label>郵便番号（7桁）</label>
-        <input id="zipInstall" inputmode="numeric" placeholder="例：2730005">
-      </div>
-      <div class="row" style="align-items:flex-end">
-        <button class="btn ghost" id="zipInstallBtn" type="button">住所自動入力</button>
-        <span id="zipInstallMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>住所（自動入力）</label>
-        <input id="addrInstall1">
-      </div>
-      <div style="grid-column:1/-1">
-        <label>番地・建物名</label>
-        <input id="addrInstall2">
-      </div>
-
-      <div>
-        <label>営業時間</label>
-        <select id="bizHours">
-          <option value="11:00-23:00" selected>11:00-23:00</option>
-        </select>
-      </div>
-      <div>
-        <label>定休日</label>
-        <select id="holiday">
-          <option value="なし" selected>なし</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="row" style="margin-bottom:10px">
-      <button class="btn ghost" id="copyInstallToBill" type="button">同上：設置先を請求先へ</button>
-    </div>
-
-    <div class="grid cols2">
-      <div>
-        <label>請求先名称</label>
-        <input id="billName" placeholder="例：麻辣湯倶楽部">
-      </div>
-      <div>
-        <label>支払方法</label>
-        <input value="銀行振込" readonly>
-      </div>
-
-      <div>
-        <label>郵便番号（7桁）</label>
-        <input id="zipBill" inputmode="numeric" placeholder="例：2730005">
-      </div>
-      <div class="row" style="align-items:flex-end">
-        <button class="btn ghost" id="zipBillBtn" type="button">住所自動入力</button>
-        <span id="zipBillMsg" style="font-size:12px; font-weight:900; color:var(--muted)"></span>
-      </div>
-      <div style="grid-column:1/-1">
-        <label>住所（自動入力）</label>
-        <input id="addrBill1">
-      </div>
-      <div style="grid-column:1/-1">
-        <label>番地・建物名</label>
-        <input id="addrBill2">
-      </div>
-
-      <div>
-        <label>課金開始日</label>
-        <input id="chargeStart" type="date" readonly>
-      </div>
-      <div>
-        <label>請求期間</label>
-        <input id="billingTerm" readonly>
-      </div>
-    </div>
-
-    <div class="row" style="margin-top:14px;">
-      <button class="btn secondary" id="back2">戻る</button>
-      <button class="btn" id="to4">次へ</button>
-    </div>
-  </section>
-
-  <!-- Step 4 -->
-  <section class="card step" id="step4">
-    <h2>機器・サービス</h2>
-
-    <div class="divider"></div>
-    <h2>初期費用（機器）</h2>
-
-    <div class="deviceList" id="deviceList"></div>
-
-    <div class="divider"></div>
-
-    <h2>利用料</h2>
-    <div class="deviceCard">
-      <div class="deviceTop">
-        <div>基本利用料</div>
-        <div class="price" id="recPriceText">月額 ¥ 8,800（税込）</div>
-      </div>
-      <div class="qtyRow">
-        <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">プラン</label>
-        <select id="recPlan">
-          <option value="monthly" selected>月額 8,800（税込）</option>
-          <option value="yearly">年額 88,000（税込）</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="jpGrand">
-      <div class="jpGrandTitle">完工時お支払額（合計）</div>
-      <div class="jpGrandValue" id="grand">¥ 0</div>
-    </div>
-
-    <div class="row" style="margin-top:14px;">
-      <button class="btn secondary" id="back3">戻る</button>
-      <button class="btn" id="goConfirm">申込内容を確認</button>
-    </div>
-
-    <div id="submitMsg" style="margin-top:10px; font-size:12px; font-weight:900; color:var(--muted)"></div>
-  </section>
-</main>
-
-<!-- Confirm Page -->
-<section class="confirmPage" id="confirmPage" aria-hidden="true">
-  <div class="confirmWrap">
-    <div class="confirmHeader">
-      <div class="confirmTitle">申込内容の確認</div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">ご契約者</div>
-      <div class="jpGrid" id="c_contract"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">設置先</div>
-      <div class="jpGrid" id="c_install"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">請求先</div>
-      <div class="jpGrid" id="c_bill"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">初期費用（機器）</div>
-      <div class="jpList" id="c_init"></div>
-    </div>
-
-    <div class="jpSection">
-      <div class="jpSecTitle">利用料</div>
-      <div class="jpGrid" id="c_rec"></div>
-    </div>
-
-    <div class="jpGrand">
-      <div class="jpGrandTitle">完工時お支払額（合計）</div>
-      <div class="jpGrandValue" id="c_grand">-</div>
-    </div>
-  </div>
-
-  <div class="sendBar">
-    <div class="inner">
-      <button class="backBtn" id="confirmBack">戻る</button>
-      <button class="sendBtn" id="sendBtn">送信</button>
-    </div>
-  </div>
-</section>
-
-<script>
-  /***************
-   * 必須設定 - 请替换为您的GAS URL（版本26）
-   ***************/
-  const GAS_URL = "https://script.google.com/macros/s/AKfycbxfnsAwte03U8TijcxWpisrtlVtqv-NtBU4YGVRUWKAbIsqUW7_QU_MWZjnai1s-uLIYA/exec";
-  const API_KEY = "NJFREGI-8F3XK29S9DKD73KDJF9283JDKS9DK2";
-  const TAX_RATE = 0.10;
-
-  /***************
-   * Step control
-   ***************/
-  const headerEl = document.getElementById("siteHeader");
-  const steps = ["step1","step2","step3","step4"].map(id=>document.getElementById(id));
-  let stepIndex = 0;
-
-  const bar = document.getElementById("bar");
-  const stepBlocks = [...document.querySelectorAll("#stepBlocks .sb")];
-
-  function setStep(i){
-    stepIndex = Math.max(0, Math.min(steps.length-1, i));
-    steps.forEach((s,idx)=>s.classList.toggle("active", idx===stepIndex));
-    stepBlocks.forEach((b, idx) => {
-      b.classList.toggle("done", idx < stepIndex);
-      b.classList.toggle("active", idx === stepIndex);
-    });
-    bar.style.width = `${(stepIndex)/(steps.length-1)*100}%`;
-    window.scrollTo({top:0, behavior:"smooth"});
-  }
-  setStep(0);
-
-  /***************
-   * Header auto-hide on scroll & input focus
-   ***************/
-  let lastY = 0;
-  window.addEventListener("scroll", ()=>{
-    const y = window.scrollY || 0;
-    if(y > lastY + 8 && y > 60) headerEl.classList.add("hide");
-    if(y < lastY - 8) headerEl.classList.remove("hide");
-    lastY = y;
-  }, {passive:true});
-
-  function bindFocusHide(){
-    const els = document.querySelectorAll("input,select,textarea");
-    els.forEach(el=>{
-      el.addEventListener("focus", ()=>headerEl.classList.add("hide"));
-      el.addEventListener("blur", ()=>{});
-    });
-  }
-  bindFocusHide();
-
-  /***************
-   * Step1 checklist gate
-   ***************/
-  const checks = [...document.querySelectorAll("#checks input[type=checkbox][data-required='1']")];
-  const to2 = document.getElementById("to2");
-  const checkHint = document.getElementById("checkHint");
-  function refreshChecklist(){
-    const ok = checks.every(c=>c.checked);
-    to2.disabled = !ok;
-    checkHint.innerHTML = ok
-      ? `<span class="ok">確認が完了しました。次へ進めます。</span>`
-      : `上記の重要事項をすべてチェックしてください。`;
-  }
-  checks.forEach(c=>c.addEventListener("change", refreshChecklist));
-  refreshChecklist();
-
-  to2.addEventListener("click", ()=>setStep(1));
-  document.getElementById("back1").addEventListener("click", ()=>setStep(0));
-  document.getElementById("to3").addEventListener("click", ()=>setStep(2));
-  document.getElementById("back2").addEventListener("click", ()=>setStep(1));
-  document.getElementById("to4").addEventListener("click", ()=>setStep(3));
-  document.getElementById("back3").addEventListener("click", ()=>setStep(2));
-
-  /***************
-   * Defaults: applyDate, customerCode, chargeStart(next month 1st), billingTerm(+1 year)
-   ***************/
-  function pad2(n){ return String(n).padStart(2,"0"); }
-  function formatYMD(d){
-    return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
-  }
-  function formatYYYYMMDD(d){
-    return `${d.getFullYear()}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`;
-  }
-  function nextMonthFirst(d){
-    return new Date(d.getFullYear(), d.getMonth()+1, 1);
-  }
-  function formatTerm(startDate){
-    const s = startDate;
-    const e = new Date(s.getFullYear()+1, s.getMonth(), s.getDate()-1);
-    return `${formatYMD(s)} ～ ${formatYMD(e)}`;
-  }
-
-  const today = new Date();
-  document.getElementById("applyDate").value = formatYMD(today);
-  document.getElementById("customerCode").value = `${formatYYYYMMDD(today)}001`;
-
-  const chargeStartEl = document.getElementById("chargeStart");
-  const billingTermEl = document.getElementById("billingTerm");
-
-  const cs = nextMonthFirst(today);
-  chargeStartEl.value = formatYMD(cs);
-  billingTermEl.value = formatTerm(cs);
-
-  /***************
-   * ZipCloud address lookup
-   ***************/
-  async function lookupZip(zip, msgEl, addr1El){
-    const z = String(zip||"").replace(/[^\d]/g,"");
-    if(z.length !== 7){
-      msgEl.textContent = "郵便番号は7桁で入力してください";
-      msgEl.className = "err";
-      return;
-    }
-    msgEl.textContent = "検索中…";
-    msgEl.className = "muted";
-    try{
-      const url = `https://zipcloud.ibsnet.co.jp/api/search?zipcode=${encodeURIComponent(z)}`;
-      const res = await fetch(url);
-      const data = await res.json();
-      if(data.status !== 200 || !data.results || !data.results.length){
-        msgEl.textContent = "該当する住所が見つかりません";
-        msgEl.className = "err";
-        return;
-      }
-      const r = data.results[0];
-      const addr = `${r.address1}${r.address2}${r.address3}`;
-      addr1El.value = addr;
-      msgEl.textContent = "住所を自動入力しました";
-      msgEl.className = "ok";
-    }catch(e){
-      msgEl.textContent = "検索に失敗しました（ネットワーク）";
-      msgEl.className = "err";
-    }
-  }
-
-  document.getElementById("zipCompanyBtn").addEventListener("click", ()=>{
-    lookupZip(
-      document.getElementById("zipCompany").value,
-      document.getElementById("zipCompanyMsg"),
-      document.getElementById("addrCompany1")
-    );
-  });
-  document.getElementById("zipInstallBtn").addEventListener("click", ()=>{
-    lookupZip(
-      document.getElementById("zipInstall").value,
-      document.getElementById("zipInstallMsg"),
-      document.getElementById("addrInstall1")
-    );
-  });
-  document.getElementById("zipBillBtn").addEventListener("click", ()=>{
-    lookupZip(
-      document.getElementById("zipBill").value,
-      document.getElementById("zipBillMsg"),
-      document.getElementById("addrBill1")
-    );
-  });
-
-  /***************
-   * "同上" copy
-   ***************/
-  document.getElementById("copyCompanyToInstall").addEventListener("click", ()=>{
-    document.getElementById("zipInstall").value = document.getElementById("zipCompany").value;
-    document.getElementById("addrInstall1").value = document.getElementById("addrCompany1").value;
-    document.getElementById("addrInstall2").value = document.getElementById("addrCompany2").value;
-    document.getElementById("installName").value = document.getElementById("companyName").value || "";
-  });
-  document.getElementById("copyInstallToBill").addEventListener("click", ()=>{
-    document.getElementById("zipBill").value = document.getElementById("zipInstall").value;
-    document.getElementById("addrBill1").value = document.getElementById("addrInstall1").value;
-    document.getElementById("addrBill2").value = document.getElementById("addrInstall2").value;
-    document.getElementById("billName").value = document.getElementById("installName").value || "";
-  });
-
-  /***************
-   * Money formatter
-   ***************/
-  function fmtJPY(n){
-    const v = Math.round(Number(n||0));
-    return "¥ " + String(v).replace(/\B(?=(\d{3})+(?!\d))/g,",");
-  }
-
-  /***************
-   * Devices (税込単価表示 + 数量入力)
-   ***************/
-  const devices = [
-    { key:"register", name:"レジスター", unitInc: 99000, qty: 1 },
-    { key:"tablet", name:"タブレット", unitInc: 32900, qty: 0 },
-    { key:"kds", name:"キッチンモニター", unitInc: 66000, qty: 0 },
-    { key:"printer", name:"プリンター", unitInc: 33000, qty: 0 },
-    { key:"drawer", name:"キャッシュドロア", unitInc: 22000, qty: 0 },
-  ];
-
-  const deviceListEl = document.getElementById("deviceList");
-
-  function renderDevices(){
-    deviceListEl.innerHTML = "";
-    devices.forEach((it, idx)=>{
-      const card = document.createElement("div");
-      card.className = "deviceCard";
-      card.innerHTML = `
-        <div class="deviceTop">
-          <div>${it.name}</div>
-          <div class="price">${fmtJPY(it.unitInc)}（税込）</div>
+        <hr>
+        <div class="small-note" style="text-align:center;">
+            GASが自動でファイルを添付して送信します<br>
+            ※CSVはExcelで、TXTはメモ帳で開けます
         </div>
-        <div class="qtyRow">
-          <label style="margin:0; width:140px; font-weight:1000; color:var(--muted)">数量</label>
-          <input type="number" min="0" step="1" class="num" value="${it.qty}" data-i="${idx}" aria-label="qty">
-        </div>
-      `;
-      deviceListEl.appendChild(card);
-    });
+    </div>
 
-    deviceListEl.querySelectorAll("input[data-i]").forEach(inp => {
-      inp.addEventListener("input", (e) => {
-        const i = Number(inp.dataset.i);
-        const val = parseInt(e.target.value, 10);
-        devices[i].qty = isNaN(val) || val < 0 ? 0 : val;
-        calcGrand();
-      });
-      
-      inp.addEventListener("blur", (e) => {
-        const i = Number(inp.dataset.i);
-        if (e.target.value === "" || isNaN(parseInt(e.target.value, 10))) {
-          devices[i].qty = 0;
-          e.target.value = 0;
-          calcGrand();
-        }
-      });
-    });
+    <script>
+        (function() {
+            "use strict";
 
-    calcGrand();
-  }
+            // ---------- 郵便番号データベース ----------
+            const postalMock = {
+                '1000001': '東京都千代田区千代田',
+                '1000002': '東京都千代田区皇居外苑',
+                '1000003': '東京都千代田区一ツ橋',
+                '1600022': '東京都新宿区新宿',
+                '1600023': '東京都新宿区西新宿',
+                '5300001': '大阪府大阪市北区梅田',
+                '5300002': '大阪府大阪市北区曾根崎',
+                '5400001': '大阪府大阪市中央区城見',
+                '8100001': '福岡県福岡市中央区天神',
+                '8100002': '福岡県福岡市中央区西中洲',
+                '4600001': '愛知県名古屋市中区三の丸',
+                '4600002': '愛知県名古屋市中区丸の内',
+                '0600001': '北海道札幌市中央区北一条西',
+                '0600002': '北海道札幌市中央区北二条西',
+                '9800001': '宮城県仙台市青葉区中江',
+                '9800002': '宮城県仙台市青葉区通町'
+            };
+            
+            // 要素取得
+            const postalInput = document.getElementById('postal');
+            const genBtn = document.getElementById('genAddressBtn');
+            const generatedStreetDiv = document.getElementById('generatedStreet');
+            const detailInput = document.getElementById('detailAddress');
+            const shopInput = document.getElementById('shopAddress');
+            const companyInput = document.getElementById('companyAddress');
+            const sameBtn = document.getElementById('sameAsShopBtn');
+            const qtyInputs = document.querySelectorAll('.item-qty');
+            const grandTotalSpan = document.getElementById('grandTotal');
+            const loadingDiv = document.getElementById('loading');
+            const successDiv = document.getElementById('successMessage');
+            const errorDiv = document.getElementById('errorMessage');
+            const sendBtn = document.getElementById('sendToGASBtn');
 
-  /***************
-   * Rec plan (monthly/yearly)
-   ***************/
-  const recPlanEl = document.getElementById("recPlan");
-  const recPriceText = document.getElementById("recPriceText");
+            // 住所生成関数
+            function updateStreetFromPostal(postal) {
+                const street = postalMock[postal] || '（該当する住所が見つかりません）';
+                generatedStreetDiv.innerText = street;
+                return street;
+            }
 
-  function getRecPlan(){
-    if(recPlanEl.value === "yearly"){
-      return { plan:"年額", priceInc: 88000 };
-    }
-    return { plan:"月額", priceInc: 8800 };
-  }
+            // 初期表示
+            updateStreetFromPostal('1000001');
 
-  recPlanEl.addEventListener("change", ()=>{
-    const p = getRecPlan();
-    recPriceText.textContent = `${p.plan} ${fmtJPY(p.priceInc)}（税込）`;
-    calcGrand();
-  });
+            // 住所生成ボタン
+            genBtn.addEventListener('click', function() {
+                let postal = postalInput.value.trim().replace(/[^0-9]/g, '');
+                if (postal.length > 7) postal = postal.slice(0,7);
+                if (postal.length < 7) {
+                    alert('郵便番号は7桁で入力してください');
+                    return;
+                }
+                updateStreetFromPostal(postal);
+            });
 
-  function calcGrand(){
-    const initTotal = devices.reduce((a, it) => {
-      const qty = Number(it.qty) || 0;
-      const price = Number(it.unitInc) || 0;
-      return a + (qty * price);
-    }, 0);
-    
-    const rp = getRecPlan();
-    const price = Number(rp.priceInc) || 0;
-    const grand = initTotal + price;
-    
-    document.getElementById("grand").textContent = fmtJPY(grand);
-  }
+            // 同上ボタン
+            sameBtn.addEventListener('click', function() {
+                if (shopInput.value.trim() !== '') {
+                    companyInput.value = shopInput.value;
+                } else {
+                    alert('店舗住所が空です');
+                }
+            });
 
-  /***************
-   * Confirm page render
-   ***************/
-  const confirmPage = document.getElementById("confirmPage");
+            // 金額計算
+            function computeAll() {
+                let total = 0;
+                qtyInputs.forEach((input) => {
+                    const row = input.closest('tr');
+                    const priceCell = row.querySelector('.unit-price');
+                    const price = parseInt(priceCell.getAttribute('data-price'), 10) || 0;
+                    const qty = parseInt(input.value, 10) || 0;
+                    const subtotal = price * qty;
+                    const subtotalTd = row.querySelector('.item-subtotal');
+                    if (subtotalTd) subtotalTd.innerText = subtotal.toLocaleString();
+                    total += subtotal;
+                });
+                grandTotalSpan.innerText = total.toLocaleString();
+            }
+            
+            qtyInputs.forEach(input => input.addEventListener('input', computeAll));
+            computeAll();
 
-  function addrLine(z,a1,a2){
-    return `〒${(z||"")} ${(a1||"")} ${(a2||"")}`.replace(/\s+/g," ").trim();
-  }
+            // データ収集関数
+            function getApplicationData() {
+                const confirm1 = document.getElementById('confirm1').checked;
+                const confirm2 = document.getElementById('confirm2').checked;
+                const confirm3 = document.getElementById('confirm3').checked;
+                
+                const postal = postalInput.value.trim();
+                const streetAuto = generatedStreetDiv.innerText;
+                const detail = detailInput.value.trim();
+                const fullAddress = streetAuto + ' ' + detail;
+                const shopAddr = shopInput.value.trim();
+                const companyAddr = companyInput.value.trim();
+                const email = document.getElementById('recipientEmail').value.trim();
 
-  function buildPayload(){
-    const rp = getRecPlan();
-    const initItems = devices.map(d=>({
-      name: d.name,
-      qty: d.qty,
-      unitInc: d.unitInc
-    })).filter(x => (x.qty||0) > 0 || x.unitInc === 0);
+                const items = [];
+                qtyInputs.forEach((input) => {
+                    const row = input.closest('tr');
+                    const name = row.cells[0].innerText;
+                    const priceCell = row.querySelector('.unit-price');
+                    const price = parseInt(priceCell.getAttribute('data-price'), 10) || 0;
+                    const qty = parseInt(input.value, 10) || 0;
+                    const subtotal = price * qty;
+                    items.push({ 
+                        name: name, 
+                        price: price, 
+                        qty: qty, 
+                        subtotal: subtotal 
+                    });
+                });
+                
+                const total = parseInt(grandTotalSpan.innerText.replace(/,/g, ''), 10) || 0;
 
-    return {
-      apiKey: API_KEY,
-      applyDate: document.getElementById("applyDate").value,
-      customerCode: document.getElementById("customerCode").value,
-      companyName: (document.getElementById("companyName").value||"").trim(),
-      personName: (document.getElementById("personName").value||"").trim(),
-      mobile: (document.getElementById("mobile").value||"").trim(),
-      email: (document.getElementById("email").value||"").trim(),
-      zipCompany: (document.getElementById("zipCompany").value||"").trim(),
-      addrCompany1: (document.getElementById("addrCompany1").value||"").trim(),
-      addrCompany2: (document.getElementById("addrCompany2").value||"").trim(),
-      installName: (document.getElementById("installName").value||"").trim(),
-      installTel: (document.getElementById("installTel").value||"").trim(),
-      zipInstall: (document.getElementById("zipInstall").value||"").trim(),
-      addrInstall1: (document.getElementById("addrInstall1").value||"").trim(),
-      addrInstall2: (document.getElementById("addrInstall2").value||"").trim(),
-      bizHours: document.getElementById("bizHours").value,
-      holiday: document.getElementById("holiday").value,
-      billName: (document.getElementById("billName").value||"").trim(),
-      payMethod: "銀行振込",
-      zipBill: (document.getElementById("zipBill").value||"").trim(),
-      addrBill1: (document.getElementById("addrBill1").value||"").trim(),
-      addrBill2: (document.getElementById("addrBill2").value||"").trim(),
-      chargeStart: chargeStartEl.value,
-      billingTerm: billingTermEl.value,
-      taxRate: TAX_RATE,
-      initItems,
-      recPlan: rp,
-    };
-  }
+                return {
+                    email: email,
+                    date: new Date().toLocaleString('ja-JP'),
+                    confirm: { 
+                        confirm1: confirm1, 
+                        confirm2: confirm2, 
+                        confirm3: confirm3 
+                    },
+                    postal: postal,
+                    streetAuto: streetAuto,
+                    detail: detail,
+                    fullAddress: fullAddress,
+                    shopAddr: shopAddr,
+                    companyAddr: companyAddr,
+                    items: items,
+                    total: total
+                };
+            }
 
-  document.getElementById("goConfirm").addEventListener("click", ()=>{
-    const csV = chargeStartEl.value;
-    if(csV){
-      const d = new Date(csV + "T00:00:00");
-      billingTermEl.value = formatTerm(d);
-    }
+            // バリデーション
+            function validateForm(data) {
+                if (!data.confirm.confirm1) {
+                    alert('利用規約への同意は必須です');
+                    return false;
+                }
+                if (!data.email || !data.email.includes('@') || !data.email.includes('.')) {
+                    alert('有効なメールアドレスを入力してください');
+                    return false;
+                }
+                if (!data.postal || data.postal.length !== 7) {
+                    alert('郵便番号を7桁で入力してください');
+                    return false;
+                }
+                if (!data.shopAddr) {
+                    alert('店舗住所を入力してください');
+                    return false;
+                }
+                return true;
+            }
 
-    const p = buildPayload();
+            // メッセージ表示制御
+            function showLoading(show) {
+                loadingDiv.classList.toggle('show', show);
+                sendBtn.disabled = show;
+            }
 
-    // 填充契約者情報
-    const contractGrid = document.getElementById("c_contract");
-    contractGrid.innerHTML = "";
-    const contractPairs = [
-      ["申込日", p.applyDate],
-      ["顧客コード", p.customerCode],
-      ["社名/屋号", p.companyName],
-      ["担当者", p.personName],
-      ["携帯", p.mobile],
-      ["E-mail", p.email],
-      ["住所", addrLine(p.zipCompany, p.addrCompany1, p.addrCompany2)]
-    ];
-    contractPairs.forEach(([label, value]) => {
-      const labelDiv = document.createElement("div");
-      labelDiv.className = "jpLabel";
-      labelDiv.textContent = label;
-      const valueDiv = document.createElement("div");
-      valueDiv.className = "jpVal";
-      valueDiv.textContent = value || "未入力";
-      contractGrid.appendChild(labelDiv);
-      contractGrid.appendChild(valueDiv);
-    });
+            function showSuccess(message) {
+                successDiv.querySelector('span').textContent = '✅ ' + message;
+                successDiv.classList.add('show');
+                setTimeout(() => {
+                    successDiv.classList.remove('show');
+                }, 5000);
+            }
 
-    // 填充設置先情報
-    const installGrid = document.getElementById("c_install");
-    installGrid.innerHTML = "";
-    const installPairs = [
-      ["名称", p.installName],
-      ["電話", p.installTel],
-      ["住所", addrLine(p.zipInstall, p.addrInstall1, p.addrInstall2)],
-      ["営業時間", p.bizHours],
-      ["定休日", p.holiday]
-    ];
-    installPairs.forEach(([label, value]) => {
-      const labelDiv = document.createElement("div");
-      labelDiv.className = "jpLabel";
-      labelDiv.textContent = label;
-      const valueDiv = document.createElement("div");
-      valueDiv.className = "jpVal";
-      valueDiv.textContent = value || "未入力";
-      installGrid.appendChild(labelDiv);
-      installGrid.appendChild(valueDiv);
-    });
+            function showError(message) {
+                errorDiv.querySelector('span').textContent = '❌ ' + message;
+                errorDiv.classList.add('show');
+                setTimeout(() => {
+                    errorDiv.classList.remove('show');
+                }, 5000);
+            }
 
-    // 填充請求先情報
-    const billGrid = document.getElementById("c_bill");
-    billGrid.innerHTML = "";
-    const billPairs = [
-      ["名称", p.billName],
-      ["支払方法", p.payMethod],
-      ["住所", addrLine(p.zipBill, p.addrBill1, p.addrBill2)],
-      ["課金開始日", p.chargeStart],
-      ["請求期間", p.billingTerm]
-    ];
-    billPairs.forEach(([label, value]) => {
-      const labelDiv = document.createElement("div");
-      labelDiv.className = "jpLabel";
-      labelDiv.textContent = label;
-      const valueDiv = document.createElement("div");
-      valueDiv.className = "jpVal";
-      valueDiv.textContent = value || "未入力";
-      billGrid.appendChild(labelDiv);
-      billGrid.appendChild(valueDiv);
-    });
+            // CSV生成
+            document.getElementById('generateCsvBtn').addEventListener('click', () => {
+                const data = getApplicationData();
+                
+                // CSVデータ作成
+                const rows = [];
+                rows.push('申請レジシステム データ');
+                rows.push(`生成日時,${data.date}`);
+                rows.push('');
+                rows.push('【確認事項】,');
+                rows.push(`利用規約同意,${data.confirm.confirm1 ? '✓' : ''}`);
+                rows.push(`事実確認,${data.confirm.confirm2 ? '✓' : ''}`);
+                rows.push(`本人確認書類,${data.confirm.confirm3 ? '✓' : ''}`);
+                rows.push('');
+                rows.push('【住所情報】,');
+                rows.push(`郵便番号,${data.postal}`);
+                rows.push(`街区住所,${data.streetAuto}`);
+                rows.push(`詳細住所,${data.detail}`);
+                rows.push(`完全住所,${data.fullAddress}`);
+                rows.push(`契約店舗住所,${data.shopAddr}`);
+                rows.push(`会社住所,${data.companyAddr}`);
+                rows.push('');
+                rows.push('【注文明細】');
+                rows.push('商品名,単価(円),数量,小計(円)');
+                data.items.forEach(item => {
+                    rows.push(`${item.name},${item.price},${item.qty},${item.subtotal}`);
+                });
+                rows.push('');
+                rows.push(`合計金額(税抜),,,${data.total}`);
+                
+                const csv = rows.join('\n');
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `申請データ_${new Date().toISOString().slice(0,10)}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                showSuccess('CSVファイルをダウンロードしました');
+            });
 
-    // 填充初期費用
-    const initBox = document.getElementById("c_init");
-    initBox.innerHTML = "";
-    if (p.initItems.length === 0) {
-      const emptyMsg = document.createElement("div");
-      emptyMsg.className = "jpItem";
-      emptyMsg.innerHTML = "<div>選択された機器はありません</div><div>¥ 0</div>";
-      initBox.appendChild(emptyMsg);
-    } else {
-      p.initItems.forEach(it=>{
-        const sub = (it.qty||0)*(it.unitInc||0);
-        const row = document.createElement("div");
-        row.className = "jpItem";
-        row.innerHTML = `<div>${it.name}　${fmtJPY(it.unitInc)} × ${it.qty}</div><div>${fmtJPY(sub)}</div>`;
-        initBox.appendChild(row);
-      });
-    }
+            // TXT生成
+            document.getElementById('generateTxtBtn').addEventListener('click', () => {
+                const data = getApplicationData();
+                
+                // テキストデータ作成
+                const lines = [];
+                lines.push('='.repeat(60));
+                lines.push('                申請レジシステム');
+                lines.push('='.repeat(60));
+                lines.push('');
+                lines.push(`生成日時: ${data.date}`);
+                lines.push('');
+                lines.push('【確認事項】');
+                lines.push('-' .repeat(40));
+                lines.push(`利用規約同意: ${data.confirm.confirm1 ? '✓' : '×'}`);
+                lines.push(`事実確認: ${data.confirm.confirm2 ? '✓' : '×'}`);
+                lines.push(`本人確認書類: ${data.confirm.confirm3 ? '✓' : '×'}`);
+                lines.push('');
+                lines.push('【住所情報】');
+                lines.push('-' .repeat(40));
+                lines.push(`郵便番号: ${data.postal}`);
+                lines.push(`街区住所: ${data.streetAuto}`);
+                lines.push(`詳細住所: ${data.detail}`);
+                lines.push(`完全住所: ${data.fullAddress}`);
+                lines.push(`契約店舗住所: ${data.shopAddr}`);
+                lines.push(`会社住所: ${data.companyAddr}`);
+                lines.push('');
+                lines.push('【注文明細】');
+                lines.push('-' .repeat(60));
+                lines.push('商品名'.padEnd(25) + '単価(円)'.padStart(10) + '数量'.padStart(8) + '小計(円)'.padStart(12));
+                lines.push('-' .repeat(60));
+                
+                data.items.forEach(item => {
+                    const name = item.name.padEnd(25, ' ');
+                    const price = item.price.toString().padStart(10, ' ');
+                    const qty = item.qty.toString().padStart(8, ' ');
+                    const subtotal = item.subtotal.toString().padStart(12, ' ');
+                    lines.push(name + price + qty + subtotal);
+                });
+                
+                lines.push('-' .repeat(60));
+                lines.push('合計金額(税抜):'.padEnd(45) + data.total.toString().padStart(12, ' ') + '円');
+                lines.push('');
+                lines.push('='.repeat(60));
+                
+                const text = lines.join('\n');
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `申請データ_${new Date().toISOString().slice(0,10)}.txt`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+                
+                showSuccess('テキストファイルをダウンロードしました');
+            });
 
-    // 填充利用料
-    const recGrid = document.getElementById("c_rec");
-    recGrid.innerHTML = "";
-    const recPairs = [
-      ["基本利用料", `${p.recPlan.plan}　${fmtJPY(p.recPlan.priceInc)}`]
-    ];
-    recPairs.forEach(([label, value]) => {
-      const labelDiv = document.createElement("div");
-      labelDiv.className = "jpLabel";
-      labelDiv.textContent = label;
-      const valueDiv = document.createElement("div");
-      valueDiv.className = "jpVal";
-      valueDiv.textContent = value;
-      recGrid.appendChild(labelDiv);
-      recGrid.appendChild(valueDiv);
-    });
+            // GAS送信ボタン
+            document.getElementById('sendToGASBtn').addEventListener('click', () => {
+                const data = getApplicationData();
+                
+                if (!validateForm(data)) {
+                    return;
+                }
 
-    const initTotal = p.initItems.reduce((a,it)=>a+(it.qty||0)*(it.unitInc||0),0);
-    const grand = initTotal + p.recPlan.priceInc;
-    document.getElementById("c_grand").textContent = fmtJPY(grand);
+                // ローディング表示
+                showLoading(true);
+                
+                // GASの関数を呼び出し
+                google.script.run
+                    .withSuccessHandler((result) => {
+                        showLoading(false);
+                        if (result.success) {
+                            showSuccess('メールを送信しました！');
+                            // フォームを初期状態に戻す（オプション）
+                            // resetForm();
+                        } else {
+                            showError(result.message);
+                        }
+                    })
+                    .withFailureHandler((error) => {
+                        showLoading(false);
+                        showError('通信エラーが発生しました: ' + error);
+                        console.error('GASエラー:', error);
+                    })
+                    .sendApplicationWithAttachments(data);
+            });
 
-    confirmPage.style.display = "block";
-    confirmPage.setAttribute("aria-hidden","false");
-    window.scrollTo({top:0, behavior:"instant"});
-  });
+            // ダブルクリックで街区住所を店舗住所にコピー
+            generatedStreetDiv.addEventListener('dblclick', function() {
+                const fullAddr = generatedStreetDiv.innerText + ' ' + detailInput.value;
+                shopInput.value = fullAddr.trim();
+                showSuccess('店舗住所にコピーしました');
+            });
 
-  document.getElementById("confirmBack").addEventListener("click", ()=>{
-    confirmPage.style.display = "none";
-    confirmPage.setAttribute("aria-hidden","true");
-  });
+            // フォームリセット関数（オプション）
+            function resetForm() {
+                document.getElementById('confirm1').checked = true;
+                document.getElementById('confirm2').checked = false;
+                document.getElementById('confirm3').checked = false;
+                postalInput.value = '1000001';
+                updateStreetFromPostal('1000001');
+                detailInput.value = '1-1 大手町ビル 5F';
+                shopInput.value = '東京都中央区日本橋2-3-4';
+                companyInput.value = '東京都港区赤坂9-7-1';
+                document.getElementById('recipientEmail').value = '';
+                qtyInputs[0].value = 1;
+                qtyInputs[1].value = 0;
+                qtyInputs[2].value = 1;
+                qtyInputs[3].value = 12;
+                computeAll();
+            }
 
-  /***************
-   * SEND to GAS (JSONP方式 - 这个版本能正常工作)
-   ***************/
-  const sendBtn = document.getElementById("sendBtn");
-
-  sendBtn.addEventListener("click", function() {
-    sendBtn.disabled = true;
-    sendBtn.textContent = "送信中…";
-
-    try {
-      const payload = buildPayload();
-      console.log("发送数据:", payload);
-      
-      const callbackName = "jsonp_callback_" + Date.now();
-      
-      window[callbackName] = function(response) {
-        try {
-          console.log("收到响应:", response);
-          
-          const script = document.getElementById(callbackName);
-          if (script) script.remove();
-          
-          if (response && response.ok === true) {
-            alert("送信完了致しました。ご申請ありがとうございます。");
-            confirmPage.style.display = "none";
-            confirmPage.setAttribute("aria-hidden", "true");
-          } else {
-            throw new Error(response?.error || "送信に失敗しました");
-          }
-        } catch (err) {
-          alert("送信に失敗しました。\n" + err.message);
-        } finally {
-          delete window[callbackName];
-          sendBtn.disabled = false;
-          sendBtn.textContent = "送信";
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = callbackName;
-      
-      const params = new URLSearchParams();
-      params.append('callback', callbackName);
-      
-      Object.keys(payload).forEach(key => {
-        if (typeof payload[key] === 'object') {
-          params.append(key, JSON.stringify(payload[key]));
-        } else {
-          params.append(key, payload[key] || '');
-        }
-      });
-      
-      script.src = GAS_URL + '?' + params.toString();
-      
-      script.onerror = function() {
-        alert("サーバーに接続できません。ネットワークを確認してください。");
-        delete window[callbackName];
-        document.getElementById(callbackName)?.remove();
-        sendBtn.disabled = false;
-        sendBtn.textContent = "送信";
-      };
-      
-      setTimeout(() => {
-        if (sendBtn.disabled) {
-          delete window[callbackName];
-          document.getElementById(callbackName)?.remove();
-          alert("送信がタイムアウトしました。");
-          sendBtn.disabled = false;
-          sendBtn.textContent = "送信";
-        }
-      }, 10000);
-      
-      document.body.appendChild(script);
-      
-    } catch (err) {
-      console.error("发送错误:", err);
-      alert("送信に失敗しました。\n" + err.message);
-      sendBtn.disabled = false;
-      sendBtn.textContent = "送信";
-    }
-  });
-
-  // 页面加载完成后执行初始化
-  document.addEventListener("DOMContentLoaded", function() {
-    renderDevices();
-    const rp = getRecPlan();
-    recPriceText.textContent = `${rp.plan} ${fmtJPY(rp.priceInc)} (税込)`;
-    calcGrand();
-  });
-</script>
+        })();
+    </script>
 </body>
 </html>
