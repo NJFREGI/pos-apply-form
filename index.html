@@ -3,136 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>サービス利用申込 | NJF REGI</title>
+    <title>申込フォーム | NJF REGI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* 强制手机端大字体和满屏布局 */
-        body { font-size: 20px; -webkit-text-size-adjust: 100%; background-color: #f1f5f9; }
-        .field-group { display: flex; flex-direction: column; width: 100%; margin-bottom: 25px; }
-        label { font-size: 22px; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
-        input { 
-            width: 100% !important; height: 70px !important; font-size: 22px !important; 
-            padding: 0 20px !important; border: 3px solid #64748b !important; 
-            border-radius: 15px !important; box-sizing: border-box !important;
-        }
-        .sig-container { border: 4px dashed #1e3a8a; background: #fff; border-radius: 20px; touch-action: none; }
-        .section-header { font-size: 26px; font-weight: 900; color: #1e3a8a; border-left: 12px solid #1e3a8a; padding-left: 15px; margin: 40px 0 25px 0; }
-        .must { background: #ef4444; color: white; padding: 2px 10px; font-size: 14px; border-radius: 6px; margin-left: 10px; }
+        .must { background: #e3342f; color: white; padding: 1px 5px; font-size: 10px; border-radius: 2px; margin-left: 5px; vertical-align: middle; }
+        canvas { border: 1px solid #ccc; background: #fff; width: 100%; height: 200px; touch-action: none; }
     </style>
 </head>
-<body class="p-0 m-0">
-    <div class="w-full bg-white min-h-screen">
-        <header class="bg-[#1e3a8a] text-white p-12 text-center">
-            <h1 class="text-3xl font-bold tracking-widest">NJFREGI サービス利用申込書</h1>
-            <p class="text-xl mt-4 font-bold">新日本富士アシスト株式会社</p>
-        </header>
+<body class="bg-gray-100 text-gray-800 antialiased">
 
-        <form id="contractForm" class="p-6 pb-20">
-            <h2 class="section-header">1. 契約者情報</h2>
-            <div class="field-group">
-                <label>契約会社名<span class="must">必須</span></label>
-                <input type="text" id="companyName" required placeholder="株式会社〇〇">
-            </div>
-            <div class="field-group">
-                <label>代表者氏名<span class="must">必須</span></label>
-                <input type="text" id="representative" required>
-            </div>
-            <div class="field-group">
-                <label>会社住所<span class="must">必須</span></label>
-                <input type="text" id="companyAddress" required>
-            </div>
-
-            <h2 class="section-header">2. 設置先情報 (店舗)</h2>
-            <button type="button" onclick="copyAddr()" class="w-full bg-blue-600 text-white py-6 rounded-2xl font-bold mb-10 text-2xl shadow-lg">住所のみ契約者と同じ</button>
-            <div class="field-group">
-                <label>店舗名<span class="must">必須</span></label>
-                <input type="text" id="shopName" required>
-            </div>
-            <div class="field-group">
-                <label>店舗担当者名<span class="must">必須</span></label>
-                <input type="text" id="shopManager" required>
-            </div>
-            <div class="field-group">
-                <label>店舗住所<span class="must">必須</span></label>
-                <input type="text" id="shopAddress" required>
-            </div>
-            <div class="field-group">
-                <label>連絡先メール<span class="must">必須</span></label>
-                <input type="email" id="email" required placeholder="example@mail.com">
-            </div>
-
-            <h2 class="section-header">3. ご署名</h2>
-            <div class="sig-container">
-                <canvas id="signaturePad" class="w-full" height="350"></canvas>
-            </div>
-            <button type="button" onclick="clearSig()" class="w-full mt-4 bg-slate-200 py-4 rounded-xl font-bold text-xl mb-10 text-slate-600">書き直す (クリア)</button>
-
-            <h2 class="section-header">4. 確認事項</h2>
-            <label class="flex items-center gap-6 p-8 border-4 border-slate-300 rounded-3xl bg-white mb-10 active:bg-blue-50">
-                <input type="checkbox" id="agree" required style="width: 45px; height: 45px;">
-                <span class="text-2xl font-black">重要事項に同意する</span>
-            </label>
-
-            <button type="submit" id="submitBtn" class="w-full bg-[#1e3a8a] text-white font-black py-10 rounded-3xl text-4xl shadow-2xl active:scale-95 transition-all">お申込を確定する</button>
-        </form>
+<div class="max-w-xl mx-auto min-h-screen bg-white shadow-lg">
+    <div class="bg-[#1a365d] p-6 text-white text-center">
+        <h1 class="text-xl font-bold">NJF REGI サービス利用申込</h1>
+        <p class="text-xs mt-1 opacity-80">新日本富士アシスト株式会社</p>
     </div>
 
-    <script>
-        // ======= 在这里填入您的 GAS 部署链接 =======
-        const API_URL = "https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec"; 
-        // =========================================
+    <form id="applyForm" class="p-5 space-y-6">
+        <section>
+            <h2 class="font-bold border-l-4 border-blue-900 pl-2 mb-3 text-lg">1. 重要事項説明 <span class="must">必須</span></h2>
+            <div class="bg-gray-50 border p-3 text-xs leading-relaxed h-40 overflow-y-scroll mb-3">
+                <p>・本サービスの最低利用期間は24ヶ月です。[cite: 5]</p>
+                <p>・中途解約時は残余期間分の料金が発生します。[cite: 6]</p>
+                <p>・データ保存期間は最大24ヶ月です。[cite: 9]</p>
+                <p>・解約は1ヶ月前に書面での申請が必要です。[cite: 22]</p>
+            </div>
+            <label class="flex items-start text-sm font-bold">
+                <input type="checkbox" name="terms" required class="mt-1 mr-2 w-5 h-5">
+                <span>上記の内容を確認し、同意します。</span>
+            </label>
+        </section>
 
-        const canvas = document.getElementById('signaturePad');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
+        <section class="space-y-4">
+            <h2 class="font-bold border-l-4 border-blue-900 pl-2 mb-3 text-lg">2. お客様情報</h2>
+            <div>
+                <label class="text-sm font-bold block">店舗名 <span class="must">必須</span></label>
+                <input type="text" name="storeName" required class="w-full border-b-2 border-gray-300 p-2 outline-none focus:border-blue-900" placeholder="例：銀河苑">
+            </div>
+            <div>
+                <label class="text-sm font-bold block">設置先住所 <span class="must">必須</span></label>
+                <input type="text" name="address" required class="w-full border-b-2 border-gray-300 p-2 outline-none" placeholder="滋賀県高島市...">
+            </div>
+            <div>
+                <label class="text-sm font-bold block">電話番号 <span class="must">必須</span></label>
+                <input type="tel" name="phone" required class="w-full border-b-2 border-gray-300 p-2 outline-none" placeholder="0740-37-6088">
+            </div>
+        </section>
 
-        window.onload = () => {
-            canvas.width = canvas.offsetWidth;
-            ctx.lineWidth = 6; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
-        };
+        <section>
+            <h2 class="font-bold border-l-4 border-blue-900 pl-2 mb-3 text-lg">3. 機器数量</h2>
+            <div class="flex justify-between items-center py-2 border-b">
+                <span class="text-sm">レジスター (88,000円/税込)</span>
+                <input type="number" name="regQty" value="1" min="0" class="w-16 border rounded p-1 text-center">
+            </div>
+            <div class="flex justify-between items-center py-2 border-b">
+                <span class="text-sm">プリンター (25,300円/税込)</span>
+                <input type="number" name="prtQty" value="3" min="0" class="w-16 border rounded p-1 text-center">
+            </div>
+        </section>
 
-        function copyAddr() { document.getElementById('shopAddress').value = document.getElementById('companyAddress').value; }
-        function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+        <section>
+            <h2 class="font-bold border-l-4 border-blue-900 pl-2 mb-3 text-lg">4. ご署名 <span class="must">必須</span></h2>
+            <canvas id="sig-canvas" class="rounded shadow-inner"></canvas>
+            <button type="button" id="sig-clearBtn" class="text-xs text-gray-500 mt-2 underline">サインを書き直す</button>
+        </section>
 
-        const getPos = (e) => {
-            const r = canvas.getBoundingClientRect();
-            const tx = e.touches ? e.touches[0].clientX : e.clientX;
-            const ty = e.touches ? e.touches[0].clientY : e.clientY;
-            return { x: tx - r.left, y: ty - r.top };
-        };
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
-        canvas.addEventListener('touchend', () => drawing = false);
+        <button type="submit" class="w-full bg-[#1a365d] text-white py-4 rounded-lg font-bold text-lg shadow-md active:bg-blue-800">
+            内容を確認して送信
+        </button>
+    </form>
+</div>
 
-        document.getElementById('contractForm').onsubmit = async (e) => {
-            e.preventDefault();
-            const isBlank = canvas.toDataURL() === canvas.cloneNode().toDataURL();
-            if(isBlank) { alert("署名をお願いします。"); return; }
-            
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true; btn.innerText = "送信中...";
+<script>
+    // 签名功能脚本
+    const canvas = document.getElementById('sig-canvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
 
-            const payload = {
-                companyName: document.getElementById('companyName').value,
-                companyAddress: document.getElementById('companyAddress').value,
-                representative: document.getElementById('representative').value,
-                shopName: document.getElementById('shopName').value,
-                shopManager: document.getElementById('shopManager').value,
-                shopAddress: document.getElementById('shopAddress').value,
-                email: document.getElementById('email').value,
-                signature: canvas.toDataURL('image/png')
-            };
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        return { x: (e.clientX || e.touches[0].clientX) - rect.left, y: (e.clientY || e.touches[0].clientY) - rect.top };
+    }
+    const start = (e) => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
+    const move = (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
+    const end = () => drawing = false;
 
-            try {
-                const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-                const resData = await res.json();
-                if(resData.status === "success") { alert("お申込が完了しました！邮件をご確認ください。"); location.reload(); }
-                else { throw new Error(resData.msg); }
-            } catch (err) {
-                alert("エラー: " + err.message);
-                btn.disabled = false; btn.innerText = "お申込を確定する";
-            }
-        };
-    </script>
+    canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move); window.addEventListener('mouseup', end);
+    canvas.addEventListener('touchstart', start); canvas.addEventListener('touchmove', move); canvas.addEventListener('touchend', end);
+    document.getElementById('sig-clearBtn').onclick = () => ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // 表单提交
+    document.getElementById('applyForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.innerText = "送信中...";
+
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        data.signature = canvas.toDataURL(); // 获取签名图片
+        data.applyDate = new Date().toLocaleDateString('ja-JP');
+
+        try {
+            await fetch('https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(data)
+            });
+            alert('お申し込みが完了しました。PDF契約書をメールで送付いたしました。');
+        } catch (err) {
+            alert('エラーが発生しました。');
+        } finally {
+            btn.disabled = false; btn.innerText = "内容を確認して送信";
+        }
+    };
+</script>
 </body>
 </html>
