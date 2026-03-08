@@ -5,121 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>サービス利用申込 | NJF REGI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
     <style>
-        /* 强制手机端显示大字体 */
-        body { font-size: 20px; -webkit-text-size-adjust: 100%; }
-        /* 每一个填入项单独做成1行 */
-        .field-box { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-bottom: 24px; }
-        label { font-size: 20px; font-weight: bold; color: #1e293b; }
+        /* 强制手机端大字体和满屏布局 */
+        body { font-size: 20px; -webkit-text-size-adjust: 100%; background-color: #f1f5f9; }
+        .field-group { display: flex; flex-direction: column; width: 100%; margin-bottom: 25px; }
+        label { font-size: 22px; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
         input { 
-            width: 100% !important; 
-            font-size: 20px !important; 
-            padding: 18px !important; 
-            border: 2px solid #94a3b8 !important; 
-            border-radius: 12px !important;
-            box-sizing: border-box;
+            width: 100% !important; height: 70px !important; font-size: 22px !important; 
+            padding: 0 20px !important; border: 3px solid #64748b !important; 
+            border-radius: 15px !important; box-sizing: border-box !important;
         }
-        /* 签名栏样式 */
-        .sig-wrapper { border: 3px dashed #cbd5e1; background: #fafafa; border-radius: 16px; touch-action: none; position: relative; }
-        #signaturePad { background: #fff; border-radius: 16px; }
-        .must { background: #ff4d4f; color: #fff; padding: 2px 8px; font-size: 14px; border-radius: 4px; margin-left: 8px; }
+        .sig-container { border: 4px dashed #1e3a8a; background: #fff; border-radius: 20px; touch-action: none; }
+        .section-header { font-size: 26px; font-weight: 900; color: #1e3a8a; border-left: 12px solid #1e3a8a; padding-left: 15px; margin: 40px 0 25px 0; }
+        .must { background: #ef4444; color: white; padding: 2px 10px; font-size: 14px; border-radius: 6px; margin-left: 10px; }
     </style>
 </head>
-<body class="bg-slate-50">
-    <div class="w-full bg-white shadow-none">
+<body class="p-0 m-0">
+    <div class="w-full bg-white min-h-screen">
         <header class="bg-[#1e3a8a] text-white p-12 text-center">
-            <h1 class="text-2xl font-bold">NJF REGI サービス利用申込</h1>
-            <p class="text-xl mt-3 font-medium">新日本富士アシスト株式会社</p>
+            <h1 class="text-3xl font-bold tracking-widest">NJF REGI サービス利用申込</h1>
+            <p class="text-xl mt-4 font-bold">新日本富士アシスト株式会社</p>
         </header>
 
-        <form id="contractForm" class="p-6">
-            <section class="mb-10">
-                <h2 class="text-2xl font-black border-l-8 border-[#1e3a8a] pl-4 mb-8 text-[#1e3a8a]">1. 契約者情報 (契約会社)</h2>
-                
-                <div class="field-box h-adr">
-                    <span class="p-country-name" style="display:none;">Japan</span>
-                    <label>契約会社名<span class="must">必須</span></label>
-                    <input type="text" id="companyName" required placeholder="例：株式会社〇〇">
-                </div>
-                
-                <div class="field-box">
-                    <label>郵便番号</label>
-                    <input type="text" id="companyZip" class="p-postal-code" placeholder="1234567">
-                </div>
+        <form id="contractForm" class="p-6 pb-20">
+            <h2 class="section-header">1. 契約者情報</h2>
+            <div class="field-group">
+                <label>契約会社名<span class="must">必須</span></label>
+                <input type="text" id="companyName" required placeholder="株式会社〇〇">
+            </div>
+            <div class="field-group">
+                <label>代表者氏名<span class="must">必須</span></label>
+                <input type="text" id="representative" required>
+            </div>
+            <div class="field-group">
+                <label>会社住所<span class="must">必須</span></label>
+                <input type="text" id="companyAddress" required>
+            </div>
 
-                <div class="field-box">
-                    <label>住所<span class="must">必須</span></label>
-                    <input type="text" id="companyAddress" required class="p-region p-locality p-street-address">
-                </div>
+            <h2 class="section-header">2. 設置先情報 (店舗)</h2>
+            <button type="button" onclick="copyAddr()" class="w-full bg-blue-600 text-white py-6 rounded-2xl font-bold mb-10 text-2xl shadow-lg">住所のみ契約者と同じ</button>
+            <div class="field-group">
+                <label>店舗名<span class="must">必須</span></label>
+                <input type="text" id="shopName" required>
+            </div>
+            <div class="field-group">
+                <label>店舗担当者名<span class="must">必須</span></label>
+                <input type="text" id="shopManager" required>
+            </div>
+            <div class="field-group">
+                <label>店舗住所<span class="must">必須</span></label>
+                <input type="text" id="shopAddress" required>
+            </div>
+            <div class="field-group">
+                <label>連絡先メール<span class="must">必須</span></label>
+                <input type="email" id="email" required placeholder="example@mail.com">
+            </div>
 
-                <div class="field-box">
-                    <label>代表者氏名<span class="must">必須</span></label>
-                    <input type="text" id="representative" required>
-                </div>
-            </section>
+            <h2 class="section-header">3. ご署名</h2>
+            <div class="sig-container">
+                <canvas id="signaturePad" class="w-full" height="350"></canvas>
+            </div>
+            <button type="button" onclick="clearSig()" class="w-full mt-4 bg-slate-200 py-4 rounded-xl font-bold text-xl mb-10 text-slate-600">書き直す (クリア)</button>
 
-            <section class="mb-10 pt-10 border-t-4 border-slate-200">
-                <h2 class="text-2xl font-black border-l-8 border-[#1e3a8a] pl-4 mb-4 text-[#1e3a8a]">2. 設置先情報 (店舗)</h2>
-                <button type="button" onclick="copyAddr()" class="w-full bg-blue-100 text-blue-800 py-5 rounded-2xl font-bold mb-8 text-xl">住所のみ契約者と同じ</button>
-                
-                <div class="field-box">
-                    <label>店舗名<span class="must">必須</span></label>
-                    <input type="text" id="shopName" required>
-                </div>
+            <h2 class="section-header">4. 確認事項</h2>
+            <label class="flex items-center gap-6 p-8 border-4 border-slate-300 rounded-3xl bg-white mb-10 active:bg-blue-50">
+                <input type="checkbox" id="agree" required style="width: 45px; height: 45px;">
+                <span class="text-2xl font-black">重要事項に同意する</span>
+            </label>
 
-                <div class="field-box">
-                    <label>店舗担当者名<span class="must">必須</span></label>
-                    <input type="text" id="shopManager" required>
-                </div>
-
-                <div class="field-box">
-                    <label>店舗住所<span class="must">必須</span></label>
-                    <input type="text" id="shopAddress" required>
-                </div>
-
-                <div class="field-box">
-                    <label>連絡先メール<span class="must">必須</span></label>
-                    <input type="email" id="email" required placeholder="PDF送付用">
-                </div>
-            </section>
-
-            <section class="mb-10 pt-10 border-t-4 border-slate-200">
-                <h2 class="text-2xl font-black border-l-8 border-[#1e3a8a] pl-4 mb-8 text-[#1e3a8a]">3. 設置機器の数量</h2>
-                <div id="product-list" class="space-y-6 mb-8"></div>
-                <div class="bg-slate-900 text-white p-10 rounded-3xl text-center shadow-xl">
-                    <p class="text-lg opacity-70">初期費用 合計 (税込)</p>
-                    <p id="total-display" class="text-6xl font-black text-yellow-400">￥0</p>
-                </div>
-            </section>
-
-            <section class="mb-10 pt-10 border-t-4 border-slate-200">
-                <h2 class="text-2xl font-black border-l-8 border-[#1e3a8a] pl-4 mb-8 text-[#1e3a8a]">4. 確認事項</h2>
-                <div class="bg-slate-100 p-6 rounded-2xl mb-6 text-lg">
-                    <p>・契約期間は2年間、以降自動更新。</p>
-                    <p>・期間内解約は残月分料金が発生します。</p>
-                </div>
-                <label class="flex items-center gap-6 p-6 border-4 rounded-3xl bg-white">
-                    <input type="checkbox" id="agree" required class="w-10 h-10">
-                    <span class="font-bold text-xl">重要事項に同意する</span>
-                </label>
-            </section>
-
-            <section class="mb-10 pt-10 border-t-4 border-slate-200">
-                <h2 class="text-2xl font-black border-l-8 border-[#1e3a8a] pl-4 mb-8 text-[#1e3a8a]">5. ご署名</h2>
-                <div class="sig-wrapper">
-                    <canvas id="signaturePad" class="w-full" height="350"></canvas>
-                    <button type="button" onclick="clearSig()" class="absolute top-4 right-4 bg-white border-2 px-6 py-2 rounded-xl font-bold shadow-lg">クリア</button>
-                </div>
-            </section>
-
-            <button type="submit" id="submitBtn" class="w-full bg-[#1e3a8a] text-white font-black py-8 rounded-3xl shadow-2xl text-3xl">お申込を確定する</button>
+            <button type="submit" id="submitBtn" class="w-full bg-[#1e3a8a] text-white font-black py-10 rounded-3xl text-4xl shadow-2xl active:scale-95 transition-all">お申込を確定する</button>
         </form>
     </div>
 
     <script>
-        let productData = [];
-        const API_URL = "https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec"; // <--- 请务必填入！
+        // ======= 在这里填入您的 GAS 部署链接 =======
+        const API_URL = "https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec"; 
+        // =========================================
 
         const canvas = document.getElementById('signaturePad');
         const ctx = canvas.getContext('2d');
@@ -127,42 +88,11 @@
 
         window.onload = () => {
             canvas.width = canvas.offsetWidth;
-            ctx.lineWidth = 5; ctx.strokeStyle = '#000';
-            fetch(API_URL).then(res => res.json()).then(data => {
-                productData = data;
-                const list = document.getElementById('product-list');
-                data.forEach((p, i) => {
-                    list.innerHTML += `
-                        <div class="flex flex-col gap-4 p-6 bg-white border-2 rounded-2xl">
-                            <span class="font-bold text-xl">${p.name}</span>
-                            <div class="flex justify-between items-center h-20 border-2 rounded-2xl overflow-hidden">
-                                <button type="button" onclick="changeQty(${i},-1)" class="w-24 bg-slate-100 text-3xl">-</button>
-                                <input type="number" value="0" id="qty-${i}" class="qty-input w-24 text-center font-bold text-2xl h-full border-none" readonly>
-                                <button type="button" onclick="changeQty(${i},1)" class="w-24 bg-slate-100 text-3xl">+</button>
-                            </div>
-                        </div>`;
-                });
-            });
+            ctx.lineWidth = 6; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#000';
         };
 
-        function changeQty(idx, d) {
-            const el = document.getElementById(`qty-${idx}`);
-            let v = parseInt(el.value) + d;
-            el.value = v < 0 ? 0 : v;
-            calc();
-        }
-
-        function calc() {
-            let total = 0;
-            document.querySelectorAll('.qty-input').forEach((input, i) => {
-                total += input.value * productData[i].price * 1.1;
-            });
-            document.getElementById('total-display').innerText = "￥" + Math.floor(total).toLocaleString();
-        }
-
-        function copyAddr() {
-            document.getElementById('shopAddress').value = document.getElementById('companyAddress').value;
-        }
+        function copyAddr() { document.getElementById('shopAddress').value = document.getElementById('companyAddress').value; }
+        function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
         const getPos = (e) => {
             const r = canvas.getBoundingClientRect();
@@ -173,10 +103,15 @@
         canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
         canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
         canvas.addEventListener('touchend', () => drawing = false);
-        function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
         document.getElementById('contractForm').onsubmit = async (e) => {
             e.preventDefault();
+            const isBlank = canvas.toDataURL() === canvas.cloneNode().toDataURL();
+            if(isBlank) { alert("署名をお願いします。"); return; }
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerText = "送信中...";
+
             const payload = {
                 companyName: document.getElementById('companyName').value,
                 companyAddress: document.getElementById('companyAddress').value,
@@ -185,10 +120,18 @@
                 shopManager: document.getElementById('shopManager').value,
                 shopAddress: document.getElementById('shopAddress').value,
                 email: document.getElementById('email').value,
-                total: document.getElementById('total-display').innerText,
-                signature: canvas.toDataURL()
+                signature: canvas.toDataURL('image/png')
             };
-            // ... (此处省略fetch发送代码)
+
+            try {
+                const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+                const resData = await res.json();
+                if(resData.status === "success") { alert("お申込が完了しました！邮件をご確認ください。"); location.reload(); }
+                else { throw new Error(resData.msg); }
+            } catch (err) {
+                alert("エラー: " + err.message);
+                btn.disabled = false; btn.innerText = "お申込を確定する";
+            }
         };
     </script>
 </body>
