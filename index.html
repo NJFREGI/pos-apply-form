@@ -7,104 +7,113 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
     <style>
-        /* 针对手机端的大字体优化 */
-        body { font-size: 18px; }
-        input, select { font-size: 18px !important; border-width: 2px !important; }
-        .label-text { font-size: 19px; font-weight: bold; color: #1e293b; margin-bottom: 6px; display: block; }
-        .must { background: #ff4d4f; color: white; padding: 2px 6px; font-size: 12px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
-        .signature-pad { border: 2px dashed #94a3b8; background: #f8fafc; touch-action: none; border-radius: 12px; }
-        .section-title { font-size: 22px; font-weight: 800; border-left: 8px solid #1e3a8a; padding-left: 12px; color: #1e3a8a; }
+        /* 1. 字体全局放大 */
+        body { font-size: 19px; line-height: 1.6; }
+        /* 2. 强制所有输入项单独成行 */
+        .input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+        input { 
+            width: 100% !important; 
+            font-size: 20px !important; 
+            padding: 16px !important; 
+            border: 2px solid #cbd5e1 !important; 
+            border-radius: 12px !important;
+            box-sizing: border-box; 
+        }
+        /* 3. 标签大字体 */
+        .label-text { font-size: 20px; font-weight: bold; color: #1e293b; }
+        .must { background: #ff4d4f; color: white; padding: 2px 8px; font-size: 14px; border-radius: 4px; margin-left: 8px; }
+        /* 4. 签名板强化 */
+        .signature-container { border: 3px dashed #94a3b8; background: #f8fafc; border-radius: 16px; overflow: hidden; touch-action: none; }
+        #signaturePad { background: #ffffff; cursor: crosshair; }
+        .section-title { font-size: 24px; font-weight: 800; border-left: 10px solid #1e3a8a; padding-left: 15px; color: #1e3a8a; }
     </style>
 </head>
 <body class="bg-slate-100">
-    <div class="w-full mx-auto bg-white min-h-screen h-adr">
-        <span class="p-country-name" style="display:none;">Japan</span>
-
+    <div class="w-full bg-white min-h-screen">
         <header class="bg-[#1e3a8a] text-white p-10 text-center">
             <h1 class="text-2xl font-bold tracking-widest">NJF REGI サービス利用申込</h1>
             <p class="text-lg opacity-90 mt-2">新日本富士アシスト株式会社</p>
         </header>
 
-        <form id="contractForm" class="p-6 space-y-12">
+        <form id="contractForm" class="p-5 space-y-10">
             <section class="space-y-6">
-                <h2 class="section-title">1. 契約者情報 (契約会社)</h2>
-                <div>
+                <h2 class="section-title">1. 契約者情報</h2>
+                <div class="input-group">
                     <label class="label-text">契約会社名<span class="must">必須</span></label>
-                    <input type="text" id="companyName" required class="w-full rounded-xl p-5 outline-none focus:border-[#1e3a8a] border-slate-300" placeholder="会社名をご入力ください">
+                    <input type="text" id="companyName" required placeholder="例：新日本富士アシスト株式会社">
                 </div>
-                <div>
+                <div class="input-group">
                     <label class="label-text">郵便番号</label>
-                    <input type="text" id="companyZip" class="p-postal-code w-full border-2 rounded-xl p-5 outline-none" placeholder="1234567">
+                    <input type="text" id="companyZip" class="p-postal-code" placeholder="1234567">
                 </div>
-                <div>
+                <div class="input-group">
                     <label class="label-text">会社住所<span class="must">必須</span></label>
-                    <input type="text" id="companyAddress" required class="p-region p-locality p-street-address w-full border-2 rounded-xl p-5 outline-none" placeholder="住所をご入力ください">
+                    <input type="text" id="companyAddress" required class="p-region p-locality p-street-address" placeholder="東京都...">
                 </div>
-                <div>
+                <div class="input-group">
                     <label class="label-text">代表者氏名<span class="must">必須</span></label>
-                    <input type="text" id="representative" required class="w-full border-2 rounded-xl p-5 outline-none" placeholder="山田 太郎">
+                    <input type="text" id="representative" required placeholder="山田 太郎">
                 </div>
             </section>
 
-            <section class="space-y-6 pt-8 border-t-2">
-                <div class="flex flex-col gap-3">
-                    <h2 class="section-title">2. 設置先情報 (店舗)</h2>
-                    <button type="button" onclick="copyAddressOnly()" class="w-full bg-blue-50 text-blue-700 py-4 rounded-xl border-2 border-blue-200 font-bold text-lg">住所のみ契約者と同じ</button>
-                </div>
-                <div>
+            <section class="space-y-6 pt-10 border-t-4 border-slate-100">
+                <h2 class="section-title">2. 設置先情報</h2>
+                <button type="button" onclick="copyAddressOnly()" class="w-full bg-blue-50 text-blue-700 py-5 rounded-2xl border-2 border-blue-200 font-bold text-xl">住所のみ契約者と同じ</button>
+                
+                <div class="input-group">
                     <label class="label-text">店舗名<span class="must">必須</span></label>
-                    <input type="text" id="shopName" required class="w-full border-2 rounded-xl p-5 outline-none" placeholder="店舗名をご入力ください">
+                    <input type="text" id="shopName" required placeholder="例：NJFレストラン">
                 </div>
-                <div>
+                <div class="input-group">
                     <label class="label-text">店舗担当者名<span class="must">必須</span></label>
-                    <input type="text" id="shopManager" required class="w-full border-2 rounded-xl p-5 outline-none" placeholder="例：佐藤 一郎">
+                    <input type="text" id="shopManager" required placeholder="例：佐藤 一郎">
                 </div>
-                <div>
+                <div class="input-group">
                     <label class="label-text">店舗住所<span class="must">必須</span></label>
-                    <input type="text" id="shopAddress" required class="w-full border-2 rounded-xl p-5 outline-none" placeholder="店舗の住所">
+                    <input type="text" id="shopAddress" required placeholder="店舗の住所をご入力ください">
                 </div>
-                <div>
+                <div class="input-group">
                     <label class="label-text">連絡先メールアドレス<span class="must">必須</span></label>
-                    <input type="email" id="email" required class="w-full border-2 rounded-xl p-5 outline-none" placeholder="example@mail.com">
+                    <input type="email" id="email" required placeholder="example@mail.com">
                 </div>
             </section>
 
-            <section class="space-y-6 pt-8 border-t-2">
+            <section class="space-y-6 pt-10 border-t-4 border-slate-100">
                 <h2 class="section-title">3. 設置機器の数量</h2>
-                <div id="product-list" class="space-y-4"></div>
-                <div class="bg-[#0f172a] text-white p-10 rounded-3xl text-center shadow-xl">
-                    <p class="text-sm opacity-60 mb-2">初期費用 合計 (税込)</p>
-                    <p id="total-display" class="text-5xl font-black text-yellow-400">￥0</p>
+                <div id="product-list" class="space-y-5"></div>
+                <div class="bg-[#0f172a] text-white p-10 rounded-3xl text-center shadow-2xl">
+                    <p class="text-base opacity-70 mb-2 font-bold">初期費用 合計 (税込)</p>
+                    <p id="total-display" class="text-6xl font-black text-yellow-400">￥0</p>
                 </div>
             </section>
 
-            <section class="space-y-6 pt-8 border-t-2">
+            <section class="space-y-6 pt-10 border-t-4 border-slate-100">
                 <h2 class="section-title">4. 確認事項</h2>
-                <div class="bg-slate-50 p-6 rounded-2xl border-2 text-sm leading-relaxed text-slate-600">
+                <div class="bg-slate-50 p-6 rounded-2xl border-2 text-base text-slate-600 leading-relaxed">
                     <p>・契約期間は2年間です。満了後は自動更新となります。</p>
                     <p>・24ヶ月以内の解約は残余期間分の料金が発生します。</p>
                 </div>
-                <label class="flex items-center gap-4 p-4 border-2 rounded-2xl bg-white active:bg-slate-50">
-                    <input type="checkbox" id="agree" required class="w-8 h-8 accent-[#1e3a8a]">
-                    <span class="text-lg font-bold">重要事項に同意する</span>
+                <label class="flex items-center gap-5 p-6 border-4 rounded-3xl bg-white active:bg-slate-100 transition-colors">
+                    <input type="checkbox" id="agree" required class="w-10 h-10 accent-[#1e3a8a]">
+                    <span class="text-xl font-black text-slate-800">重要事項に同意する</span>
                 </label>
             </section>
 
-            <section class="space-y-6 pt-8 border-t-2">
+            <section class="space-y-6 pt-10 border-t-4 border-slate-100">
                 <h2 class="section-title">5. ご署名</h2>
-                <div class="relative">
-                    <canvas id="signaturePad" class="signature-pad w-full" height="250"></canvas>
-                    <button type="button" onclick="clearSig()" class="absolute top-4 right-4 bg-white border-2 px-6 py-2 rounded-xl font-bold shadow-md">クリア</button>
+                <div class="signature-container relative">
+                    <canvas id="signaturePad" class="w-full" height="300"></canvas>
+                    <button type="button" onclick="clearSig()" class="absolute top-4 right-4 bg-white border-2 border-slate-300 px-6 py-2 rounded-xl font-bold shadow-lg text-lg">クリア</button>
                 </div>
             </section>
 
-            <button type="submit" id="submitBtn" class="w-full bg-[#1e3a8a] text-white font-black py-7 rounded-3xl shadow-2xl active:scale-95 transition-all text-2xl">お申込を確定する</button>
+            <button type="submit" id="submitBtn" class="w-full bg-[#1e3a8a] text-white font-black py-8 rounded-3xl shadow-2xl active:scale-95 transition-all text-3xl">お申込を確定する</button>
         </form>
     </div>
 
     <script>
         let productData = [];
-        const API_URL = "https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec"; // <--- 记得替换这里
+        const API_URL = "https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec"; // <--- 必须修改这里！
 
         const canvas = document.getElementById('signaturePad');
         const ctx = canvas.getContext('2d');
@@ -112,7 +121,7 @@
 
         window.onload = () => {
             canvas.width = canvas.offsetWidth;
-            ctx.lineWidth = 4; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#0f172a';
+            ctx.lineWidth = 5; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = '#000000';
             fetchData();
         };
 
@@ -123,12 +132,12 @@
                 list.innerHTML = '';
                 data.forEach((p, i) => {
                     list.innerHTML += `
-                        <div class="flex items-center justify-between p-6 bg-slate-50 rounded-2xl border-2">
-                            <span class="font-bold text-lg">${p.name}</span>
-                            <div class="flex items-center border-2 bg-white rounded-xl overflow-hidden">
-                                <button type="button" onclick="changeQty(${i},-1)" class="px-5 py-3 bg-slate-100 font-black text-xl">-</button>
-                                <input type="number" value="0" id="qty-${i}" data-index="${i}" class="qty-input w-16 text-center font-bold text-xl" readonly>
-                                <button type="button" onclick="changeQty(${i},1)" class="px-5 py-3 bg-slate-100 font-black text-xl">+</button>
+                        <div class="flex flex-col gap-4 p-6 bg-slate-50 rounded-2xl border-2">
+                            <span class="font-bold text-xl text-slate-800">${p.name}</span>
+                            <div class="flex items-center justify-between bg-white border-2 rounded-2xl overflow-hidden h-16">
+                                <button type="button" onclick="changeQty(${i},-1)" class="w-20 h-full bg-slate-100 font-black text-3xl">-</button>
+                                <input type="number" value="0" id="qty-${i}" data-index="${i}" class="qty-input w-20 text-center font-bold text-2xl h-full" readonly>
+                                <button type="button" onclick="changeQty(${i},1)" class="w-20 h-full bg-slate-100 font-black text-3xl">+</button>
                             </div>
                         </div>`;
                 });
@@ -155,17 +164,19 @@
             document.getElementById('total-display').innerText = "￥" + Math.floor(total).toLocaleString();
         }
 
+        // 签名逻辑：适配手机触屏
         const getPos = (e) => {
             const r = canvas.getBoundingClientRect();
             const tx = e.touches ? e.touches[0].clientX : e.clientX;
             const ty = e.touches ? e.touches[0].clientY : e.clientY;
             return { x: tx - r.left, y: ty - r.top };
         };
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+        canvas.addEventListener('touchend', () => drawing = false);
         canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
         canvas.addEventListener('mousemove', (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
         canvas.addEventListener('mouseup', () => drawing = false);
-        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
-        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
         function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
 
         document.getElementById('contractForm').onsubmit = async (e) => {
