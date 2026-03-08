@@ -2,865 +2,228 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>申請レジシステム | GAS版</title>
-    <!-- スタイルシート -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>サービス利用申込 | NJF REGI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://yubinbango.github.io/yubinbango/yubinbango.js" charset="UTF-8"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: 'Helvetica Neue', 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-            background-color: #f8f9fa;
-            padding: 16px 12px;
-            color: #1e2a3a;
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
-            padding: 24px 16px;
-        }
-
-        h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            letter-spacing: 0.02em;
-            border-left: 6px solid #c0392b;
-            padding-left: 14px;
-            margin-bottom: 22px;
-            color: #2c3e50;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            background: #ecf0f1;
-            padding: 8px 14px;
-            border-radius: 30px;
-            margin: 24px 0 16px 0;
-            color: #2c3e50;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .check-group {
-            background-color: #fef9e7;
-            border: 1px solid #f1c40f;
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 8px;
-        }
-
-        .check-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 8px 0;
-        }
-
-        .check-item input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            accent-color: #e67e22;
-        }
-
-        .required-badge {
-            background-color: #e74c3c;
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 30px;
-            margin-left: 8px;
-        }
-
-        .form-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .field label {
-            font-weight: 600;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        input, select {
-            padding: 14px 16px;
-            border: 1.5px solid #d5dbdb;
-            border-radius: 16px;
-            font-size: 1rem;
-            background-color: white;
-            transition: 0.15s;
-            font-family: inherit;
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #e67e22;
-            box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.2);
-        }
-
-        .row-2col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .postal-group {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .postal-group input {
-            flex: 1;
-        }
-
-        .auto-generate-btn {
-            background-color: #e67e22;
-            color: white;
-            border: none;
-            padding: 14px 20px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            white-space: nowrap;
-            box-shadow: 0 4px 6px rgba(230, 126, 34, 0.3);
-            transition: all 0.2s;
-        }
-
-        .auto-generate-btn:active {
-            background-color: #b85e0e;
-            transform: scale(0.97);
-        }
-
-        .street-address {
-            background-color: #e9eef2;
-            border-radius: 16px;
-            padding: 14px 16px;
-            font-size: 1rem;
-            color: #2c3e50;
-            word-break: break-all;
-            border: 1px dashed #7f8c8d;
-            min-height: 60px;
-        }
-
-        .same-button {
-            background-color: #34495e;
-            color: white;
-            border: none;
-            border-radius: 40px;
-            padding: 12px 24px;
-            font-weight: 600;
-            letter-spacing: 0.03em;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            align-self: flex-start;
-            font-size: 0.95rem;
-            margin: 5px 0;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .same-button:active {
-            background-color: #1e2b37;
-            transform: scale(0.97);
-        }
-
-        .order-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        }
-
-        .order-table th {
-            background-color: #f39c12;
-            color: white;
-            font-weight: 600;
-            padding: 12px 4px;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .order-table td {
-            padding: 12px 4px;
-            text-align: center;
-            border-bottom: 1px solid #e3e7ea;
-        }
-
-        .order-table input[type="number"] {
-            width: 70px;
-            padding: 10px 6px;
-            text-align: center;
-            border-radius: 30px;
-            border: 1px solid #bdc3c7;
-            margin: 0 auto;
-        }
-
-        .order-table input[type="number"]:focus {
-            outline: 2px solid #f39c12;
-            border-color: transparent;
-        }
-
-        .unit-price {
-            font-weight: 700;
-            color: #27ae60;
-        }
-
-        .total-row {
-            background-color: #fef5e7;
-            font-weight: 700;
-        }
-
-        .total-row td {
-            border-bottom: none;
-            padding: 16px 4px;
-            font-size: 1.1rem;
-        }
-
-        .info-note {
-            background-color: #e8f0fe;
-            border-radius: 16px;
-            padding: 12px;
-            font-size: 0.9rem;
-            color: #2c3e50;
-            margin: 20px 0 5px;
-            border-left: 5px solid #3498db;
-        }
-
-        .email-section {
-            background-color: #f1f9f0;
-            border-radius: 18px;
-            padding: 18px;
-            margin: 24px 0 12px;
-            border: 1px solid #2ecc71;
-        }
-
-        .email-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .email-field label {
-            font-weight: 700;
-            color: #27ae60;
-        }
-
-        .email-field input {
-            background-color: #f9fff9;
-        }
-
-        .button-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .export-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: #3498db;
-            color: white;
-            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
-        }
-
-        .export-btn:active {
-            background-color: #1f618d;
-            transform: scale(0.98);
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            background-color: #27ae60;
-            color: white;
-            box-shadow: 0 10px 20px rgba(39, 174, 96, 0.3);
-        }
-
-        .submit-btn:active {
-            background-color: #1e8449;
-            transform: scale(0.98);
-        }
-
-        .submit-btn:disabled {
-            background-color: #95a5a6;
-            box-shadow: none;
-            cursor: not-allowed;
-        }
-
-        hr {
-            border: 1px solid #eee;
-            margin: 24px 0 8px;
-        }
-
-        .small-note {
-            font-size: 0.85rem;
-            color: #7f8c8d;
-            margin-top: 4px;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: #e67e22;
-            font-weight: 600;
-            background-color: #fff3e0;
-            border-radius: 40px;
-            margin: 10px 0;
-        }
-
-        .loading.show {
-            display: block;
-        }
-
-        .success-message {
-            background-color: #d4edda;
-            color: #155724;
-            padding: 16px;
-            border-radius: 40px;
-            text-align: center;
-            margin: 10px 0;
-            display: none;
-        }
-
-        .success-message.show {
-            display: block;
-        }
-
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 16px;
-            border-radius: 40px;
-            text-align: center;
-            margin: 10px 0;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .postal-hint {
-            font-size: 0.8rem;
-            color: #7f8c8d;
-            margin-top: 4px;
-        }
+        .must { background: #ff4d4f; color: white; padding: 2px 4px; font-size: 10px; border-radius: 2px; margin-left: 4px; }
+        .signature-pad { border: 2px dashed #cbd5e1; background: #fafafa; touch-action: none; border-radius: 12px; cursor: crosshair; }
+        input { font-size: 16px !important; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h2>📋 申請レジシステム<br><span style="font-size:0.9rem;">(GAS自動送信版)</span></h2>
+<body class="bg-slate-200">
+    <div class="max-w-xl mx-auto min-h-screen bg-white shadow-2xl h-adr">
+        <span class="p-country-name" style="display:none;">Japan</span>
 
-        <!-- 1. 上記事項確認 -->
-        <div class="section-title"><span>✅ 1. 上記事項確認</span></div>
-        <div class="check-group">
-            <div class="check-item">
-                <input type="checkbox" id="confirm1" checked>
-                <label for="confirm1" class="label-text">利用規約および個人情報の取り扱いに同意する <span class="required-badge">必須</span></label>
-            </div>
-            <div class="check-item">
-                <input type="checkbox" id="confirm2">
-                <label for="confirm2" class="label-text">申請内容が事実であることを確認しました</label>
-            </div>
-            <div class="check-item">
-                <input type="checkbox" id="confirm3">
-                <label for="confirm3" class="label-text">本人確認書類のアップロードが完了</label>
-            </div>
-        </div>
+        <header class="bg-[#1e3a8a] text-white p-10 text-center">
+            <h1 class="text-2xl font-bold tracking-widest">NJF REGI サービス利用申込</h1>
+            <p class="text-sm opacity-70 mt-3">新日本富士アシスト株式会社</p>
+        </header>
 
-        <!-- 2. 住所情報 -->
-        <div class="section-title"><span>🏠 2. 住所情報</span></div>
-        <div class="form-grid">
-            <div class="field">
-                <label>〒 郵便番号 (ハイフンなし)</label>
-                <div class="postal-group">
-                    <input type="text" id="postal" placeholder="1000001" maxlength="7" inputmode="numeric" value="1000001">
-                    <button class="auto-generate-btn" id="genAddressBtn">住所生成</button>
+        <form id="contractForm" class="p-6 space-y-8">
+            <section class="space-y-4">
+                <h2 class="font-bold border-l-4 border-[#1e3a8a] pl-2 text-lg">1. 契約者情報 (契約会社)</h2>
+                <input type="text" id="companyName" required class="w-full border-b-2 p-3 outline-none focus:border-[#1e3a8a]" placeholder="契約会社名（必须）">
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="text" id="companyZip" class="p-postal-code border-b-2 p-3 outline-none" placeholder="郵便番号">
+                    <input type="text" id="companyAddress" required class="p-region p-locality p-street-address col-span-2 border-b-2 p-3 outline-none" placeholder="会社住所">
                 </div>
-                <div class="postal-hint">例: 1000001 → 東京都千代田区</div>
-            </div>
-
-            <div class="field">
-                <label>街区住所 (自動生成)</label>
-                <div class="street-address" id="generatedStreet">東京都千代田区千代田</div>
-                <div class="small-note">※ダブルクリックで店舗住所にコピー</div>
-            </div>
-
-            <div class="field">
-                <label>詳細番地・マンション名・号室 (手入力)</label>
-                <input type="text" id="detailAddress" placeholder="1-1 皇居内 / ○○ビル 3F" value="1-1 大手町ビル 5F">
-            </div>
-
-            <div class="row-2col" style="margin-top: 10px;">
-                <div class="field">
-                    <label>🏢 契約店舗住所</label>
-                    <input type="text" id="shopAddress" placeholder="店舗住所を入力" value="東京都中央区日本橋2-3-4">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="tel" id="companyTel" required class="border-b-2 p-3 outline-none" placeholder="電話番号">
+                    <input type="text" id="representative" required class="border-b-2 p-3 outline-none" placeholder="代表者氏名">
                 </div>
-                <div class="field">
-                    <label>🏭 会社住所</label>
-                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
-                        <input type="text" id="companyAddress" placeholder="会社住所" value="東京都港区赤坂9-7-1" style="flex:2;">
-                        <button class="same-button" id="sameAsShopBtn">同上</button>
+            </section>
+
+            <section class="space-y-4 pt-4 border-t">
+                <div class="flex justify-between items-center">
+                    <h2 class="font-bold border-l-4 border-[#1e3a8a] pl-2 text-lg">2. 設置先情報 (店舗)</h2>
+                    <button type="button" onclick="copyInfo()" class="text-[10px] bg-blue-50 text-blue-700 px-3 py-1 rounded-full border border-blue-200">契約者と同じ (同上)</button>
+                </div>
+                <input type="text" id="shopName" required class="w-full border-b-2 p-3 outline-none" placeholder="店舗名">
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="text" id="shopZip" class="border-b-2 p-3 outline-none" placeholder="郵便番号">
+                    <input type="text" id="shopAddress" required class="col-span-2 border-b-2 p-3 outline-none" placeholder="店舗住所">
+                </div>
+                <input type="tel" id="shopTel" required class="w-full border-b-2 p-3 outline-none" placeholder="店舗電話番号">
+                <input type="email" id="email" required class="w-full border-b-2 p-3 outline-none" placeholder="連絡先メールアドレス">
+            </section>
+
+            <section class="space-y-4 pt-4 border-t">
+                <h2 class="font-bold border-l-4 border-[#1e3a8a] pl-2 text-lg">3. 設置機器の数量</h2>
+                <div id="product-list" class="space-y-3"></div>
+                
+                <div class="bg-blue-50 p-4 rounded-xl space-y-4">
+                    <p class="text-xs font-bold text-blue-800">基本利用料 (必須選択)</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="flex flex-col items-center p-3 bg-white border-2 rounded-xl cursor-pointer has-[:checked]:border-[#1e3a8a]">
+                            <input type="radio" name="basePlan" value="monthly" checked class="hidden" onchange="calc()">
+                            <span class="text-[10px] text-slate-500">月額プラン</span><span class="font-bold text-lg">￥8,000</span>
+                        </label>
+                        <label class="flex flex-col items-center p-3 bg-white border-2 rounded-xl cursor-pointer has-[:checked]:border-[#1e3a8a]">
+                            <input type="radio" name="basePlan" value="yearly" class="hidden" onchange="calc()">
+                            <span class="text-[10px] text-slate-500">年額プラン</span><span class="font-bold text-lg">￥80,000</span>
+                        </label>
                     </div>
+                    <label class="flex items-center justify-between p-3 bg-white border-2 rounded-xl cursor-pointer">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="qrOption" class="w-5 h-5 mr-3 accent-[#1e3a8a]" onchange="calc()">
+                            <div><span class="font-bold text-sm">QR注文サービス</span><p id="qrPriceHint" class="text-[10px] text-slate-400">月額 +￥4,000</p></div>
+                        </div>
+                        <div id="qrActivePrice" class="font-bold text-blue-900">￥0</div>
+                    </label>
                 </div>
-            </div>
-        </div>
 
-        <!-- 3. 商品/サービス -->
-        <div class="section-title"><span>🛒 3. デバイス＆サービス</span></div>
-        <div class="info-note">⚡ 単価は固定。数量を変更すると自動合計</div>
-        <table class="order-table" id="orderTable">
-            <thead>
-                <tr>
-                    <th>商品/サービス</th>
-                    <th>単価(円)</th>
-                    <th>数量</th>
-                    <th>小計(円)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>POSレジ端末 Pro</td>
-                    <td class="unit-price" data-price="59800">59,800</td>
-                    <td><input type="number" min="0" value="1" class="item-qty" id="qty1"></td>
-                    <td class="item-subtotal" id="subtotal1">59,800</td>
-                </tr>
-                <tr>
-                    <td>バーコードスキャナ</td>
-                    <td class="unit-price" data-price="12800">12,800</td>
-                    <td><input type="number" min="0" value="0" class="item-qty" id="qty2"></td>
-                    <td class="item-subtotal" id="subtotal2">0</td>
-                </tr>
-                <tr>
-                    <td>レシートプリンター</td>
-                    <td class="unit-price" data-price="19800">19,800</td>
-                    <td><input type="number" min="0" value="1" class="item-qty" id="qty3"></td>
-                    <td class="item-subtotal" id="subtotal3">19,800</td>
-                </tr>
-                <tr>
-                    <td>クラウド基本利用料(月)</td>
-                    <td class="unit-price" data-price="3000">3,000</td>
-                    <td><input type="number" min="0" value="12" class="item-qty" id="qty4"></td>
-                    <td class="item-subtotal" id="subtotal4">36,000</td>
-                </tr>
-                <tr class="total-row">
-                    <td colspan="3" style="text-align:right;">合計金額 (税抜):</td>
-                    <td id="grandTotal">115,600</td>
-                </tr>
-            </tbody>
-        </table>
+                <div class="bg-[#0f172a] text-white p-6 rounded-2xl text-center shadow-lg">
+                    <p class="text-xs opacity-60 mb-1">初期費用 総計 (10%税込)</p>
+                    <p id="total-display" class="text-4xl font-bold">￥0</p>
+                </div>
+            </section>
 
-        <!-- 4. メール送信先 -->
-        <div class="email-section">
-            <div class="email-field">
-                <label>📧 liu922506@gmail.com <span class="required-badge">必須</span></label>
-                <input type="email" id="recipientEmail" placeholder="yourname@gmail.com" value="" required>
-                <div class="small-note">※ このアドレスにCSV/TXTファイルが添付されて届きます</div>
-            </div>
-        </div>
+            <section class="space-y-3 pt-4 border-t">
+                <h2 class="font-bold border-l-4 border-[#1e3a8a] pl-2 text-lg">4. ご署名</h2>
+                <div class="relative">
+                    <canvas id="signaturePad" class="signature-pad w-full" height="200"></canvas>
+                    <button type="button" onclick="clearSig()" class="absolute top-2 right-2 text-[10px] bg-white border px-3 py-1 rounded shadow-sm">クリア</button>
+                </div>
+            </section>
 
-        <!-- 5. ステータス表示 -->
-        <div id="loading" class="loading">
-            <span>⏳ 送信中... しばらくお待ちください</span>
-        </div>
-        <div id="successMessage" class="success-message">
-            <span>✅ メールを送信しました！</span>
-        </div>
-        <div id="errorMessage" class="error-message">
-            <span>❌ エラーが発生しました</span>
-        </div>
-
-        <!-- 6. ボタン群 -->
-        <div class="button-group">
-            <button class="export-btn" id="generateCsvBtn">📥 CSVファイルを生成</button>
-            <button class="export-btn" id="generateTxtBtn">📥 テキストファイルを生成</button>
-            <button class="submit-btn" id="sendToGASBtn">📧 GASでメール送信</button>
-        </div>
-
-        <hr>
-        <div class="small-note" style="text-align:center;">
-            GASが自動でファイルを添付して送信します<br>
-            ※CSVはExcelで、TXTはメモ帳で開けます
-        </div>
+            <button type="submit" id="submitBtn" class="w-full bg-[#1e3a8a] text-white font-bold py-5 rounded-2xl shadow-xl active:scale-95 transition-all text-xl">お申込を確定する</button>
+        </form>
     </div>
 
     <script>
-        (function() {
-            "use strict";
+        let productData = [];
+        const API_URL = "https://script.google.com/macros/s/AKfycbwIP-XgdD0fqd4Zhe3tsN7iAWXoIuiEs_7jVBEH6ZXGmESG_4qxNde8k0hrgwAKscz56w/exec"; // <--- 这里填 exec 结尾的链接
 
-            // ---------- 郵便番号データベース ----------
-            const postalMock = {
-                '1000001': '東京都千代田区千代田',
-                '1000002': '東京都千代田区皇居外苑',
-                '1000003': '東京都千代田区一ツ橋',
-                '1600022': '東京都新宿区新宿',
-                '1600023': '東京都新宿区西新宿',
-                '5300001': '大阪府大阪市北区梅田',
-                '5300002': '大阪府大阪市北区曾根崎',
-                '5400001': '大阪府大阪市中央区城見',
-                '8100001': '福岡県福岡市中央区天神',
-                '8100002': '福岡県福岡市中央区西中洲',
-                '4600001': '愛知県名古屋市中区三の丸',
-                '4600002': '愛知県名古屋市中区丸の内',
-                '0600001': '北海道札幌市中央区北一条西',
-                '0600002': '北海道札幌市中央区北二条西',
-                '9800001': '宮城県仙台市青葉区中江',
-                '9800002': '宮城県仙台市青葉区通町'
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        let drawing = false;
+
+        window.onload = () => {
+            canvas.width = canvas.offsetWidth;
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+            ctx.strokeStyle = '#0f172a';
+            fetchData();
+        };
+
+        function fetchData() {
+            fetch(API_URL).then(res => res.json()).then(data => {
+                productData = data;
+                const list = document.getElementById('product-list');
+                list.innerHTML = '';
+                data.forEach((p, i) => {
+                    if(p.name.includes("利用料") || p.name.includes("QR")) return;
+                    list.innerHTML += `
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl">
+                            <span class="font-bold text-sm">${p.name}</span>
+                            <div class="flex items-center border bg-white rounded-lg">
+                                <button type="button" onclick="changeQty(${i},-1)" class="px-3 py-1 border-r">-</button>
+                                <input type="number" value="0" id="qty-${i}" data-index="${i}" class="qty-input w-10 text-center font-bold" readonly>
+                                <button type="button" onclick="changeQty(${i},1)" class="px-3 py-1 border-l">+</button>
+                            </div>
+                        </div>`;
+                });
+                calc();
+            });
+        }
+
+        function changeQty(idx, d) {
+            const el = document.getElementById(`qty-${idx}`);
+            let v = parseInt(el.value) + d;
+            el.value = v < 0 ? 0 : v;
+            calc();
+        }
+
+        function copyInfo() {
+            document.getElementById('shopName').value = document.getElementById('companyName').value;
+            document.getElementById('shopZip').value = document.getElementById('companyZip').value;
+            document.getElementById('shopAddress').value = document.getElementById('companyAddress').value;
+            document.getElementById('shopTel').value = document.getElementById('companyTel').value;
+        }
+
+        function calc() {
+            let total = 0;
+            const isYearly = document.querySelector('input[name="basePlan"]:checked').value === 'yearly';
+            document.querySelectorAll('.qty-input').forEach(input => {
+                total += input.value * productData[input.dataset.index].price * 1.1;
+            });
+            const base = isYearly ? 80000 : 8000;
+            const qr = isYearly ? 40000 : 4000;
+            total += base * 1.1;
+            document.getElementById('qrPriceHint').innerText = isYearly ? "年額 +￥40,000" : "月額 +￥4,000";
+            if(document.getElementById('qrOption').checked) {
+                total += qr * 1.1;
+                document.getElementById('qrActivePrice').innerText = "￥"+(qr*1.1).toLocaleString();
+            } else {
+                document.getElementById('qrActivePrice').innerText = "￥0";
+            }
+            document.getElementById('total-display').innerText = "￥" + Math.floor(total).toLocaleString();
+        }
+
+        // 签名逻辑适配手机
+        const getPos = (e) => {
+            const r = canvas.getBoundingClientRect();
+            const tx = e.touches ? e.touches[0].clientX : e.clientX;
+            const ty = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: tx - r.left, y: ty - r.top };
+        };
+        canvas.addEventListener('mousedown', (e) => { drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
+        canvas.addEventListener('mousemove', (e) => { if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; ctx.beginPath(); const p = getPos(e); ctx.moveTo(p.x, p.y); });
+        canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+        function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+        document.getElementById('contractForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const isBlank = canvas.toDataURL() === canvas.cloneNode().toDataURL();
+            if(isBlank) { alert("署名をお願いします。"); return; }
+            
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerText = "送信中...";
+
+            const items = [];
+            document.querySelectorAll('.qty-input').forEach(input => {
+                if(input.value > 0) {
+                    const p = productData[input.dataset.index];
+                    items.push({ name: p.name, count: input.value, subtotal: input.value * p.price * 1.1 });
+                }
+            });
+            const isYearly = document.querySelector('input[name="basePlan"]:checked').value === 'yearly';
+            items.push({ name: isYearly ? "基本料(年)" : "基本料(月)", count: 1, subtotal: (isYearly?80000:8000)*1.1 });
+            if(document.getElementById('qrOption').checked) {
+                items.push({ name: isYearly ? "QR注文(年)" : "QR注文(月)", count: 1, subtotal: (isYearly?40000:4000)*1.1 });
+            }
+
+            const payload = {
+                companyName: document.getElementById('companyName').value,
+                companyZip: document.getElementById('companyZip').value,
+                companyAddress: document.getElementById('companyAddress').value,
+                companyTel: document.getElementById('companyTel').value,
+                representative: document.getElementById('representative').value,
+                shopName: document.getElementById('shopName').value,
+                shopZip: document.getElementById('shopZip').value,
+                shopAddress: document.getElementById('shopAddress').value,
+                shopTel: document.getElementById('shopTel').value,
+                email: document.getElementById('email').value,
+                items: items,
+                total: document.getElementById('total-display').innerText,
+                signature: canvas.toDataURL('image/png')
             };
-            
-            // 要素取得
-            const postalInput = document.getElementById('postal');
-            const genBtn = document.getElementById('genAddressBtn');
-            const generatedStreetDiv = document.getElementById('generatedStreet');
-            const detailInput = document.getElementById('detailAddress');
-            const shopInput = document.getElementById('shopAddress');
-            const companyInput = document.getElementById('companyAddress');
-            const sameBtn = document.getElementById('sameAsShopBtn');
-            const qtyInputs = document.querySelectorAll('.item-qty');
-            const grandTotalSpan = document.getElementById('grandTotal');
-            const loadingDiv = document.getElementById('loading');
-            const successDiv = document.getElementById('successMessage');
-            const errorDiv = document.getElementById('errorMessage');
-            const sendBtn = document.getElementById('sendToGASBtn');
 
-            // 住所生成関数
-            function updateStreetFromPostal(postal) {
-                const street = postalMock[postal] || '（該当する住所が見つかりません）';
-                generatedStreetDiv.innerText = street;
-                return street;
+            try {
+                const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+                const resData = await res.json();
+                if(resData.status === "success") { alert("送信完了！"); location.reload(); }
+                else { throw new Error(resData.msg); }
+            } catch (err) {
+                alert("エラー: " + err.message);
+                btn.disabled = false; btn.innerText = "お申込を確定する";
             }
-
-            // 初期表示
-            updateStreetFromPostal('1000001');
-
-            // 住所生成ボタン
-            genBtn.addEventListener('click', function() {
-                let postal = postalInput.value.trim().replace(/[^0-9]/g, '');
-                if (postal.length > 7) postal = postal.slice(0,7);
-                if (postal.length < 7) {
-                    alert('郵便番号は7桁で入力してください');
-                    return;
-                }
-                updateStreetFromPostal(postal);
-            });
-
-            // 同上ボタン
-            sameBtn.addEventListener('click', function() {
-                if (shopInput.value.trim() !== '') {
-                    companyInput.value = shopInput.value;
-                } else {
-                    alert('店舗住所が空です');
-                }
-            });
-
-            // 金額計算
-            function computeAll() {
-                let total = 0;
-                qtyInputs.forEach((input) => {
-                    const row = input.closest('tr');
-                    const priceCell = row.querySelector('.unit-price');
-                    const price = parseInt(priceCell.getAttribute('data-price'), 10) || 0;
-                    const qty = parseInt(input.value, 10) || 0;
-                    const subtotal = price * qty;
-                    const subtotalTd = row.querySelector('.item-subtotal');
-                    if (subtotalTd) subtotalTd.innerText = subtotal.toLocaleString();
-                    total += subtotal;
-                });
-                grandTotalSpan.innerText = total.toLocaleString();
-            }
-            
-            qtyInputs.forEach(input => input.addEventListener('input', computeAll));
-            computeAll();
-
-            // データ収集関数
-            function getApplicationData() {
-                const confirm1 = document.getElementById('confirm1').checked;
-                const confirm2 = document.getElementById('confirm2').checked;
-                const confirm3 = document.getElementById('confirm3').checked;
-                
-                const postal = postalInput.value.trim();
-                const streetAuto = generatedStreetDiv.innerText;
-                const detail = detailInput.value.trim();
-                const fullAddress = streetAuto + ' ' + detail;
-                const shopAddr = shopInput.value.trim();
-                const companyAddr = companyInput.value.trim();
-                const email = document.getElementById('recipientEmail').value.trim();
-
-                const items = [];
-                qtyInputs.forEach((input) => {
-                    const row = input.closest('tr');
-                    const name = row.cells[0].innerText;
-                    const priceCell = row.querySelector('.unit-price');
-                    const price = parseInt(priceCell.getAttribute('data-price'), 10) || 0;
-                    const qty = parseInt(input.value, 10) || 0;
-                    const subtotal = price * qty;
-                    items.push({ 
-                        name: name, 
-                        price: price, 
-                        qty: qty, 
-                        subtotal: subtotal 
-                    });
-                });
-                
-                const total = parseInt(grandTotalSpan.innerText.replace(/,/g, ''), 10) || 0;
-
-                return {
-                    email: email,
-                    date: new Date().toLocaleString('ja-JP'),
-                    confirm: { 
-                        confirm1: confirm1, 
-                        confirm2: confirm2, 
-                        confirm3: confirm3 
-                    },
-                    postal: postal,
-                    streetAuto: streetAuto,
-                    detail: detail,
-                    fullAddress: fullAddress,
-                    shopAddr: shopAddr,
-                    companyAddr: companyAddr,
-                    items: items,
-                    total: total
-                };
-            }
-
-            // バリデーション
-            function validateForm(data) {
-                if (!data.confirm.confirm1) {
-                    alert('利用規約への同意は必須です');
-                    return false;
-                }
-                if (!data.email || !data.email.includes('@') || !data.email.includes('.')) {
-                    alert('有効なメールアドレスを入力してください');
-                    return false;
-                }
-                if (!data.postal || data.postal.length !== 7) {
-                    alert('郵便番号を7桁で入力してください');
-                    return false;
-                }
-                if (!data.shopAddr) {
-                    alert('店舗住所を入力してください');
-                    return false;
-                }
-                return true;
-            }
-
-            // メッセージ表示制御
-            function showLoading(show) {
-                loadingDiv.classList.toggle('show', show);
-                sendBtn.disabled = show;
-            }
-
-            function showSuccess(message) {
-                successDiv.querySelector('span').textContent = '✅ ' + message;
-                successDiv.classList.add('show');
-                setTimeout(() => {
-                    successDiv.classList.remove('show');
-                }, 5000);
-            }
-
-            function showError(message) {
-                errorDiv.querySelector('span').textContent = '❌ ' + message;
-                errorDiv.classList.add('show');
-                setTimeout(() => {
-                    errorDiv.classList.remove('show');
-                }, 5000);
-            }
-
-            // CSV生成
-            document.getElementById('generateCsvBtn').addEventListener('click', () => {
-                const data = getApplicationData();
-                
-                // CSVデータ作成
-                const rows = [];
-                rows.push('申請レジシステム データ');
-                rows.push(`生成日時,${data.date}`);
-                rows.push('');
-                rows.push('【確認事項】,');
-                rows.push(`利用規約同意,${data.confirm.confirm1 ? '✓' : ''}`);
-                rows.push(`事実確認,${data.confirm.confirm2 ? '✓' : ''}`);
-                rows.push(`本人確認書類,${data.confirm.confirm3 ? '✓' : ''}`);
-                rows.push('');
-                rows.push('【住所情報】,');
-                rows.push(`郵便番号,${data.postal}`);
-                rows.push(`街区住所,${data.streetAuto}`);
-                rows.push(`詳細住所,${data.detail}`);
-                rows.push(`完全住所,${data.fullAddress}`);
-                rows.push(`契約店舗住所,${data.shopAddr}`);
-                rows.push(`会社住所,${data.companyAddr}`);
-                rows.push('');
-                rows.push('【注文明細】');
-                rows.push('商品名,単価(円),数量,小計(円)');
-                data.items.forEach(item => {
-                    rows.push(`${item.name},${item.price},${item.qty},${item.subtotal}`);
-                });
-                rows.push('');
-                rows.push(`合計金額(税抜),,,${data.total}`);
-                
-                const csv = rows.join('\n');
-                const blob = new Blob([csv], { type: 'text/csv' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `申請データ_${new Date().toISOString().slice(0,10)}.csv`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-                
-                showSuccess('CSVファイルをダウンロードしました');
-            });
-
-            // TXT生成
-            document.getElementById('generateTxtBtn').addEventListener('click', () => {
-                const data = getApplicationData();
-                
-                // テキストデータ作成
-                const lines = [];
-                lines.push('='.repeat(60));
-                lines.push('                申請レジシステム');
-                lines.push('='.repeat(60));
-                lines.push('');
-                lines.push(`生成日時: ${data.date}`);
-                lines.push('');
-                lines.push('【確認事項】');
-                lines.push('-' .repeat(40));
-                lines.push(`利用規約同意: ${data.confirm.confirm1 ? '✓' : '×'}`);
-                lines.push(`事実確認: ${data.confirm.confirm2 ? '✓' : '×'}`);
-                lines.push(`本人確認書類: ${data.confirm.confirm3 ? '✓' : '×'}`);
-                lines.push('');
-                lines.push('【住所情報】');
-                lines.push('-' .repeat(40));
-                lines.push(`郵便番号: ${data.postal}`);
-                lines.push(`街区住所: ${data.streetAuto}`);
-                lines.push(`詳細住所: ${data.detail}`);
-                lines.push(`完全住所: ${data.fullAddress}`);
-                lines.push(`契約店舗住所: ${data.shopAddr}`);
-                lines.push(`会社住所: ${data.companyAddr}`);
-                lines.push('');
-                lines.push('【注文明細】');
-                lines.push('-' .repeat(60));
-                lines.push('商品名'.padEnd(25) + '単価(円)'.padStart(10) + '数量'.padStart(8) + '小計(円)'.padStart(12));
-                lines.push('-' .repeat(60));
-                
-                data.items.forEach(item => {
-                    const name = item.name.padEnd(25, ' ');
-                    const price = item.price.toString().padStart(10, ' ');
-                    const qty = item.qty.toString().padStart(8, ' ');
-                    const subtotal = item.subtotal.toString().padStart(12, ' ');
-                    lines.push(name + price + qty + subtotal);
-                });
-                
-                lines.push('-' .repeat(60));
-                lines.push('合計金額(税抜):'.padEnd(45) + data.total.toString().padStart(12, ' ') + '円');
-                lines.push('');
-                lines.push('='.repeat(60));
-                
-                const text = lines.join('\n');
-                const blob = new Blob([text], { type: 'text/plain' });
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `申請データ_${new Date().toISOString().slice(0,10)}.txt`;
-                a.click();
-                window.URL.revokeObjectURL(url);
-                
-                showSuccess('テキストファイルをダウンロードしました');
-            });
-
-            // GAS送信ボタン
-            document.getElementById('sendToGASBtn').addEventListener('click', () => {
-                const data = getApplicationData();
-                
-                if (!validateForm(data)) {
-                    return;
-                }
-
-                // ローディング表示
-                showLoading(true);
-                
-                // GASの関数を呼び出し
-                google.script.run
-                    .withSuccessHandler((result) => {
-                        showLoading(false);
-                        if (result.success) {
-                            showSuccess('メールを送信しました！');
-                            // フォームを初期状態に戻す（オプション）
-                            // resetForm();
-                        } else {
-                            showError(result.message);
-                        }
-                    })
-                    .withFailureHandler((error) => {
-                        showLoading(false);
-                        showError('通信エラーが発生しました: ' + error);
-                        console.error('GASエラー:', error);
-                    })
-                    .sendApplicationWithAttachments(data);
-            });
-
-            // ダブルクリックで街区住所を店舗住所にコピー
-            generatedStreetDiv.addEventListener('dblclick', function() {
-                const fullAddr = generatedStreetDiv.innerText + ' ' + detailInput.value;
-                shopInput.value = fullAddr.trim();
-                showSuccess('店舗住所にコピーしました');
-            });
-
-            // フォームリセット関数（オプション）
-            function resetForm() {
-                document.getElementById('confirm1').checked = true;
-                document.getElementById('confirm2').checked = false;
-                document.getElementById('confirm3').checked = false;
-                postalInput.value = '1000001';
-                updateStreetFromPostal('1000001');
-                detailInput.value = '1-1 大手町ビル 5F';
-                shopInput.value = '東京都中央区日本橋2-3-4';
-                companyInput.value = '東京都港区赤坂9-7-1';
-                document.getElementById('recipientEmail').value = '';
-                qtyInputs[0].value = 1;
-                qtyInputs[1].value = 0;
-                qtyInputs[2].value = 1;
-                qtyInputs[3].value = 12;
-                computeAll();
-            }
-
-        })();
+        };
     </script>
 </body>
 </html>
