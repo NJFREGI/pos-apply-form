@@ -97,6 +97,10 @@ body {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 60px);
+  z-index: 199;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .step-nav::-webkit-scrollbar { display: none; }
 .step-list {
@@ -1374,7 +1378,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbxp5AjZDxCDxU7FpOL8xhmCDve3LZXrkHme6JgE0tTvehGyu01YurZAgf6AlymLS3nnOA/exec">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1428,7 +1432,7 @@ body {
 // ★★★ 管理者設定（公開前にここを変更してください）★★★
 let config = {
   email: 'info@njfregi.co.jp',       // 受信メールアドレス
-  gasUrl: 'YOUR_GAS_URL_HERE',       // GAS Web App URL
+  gasUrl: 'https://script.google.com/macros/s/AKfycbxp5AjZDxCDxU7FpOL8xhmCDve3LZXrkHme6JgE0tTvehGyu01YurZAgf6AlymLS3nnOA/exec',       // GAS Web App URL
   monthly: 8000,                      // 基本月額（税別）
   yearly: 80000,                      // 基本年額（税別）
   qrMonthly: 4000,                    // QR月額（税別）
