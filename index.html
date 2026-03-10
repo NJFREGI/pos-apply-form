@@ -6,7 +6,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>NJF REGI - サービス申込</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap');
 
@@ -1378,7 +1377,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbwH-zf9cDzBjRw5lMP6bbqwfrqVuMhMiLg32ab3ayRpCzqrrMGdc6lu2wPhyx4hwBx4Qg/exec" style="font-size:11px;">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbxOwmhuOBT1isk7FSnsnsXOWr8EMsZV-p9--2g_pofEqJoUY8o2sSItUmbqBBcOAFZa3g/exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1811,269 +1810,6 @@ function collectData() {
 }
 
 // ═══════════════════════════════════════════
-//  PDF GENERATION (same as desktop)
-// ═══════════════════════════════════════════
-async function generatePDFs(data) {
-  const { jsPDF } = window.jspdf;
-
-  function hline(doc, y, x1, x2, color) {
-    doc.setDrawColor(color || 180);
-    doc.line(x1 || 20, y, x2 || 190, y);
-  }
-
-  // ── PDF1: 申請書 ──
-  const pdf1 = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  pdf1.setFillColor(26, 31, 58);
-  pdf1.rect(0, 0, 210, 22, 'F');
-  pdf1.setTextColor(201, 168, 76);
-  pdf1.setFontSize(16);
-  pdf1.setFont('helvetica', 'bold');
-  pdf1.text('NJF REGI', 14, 13);
-  pdf1.setFontSize(9);
-  pdf1.setFont('helvetica', 'normal');
-  pdf1.setTextColor(255, 255, 255);
-  pdf1.text('Shin Nihon Fuji Assist Co., Ltd.  |  03-6806-0988  |  Reg: T3010801026751', 50, 13);
-
-  pdf1.setTextColor(26, 31, 58);
-  pdf1.setFontSize(14);
-  pdf1.setFont('helvetica', 'bold');
-  pdf1.text('SERVICE APPLICATION FORM', 105, 32, { align: 'center' });
-  pdf1.setFontSize(9);
-  pdf1.setFont('helvetica', 'normal');
-  pdf1.setTextColor(80, 80, 80);
-  pdf1.text(`Customer Code: ${data.custCode}   Date: ${data.dateStr}`, 105, 38, { align: 'center' });
-  hline(pdf1, 41);
-
-  let y = 46;
-  const LH = 7;
-
-  function secHead(doc, t, yy) {
-    doc.setFillColor(26, 31, 58);
-    doc.rect(20, yy, 170, 7, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.text(t, 23, yy + 5);
-    doc.setTextColor(30, 30, 30);
-    doc.setFont('helvetica', 'normal');
-    return yy + 10;
-  }
-  function r2(doc, l, v, yy) {
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text(l + ':', 22, yy);
-    doc.setTextColor(20, 20, 20);
-    doc.setFont('helvetica', 'bold');
-    doc.text(String(v || '-'), 70, yy);
-    doc.setFont('helvetica', 'normal');
-    return yy + LH;
-  }
-
-  y = secHead(pdf1, '1. Contractor / Keiyakusha', y);
-  y = r2(pdf1, 'Company', data.company, y);
-  y = r2(pdf1, 'Furigana', data.companyKana, y);
-  y = r2(pdf1, 'Representative', data.repName, y);
-  y = r2(pdf1, 'Postal Code', data.zip1, y);
-  y = r2(pdf1, 'Address', data.addr1, y);
-  y = r2(pdf1, 'Tel', data.tel, y);
-  y = r2(pdf1, 'Mobile', data.mobile, y);
-  y = r2(pdf1, 'Email', data.email, y);
-  y += 3;
-
-  y = secHead(pdf1, '2. Store / Setchisaki', y);
-  y = r2(pdf1, 'Store Name', data.shopName, y);
-  y = r2(pdf1, 'Industry', data.industry, y);
-  y = r2(pdf1, 'Postal Code', data.zip2, y);
-  y = r2(pdf1, 'Address', data.addr2, y);
-  y = r2(pdf1, 'Tel', data.shopTel, y);
-  y = r2(pdf1, 'Open Date', data.openDate, y);
-  y += 3;
-
-  y = secHead(pdf1, '3. Equipment & Service', y);
-  data.devices.forEach(d => {
-    pdf1.setFontSize(8);
-    pdf1.setTextColor(20, 20, 20);
-    pdf1.text(`${d.name} x${d.qty}`, 22, y);
-    pdf1.text(`JPY ${d.amount.toLocaleString()}`, 175, y, { align: 'right' });
-    y += 6;
-  });
-  pdf1.setFontSize(8);
-  pdf1.text(data.basicLabel, 22, y);
-  pdf1.text(`JPY ${data.basicPrice.toLocaleString()}`, 175, y, { align: 'right' });
-  y += 6;
-  if (data.qrSelected) {
-    pdf1.text(data.qrLabel, 22, y);
-    pdf1.text(`JPY ${data.qrPrice.toLocaleString()}`, 175, y, { align: 'right' });
-    y += 6;
-  }
-  hline(pdf1, y, 120, 190);
-  y += 5;
-  pdf1.setFillColor(26, 31, 58);
-  pdf1.rect(118, y - 2, 72, 10, 'F');
-  pdf1.setTextColor(255, 255, 255);
-  pdf1.setFontSize(9);
-  pdf1.setFont('helvetica', 'bold');
-  pdf1.text('TOTAL (incl. tax):', 121, y + 4);
-  pdf1.setTextColor(201, 168, 76);
-  pdf1.text(`JPY ${data.amounts.total.toLocaleString()}`, 186, y + 5, { align: 'right' });
-  y += 14;
-
-  y = secHead(pdf1, '4. Signature', y);
-  pdf1.setFontSize(8);
-  pdf1.setFont('helvetica', 'normal');
-  pdf1.setTextColor(60, 60, 60);
-  pdf1.text(`Signer: ${data.signatureName}   Role: ${data.signatureRole}`, 22, y);
-  y += 5;
-  try { pdf1.addImage(data.sigDataURL, 'PNG', 22, y, 100, 25); } catch(e) {}
-  y += 28;
-
-  pdf1.setFillColor(26, 31, 58);
-  pdf1.rect(0, 282, 210, 15, 'F');
-  pdf1.setTextColor(201, 168, 76);
-  pdf1.setFontSize(8);
-  pdf1.text('Shin Nihon Fuji Assist Co., Ltd.  |  Tokyo-to Taito-ku Taito 4-31-7-203  |  03-6806-0988', 105, 291, { align: 'center' });
-
-  // ── PDF2: 請求書 ──
-  const pdf2 = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  pdf2.setFillColor(26, 31, 58);
-  pdf2.rect(0, 0, 210, 22, 'F');
-  pdf2.setTextColor(201, 168, 76);
-  pdf2.setFontSize(16);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text('NJF REGI', 14, 13);
-  pdf2.setFontSize(9);
-  pdf2.setFont('helvetica', 'normal');
-  pdf2.setTextColor(255, 255, 255);
-  pdf2.text('Shin Nihon Fuji Assist Co., Ltd.  |  Reg No.: T3010801026751', 50, 13);
-
-  pdf2.setTextColor(26, 31, 58);
-  pdf2.setFontSize(18);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text('INVOICE', 105, 35, { align: 'center' });
-  pdf2.setFontSize(10);
-  pdf2.setFont('helvetica', 'normal');
-  pdf2.setTextColor(80, 80, 80);
-  pdf2.text('Seikyu-sho (Ryoshu-sho)', 105, 42, { align: 'center' });
-  hline(pdf2, 46);
-
-  pdf2.setFontSize(9);
-  pdf2.setTextColor(100, 100, 100);
-  pdf2.text('Bill To:', 20, 54);
-  pdf2.setFontSize(12);
-  pdf2.setTextColor(20, 20, 20);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text(data.shopName + ' Oncyu', 20, 61);
-  pdf2.setFont('helvetica', 'normal');
-  pdf2.setFontSize(9);
-  pdf2.setTextColor(80, 80, 80);
-  pdf2.text(data.company, 20, 67);
-  pdf2.text(data.addr1, 20, 72);
-
-  pdf2.text('Invoice Date:', 140, 54);
-  pdf2.setTextColor(20, 20, 20);
-  pdf2.text(data.dateStr, 170, 54);
-  pdf2.setTextColor(100, 100, 100);
-  pdf2.text('Invoice No.:', 140, 60);
-  pdf2.setTextColor(26, 31, 58);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text(data.custCode, 170, 60);
-  pdf2.setFont('helvetica', 'normal');
-
-  let y2 = 82;
-  pdf2.setFillColor(26, 31, 58);
-  pdf2.rect(20, y2, 170, 8, 'F');
-  pdf2.setTextColor(255, 255, 255);
-  pdf2.setFontSize(8);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text('Description', 23, y2 + 5.5);
-  pdf2.text('Qty', 110, y2 + 5.5);
-  pdf2.text('Unit Price', 125, y2 + 5.5);
-  pdf2.text('Amount', 180, y2 + 5.5, { align: 'right' });
-  y2 += 10;
-
-  pdf2.setFont('helvetica', 'normal');
-  pdf2.setTextColor(20, 20, 20);
-  let sub2 = 0;
-
-  data.devices.forEach(d => {
-    pdf2.setFontSize(9);
-    pdf2.text(d.name, 23, y2);
-    pdf2.text(String(d.qty), 112, y2);
-    pdf2.text(`JPY ${d.price.toLocaleString()}`, 120, y2);
-    pdf2.text(`JPY ${d.amount.toLocaleString()}`, 180, y2, { align: 'right' });
-    pdf2.setDrawColor(220);
-    pdf2.line(20, y2 + 2, 190, y2 + 2);
-    sub2 += d.amount;
-    y2 += 8;
-  });
-
-  pdf2.text(data.basicLabel, 23, y2);
-  pdf2.text('1', 112, y2);
-  pdf2.text(`JPY ${data.basicPrice.toLocaleString()}`, 120, y2);
-  pdf2.text(`JPY ${data.basicPrice.toLocaleString()}`, 180, y2, { align: 'right' });
-  pdf2.setDrawColor(220);
-  pdf2.line(20, y2 + 2, 190, y2 + 2);
-  sub2 += data.basicPrice;
-  y2 += 8;
-
-  if (data.qrSelected) {
-    pdf2.text(data.qrLabel, 23, y2);
-    pdf2.text('1', 112, y2);
-    pdf2.text(`JPY ${data.qrPrice.toLocaleString()}`, 120, y2);
-    pdf2.text(`JPY ${data.qrPrice.toLocaleString()}`, 180, y2, { align: 'right' });
-    pdf2.setDrawColor(220);
-    pdf2.line(20, y2 + 2, 190, y2 + 2);
-    sub2 += data.qrPrice;
-    y2 += 8;
-  }
-
-  y2 += 4; hline(pdf2, y2, 120, 190); y2 += 5;
-  pdf2.setFontSize(9);
-  pdf2.setTextColor(80, 80, 80);
-  pdf2.text('Subtotal:', 120, y2);
-  pdf2.setTextColor(20, 20, 20);
-  pdf2.text(`JPY ${sub2.toLocaleString()}`, 185, y2, { align: 'right' });
-  y2 += 7;
-  const tax2 = Math.floor(sub2 * 0.1);
-  pdf2.setTextColor(80, 80, 80);
-  pdf2.text('Tax 10%:', 120, y2);
-  pdf2.setTextColor(20, 20, 20);
-  pdf2.text(`JPY ${tax2.toLocaleString()}`, 185, y2, { align: 'right' });
-  y2 += 5; hline(pdf2, y2, 120, 190); y2 += 6;
-
-  pdf2.setFillColor(26, 31, 58);
-  pdf2.rect(115, y2 - 2, 75, 12, 'F');
-  pdf2.setTextColor(201, 168, 76);
-  pdf2.setFontSize(10);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text('TOTAL:', 120, y2 + 5);
-  pdf2.setFontSize(12);
-  pdf2.setTextColor(255, 255, 255);
-  pdf2.text(`JPY ${data.amounts.total.toLocaleString()}`, 185, y2 + 7, { align: 'right' });
-  y2 += 18;
-
-  pdf2.setFontSize(9);
-  pdf2.setFillColor(245, 244, 240);
-  pdf2.rect(20, y2, 170, 28, 'F');
-  pdf2.setTextColor(26, 31, 58);
-  pdf2.setFont('helvetica', 'bold');
-  pdf2.text('Bank Transfer / Furikomi', 22, y2 + 7);
-  pdf2.setFont('helvetica', 'normal');
-  pdf2.setTextColor(40, 40, 40);
-  pdf2.text('Bank: Sumitomo Mitsui Banking Corp., Ueno Branch', 22, y2 + 14);
-  pdf2.text('Account: Ordinary  No.: 8690693  SHINNIHONFUJIASIST(K)', 22, y2 + 20);
-  y2 += 34;
-
-  pdf2.setFillColor(26, 31, 58);
-  pdf2.rect(0, 282, 210, 15, 'F');
-  pdf2.setTextColor(201, 168, 76);
-  pdf2.setFontSize(8);
-  pdf2.text('Thank you for your business.  |  Shin Nihon Fuji Assist Co., Ltd.  |  03-6806-0988', 105, 291, { align: 'center' });
-
-  return { pdf1, pdf2 };
-}
-
-// ═══════════════════════════════════════════
 //  SUBMIT
 // ═══════════════════════════════════════════
 function getGasUrl() { return config.gasUrl || ''; }
@@ -2095,10 +1831,8 @@ async function submitForm() {
 
   try {
     const data = collectData();
-    const { pdf1, pdf2 } = await generatePDFs(data);
-    const pdf1B64 = pdf1.output('datauristring').split(',')[1];
-    const pdf2B64 = pdf2.output('datauristring').split(',')[1];
 
+    // 署名画像をbase64で送信（GAS側でPDF生成）
     const payload = {
       dateStr: data.dateStr, custCode: data.custCode,
       company: data.company, companyKana: data.companyKana, repName: data.repName,
@@ -2110,11 +1844,10 @@ async function submitForm() {
       basicPlan: data.basicLabel, basicPrice: data.basicPrice,
       qrSelected: data.qrSelected ? 'あり' : 'なし', qrPrice: data.qrPrice,
       devicesStr: data.devices.map(d => `${d.name}×${d.qty}`).join('、'),
+      devices: data.devices,
       subtotal: data.amounts.subtotal, tax: data.amounts.tax, total: data.amounts.total,
       signatureName: data.signatureName, signatureRole: data.signatureRole,
-      pdf1B64, pdf2B64,
-      pdf1Name: `${data.company}_申請書_${data.dateStr}.pdf`,
-      pdf2Name: `${data.company}_請求書_${data.dateStr}.pdf`,
+      sigDataURL: data.sigDataURL,
       toEmail: config.email,
       subject: `【新規申請】${data.company}`,
     };
