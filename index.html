@@ -1377,7 +1377,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbzi1C2WJYFtYbff3Oit_u4VlTjIWcsZW2PIjdYfqfG-VoiXF2uKAFWKlZp3mMk_nXuOhw/exec" style="font-size:11px;">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbyN_S4heSfbofEh2L6K_f9PY-C7xRNEhzqg1Rla8SaM4Pr4AYqDJYRjz6yiU1up475zrg/exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1678,11 +1678,16 @@ function clearSig() {
 //  NAVIGATION
 // ═══════════════════════════════════════════
 function goPage(n) {
-  document.getElementById(`page${currentPage}`)?.classList.remove('active');
+  document.getElementById('page' + currentPage)?.classList.remove('active');
   currentPage = n;
-  document.getElementById(`page${n}`)?.classList.add('active');
+  document.getElementById('page' + n)?.classList.add('active');
   renderSteps();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 即座にトップへスクロール（smoothだとモバイルで効かない場合あり）
+  setTimeout(function() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, 10);
   if (n === 5) renderConfirmSummary();
 }
 
@@ -1730,7 +1735,7 @@ function validatePage(page) {
     }
   }
 
-  if (!ok) window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (!ok) { window.scrollTo(0, 0); document.body.scrollTop = 0; }
   return ok;
 }
 
