@@ -952,7 +952,7 @@ body {
 
       <div class="field-group" id="fg-rep">
         <div class="field-label">代表者名 <span class="req-badge">必須</span></div>
-        <input type="text" class="field-input" id="repName" placeholder="例：NJF　太郎">
+        <input type="text" class="field-input" id="repName" placeholder="例：NJF 太郎">
         <div class="field-err">代表者名を入力してください</div>
       </div>
 
@@ -1005,7 +1005,7 @@ body {
 
       <div class="field-group">
         <div class="field-label">担当者名</div>
-        <input type="text" class="field-input" id="contactName" placeholder="例：張 倩倩">
+        <input type="text" class="field-input" id="contactName" placeholder="例：NJF 太郎">
       </div>
 
     </div>
@@ -1030,13 +1030,13 @@ body {
 
       <div class="field-group" id="fg-shop">
         <div class="field-label">店舗名 <span class="req-badge">必須</span></div>
-        <input type="text" class="field-input" id="shopName" placeholder="例：上海人家麻辣湯">
+        <input type="text" class="field-input" id="shopName" placeholder="例：NJF酒場">
         <div class="field-err">店舗名を入力してください</div>
       </div>
 
       <div class="field-group">
         <div class="field-label">フリガナ</div>
-        <input type="text" class="field-input" id="shopKana" placeholder="例：シャンハイニンカ マーラータン">
+        <input type="text" class="field-input" id="shopKana" placeholder="例：NJFサカバ">
       </div>
 
       <div class="field-group">
@@ -1093,7 +1093,7 @@ body {
 
       <div class="field-group">
         <div class="field-label">設置責任者名</div>
-        <input type="text" class="field-input" id="shopContact" placeholder="例：張 倩倩">
+        <input type="text" class="field-input" id="shopContact" placeholder="例：NJF 次郎">
       </div>
 
       <div class="field-group">
@@ -1145,7 +1145,10 @@ body {
   <div class="card">
     <div class="card-head">
       <div class="card-head-num" style="background:var(--gold-light)">★</div>
-      <div class="card-head-title">基本サービス料金<span style="font-size:10px;font-weight:400;margin-left:8px;color:rgba(255,255,255,0.6);">（必選）</span></div>
+      <div class="card-head-title">基本サービス料金<span style="font-size:10px;font-weight:400;margin-left:8px;color:rgba(255,255,255,0.6);">（必須）</span></div>
+    </div>
+    <div style="background:rgba(201,168,76,0.1);padding:9px 16px;font-size:11px;color:#8a7340;border-bottom:1px solid rgba(201,168,76,0.25);">
+      ※ サービス料の課金開始日は、翌月1日からとなります。
     </div>
     <div class="card-body">
       <div class="plan-cards" id="planCards">
@@ -1225,7 +1228,7 @@ body {
     <div class="card-body">
       <div class="terms-box">
         <h4>契約期間について</h4>
-        <p>本サービスの契約期間は2年間です。契約期間満了後は、2年毎の自動更新となります。</p>
+        <p>本サービスの契約期間は１年間です。契約期間満了後は、１年毎の自動更新となります。</p>
         <h4>ご利用開始日について</h4>
         <p>ご利用開始日は、本サービス・オプションサービス専用機器の設置（設定含む）が完了した日とさせていただきます。ご利用開始日以降になる場合がございます。</p>
         <h4>中途解約について</h4>
@@ -1359,8 +1362,8 @@ body {
 </div>
 
 <!-- ADMIN FAB -->
-<!-- 管理者FABボタン（本番では非表示）-->
-<button id="adminFab" onclick="openAdmin()" title="管理者設定" style="display:none;">⚙</button>
+<!-- 管理者FABボタン（長押し3秒で表示）-->
+<button id="adminFab" title="管理者設定" style="opacity:0;pointer-events:auto;">⚙</button>
 
 <!-- DRAWER OVERLAY -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeAdmin()"></div>
@@ -1377,7 +1380,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbyN_S4heSfbofEh2L6K_f9PY-C7xRNEhzqg1Rla8SaM4Pr4AYqDJYRjz6yiU1up475zrg/exec" style="font-size:11px;">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbwvswZrw4wtrA1XgrfveOibTDcjU8FYFLY4pLubJaIkcC8L2YmZRoMGGYUhxPc9mtsqKQ/exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1438,10 +1441,8 @@ let config = {
   qrYearly: 40000,                    // QR年額（税別）
   devices: [
     { name: 'レジスター', price: 90000 },
-    { name: 'プリンター', price: 29000 },
-    { name: 'タブレット', price: 35000 },
-    { name: 'キッチンモニター', price: 60000 },
-    { name: 'キャッシュドロア', price: 8000 }
+    { name: 'プリンター', price: 0 },
+    { name: 'キャッシュドロア', price: 0 }
   ]
 };
 // ★★★★★★★★★★★★★★★★★★★★★★★★★★★
@@ -1966,6 +1967,45 @@ function saveAdmin() {
   closeAdmin();
   alert('設定を保存しました。');
 }
+
+// ─── Admin long-press（3秒長押しで管理パネル表示）───
+(function() {
+  var fab = document.getElementById('adminFab');
+  var pressTimer = null;
+  var pressCount = 0;
+
+  function startPress() {
+    pressTimer = setTimeout(function() {
+      fab.style.opacity = '1';
+      fab.style.background = 'var(--gold)';
+      fab.style.color = 'var(--navy-dark)';
+      fab.onclick = openAdmin;
+      pressCount++;
+      // 5回使ったら再び隠す
+      if (pressCount >= 5) {
+        setTimeout(function() {
+          fab.style.opacity = '0';
+          fab.onclick = null;
+          pressCount = 0;
+        }, 30000);
+      }
+    }, 3000);
+  }
+
+  function cancelPress() {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+  }
+
+  fab.addEventListener('mousedown', startPress);
+  fab.addEventListener('touchstart', startPress, { passive: true });
+  fab.addEventListener('mouseup', cancelPress);
+  fab.addEventListener('mouseleave', cancelPress);
+  fab.addEventListener('touchend', cancelPress);
+  fab.addEventListener('touchcancel', cancelPress);
+})();
 
 // ─── Boot ───
 init();
