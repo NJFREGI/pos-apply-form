@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>NJF REGI - サービス申し込み</title>
+<title>NJF REGI - サービス申込</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap');
 
@@ -1380,7 +1380,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbzhbdZRWpN5Crk8tXf93Uy8FACcHNORF-r1OaLkRv9aYf4LmyNyI6OlCyYli7knAzvlzA/exec" style="font-size:11px;">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1457,15 +1457,8 @@ const STEP_LABELS = ['契約者', '店舗', 'サービス', '確認', '署名'];
 
 // ─── Load/Save config ───
 function loadConfig() {
-  try {
-    const s = localStorage.getItem('njfConfig');
-    if (s) {
-      const saved = JSON.parse(s);
-      // gasUrlとemailのみlocalStorageから復元（devicesや料金はコードの設定を優先）
-      if (saved.gasUrl) config.gasUrl = saved.gasUrl;
-      if (saved.email)  config.email  = saved.email;
-    }
-  } catch(e) {}
+  // 古いlocalStorageデータを完全にクリア
+  try { localStorage.clear(); } catch(e) {}
 }
 function saveConfig() {
   try {
@@ -1476,13 +1469,8 @@ function saveConfig() {
   } catch(e) {}
 }
 
-// バージョン管理：古いlocalStorageデータをクリア
-const CONFIG_VERSION = '2';
-if (localStorage.getItem('njfConfigVersion') !== CONFIG_VERSION) {
-  localStorage.removeItem('njfConfig');
-  localStorage.setItem('njfConfigVersion', CONFIG_VERSION);
-}
-loadConfig();
+// localStorageは使用しない（コードの設定を常に優先）
+// loadConfig(); // 無効化
 
 // ═══════════════════════════════════════════
 //  INIT
@@ -1662,50 +1650,104 @@ function copyAddress() {
 function checkAgree() { /* allow free navigation */ }
 
 // ─── Signature ───
-function initSignature() {
-  const canvas = document.getElementById('sigCanvas');
-  const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#1a1f3a';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+var sigCtx = null;
+var sigLastX = 0, sigLastY = 0;
 
-  function getPos(e) {
-    const rect = canvas.getBoundingClientRect();
-    const sx = canvas.width / rect.width;
-    const sy = canvas.height / rect.height;
+function initSignature() {
+  setupSignatureCanvas();
+}
+
+function setupSignatureCanvas() {
+  const canvas = document.getElementById('sigCanvas');
+  if (!canvas) return;
+
+  // canvasのwidthをCSSの実際の表示幅に合わせる（重要！）
+  // これをしないとタッチ座標がずれる
+  const displayW = canvas.offsetWidth || canvas.parentElement.offsetWidth || 700;
+  canvas.width  = displayW;
+  canvas.height = 160;
+
+  sigCtx = canvas.getContext('2d');
+  sigCtx.strokeStyle = '#1a1f3a';
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+  sigHasData = false;
+
+  // 既存のイベントリスナーをクリアするためcanvasを複製して置き換え
+  const newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  const c = document.getElementById('sigCanvas');
+  // 複製後もwidthを同期
+  c.width  = displayW;
+  c.height = 160;
+  sigCtx = c.getContext('2d');
+  sigCtx.strokeStyle = '#1a1f3a';
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+
+  function getXY(e) {
+    const rect = c.getBoundingClientRect();
+    // scaleは常に1になるはず（widthをoffsetWidthに合わせたので）
     const src = e.touches ? e.touches[0] : e;
-    return { x: (src.clientX - rect.left) * sx, y: (src.clientY - rect.top) * sy };
+    return {
+      x: src.clientX - rect.left,
+      y: src.clientY - rect.top
+    };
   }
-  canvas.addEventListener('mousedown', e => { sigPainting = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
-  canvas.addEventListener('mousemove', e => { if (!sigPainting) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); sigHasData = true; });
-  canvas.addEventListener('mouseup', () => sigPainting = false);
-  canvas.addEventListener('mouseleave', () => sigPainting = false);
-  canvas.addEventListener('touchstart', e => { e.preventDefault(); sigPainting = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
-  canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!sigPainting) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); sigHasData = true; }, { passive: false });
-  canvas.addEventListener('touchend', () => sigPainting = false);
+
+  c.addEventListener('mousedown', function(e) {
+    sigPainting = true;
+    const p = getXY(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    sigLastX = p.x; sigLastY = p.y;
+  });
+  c.addEventListener('mousemove', function(e) {
+    if (!sigPainting) return;
+    const p = getXY(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+    sigLastX = p.x; sigLastY = p.y;
+    sigHasData = true;
+  });
+  c.addEventListener('mouseup',    function() { sigPainting = false; });
+  c.addEventListener('mouseleave', function() { sigPainting = false; });
+
+  c.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    sigPainting = true;
+    const p = getXY(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    sigLastX = p.x; sigLastY = p.y;
+  }, { passive: false });
+
+  c.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (!sigPainting) return;
+    const p = getXY(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+    sigLastX = p.x; sigLastY = p.y;
+    sigHasData = true;
+  }, { passive: false });
+
+  c.addEventListener('touchend',   function() { sigPainting = false; });
+  c.addEventListener('touchcancel',function() { sigPainting = false; });
 }
 
 function clearSig() {
   const canvas = document.getElementById('sigCanvas');
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  if (canvas && sigCtx) {
+    sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+  }
   sigHasData = false;
 }
 
 function reinitSignature() {
-  const canvas = document.getElementById('sigCanvas');
-  const rect = canvas.getBoundingClientRect();
-  if (rect.width > 0) {
-    // canvasサイズをCSSサイズに合わせてリセット（scaleは使わない）
-    canvas.width  = Math.floor(rect.width);
-    canvas.height = Math.floor(rect.height);
-    const ctx = canvas.getContext('2d');
-    ctx.strokeStyle = '#1a1f3a';
-    ctx.lineWidth = 2.5;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    sigHasData = false;
-  }
+  setupSignatureCanvas();
 }
 
 // ═══════════════════════════════════════════
@@ -1848,7 +1890,7 @@ function collectData() {
     amounts,
     signatureName: document.getElementById('signatureName').value,
     signatureRole: document.getElementById('signatureRole').value,
-    sigDataURL:   document.getElementById('sigCanvas').toDataURL('image/png'),
+    sigDataURL:   (document.getElementById('sigCanvas') || {}).toDataURL ? document.getElementById('sigCanvas').toDataURL('image/png') : '',
     toEmail:      config.email,
     subject:      `【新規申請】${document.getElementById('company').value}`,
   };
