@@ -947,7 +947,7 @@ body {
 
       <div class="field-group">
         <div class="field-label">フリガナ</div>
-        <input type="text" class="field-input" id="companyKana" placeholder="例：NJFカブシキガイシャ">
+        <input type="text" class="field-input" id="companyKana" placeholder="例：エヌジェイエフレジカブシキガイシャ">
       </div>
 
       <div class="field-group" id="fg-rep">
@@ -1036,7 +1036,7 @@ body {
 
       <div class="field-group">
         <div class="field-label">フリガナ</div>
-        <input type="text" class="field-input" id="shopKana" placeholder="例：NJFサカバ">
+        <input type="text" class="field-input" id="shopKana" placeholder="例：エヌジェイエフサカバ">
       </div>
 
       <div class="field-group">
@@ -1093,7 +1093,7 @@ body {
 
       <div class="field-group">
         <div class="field-label">設置責任者名</div>
-        <input type="text" class="field-input" id="shopContact" placeholder="例：NJF 次郎">
+        <input type="text" class="field-input" id="shopContact" placeholder="例：NJF 太郎">
       </div>
 
       <div class="field-group">
@@ -1145,7 +1145,7 @@ body {
   <div class="card">
     <div class="card-head">
       <div class="card-head-num" style="background:var(--gold-light)">★</div>
-      <div class="card-head-title">基本サービス料金<span style="font-size:10px;font-weight:400;margin-left:8px;color:rgba(255,255,255,0.6);">（必須）</span></div>
+      <div class="card-head-title">基本サービス料金<span style="font-size:10px;font-weight:400;margin-left:8px;color:rgba(255,255,255,0.6);">（必選）</span></div>
     </div>
     <div style="background:rgba(201,168,76,0.1);padding:9px 16px;font-size:11px;color:#8a7340;border-bottom:1px solid rgba(201,168,76,0.25);">
       ※ サービス料の課金開始日は、翌月1日からとなります。
@@ -1228,7 +1228,7 @@ body {
     <div class="card-body">
       <div class="terms-box">
         <h4>契約期間について</h4>
-        <p>本サービスの契約期間は１年間です。契約期間満了後は、１年毎の自動更新となります。</p>
+        <p>本サービスの契約期間は2年間です。契約期間満了後は、2年毎の自動更新となります。</p>
         <h4>ご利用開始日について</h4>
         <p>ご利用開始日は、本サービス・オプションサービス専用機器の設置（設定含む）が完了した日とさせていただきます。ご利用開始日以降になる場合がございます。</p>
         <h4>中途解約について</h4>
@@ -1307,7 +1307,7 @@ body {
 
       <div class="field-group" id="fg-signame">
         <div class="field-label">署名者名 <span class="req-badge">必須</span></div>
-        <input type="text" class="field-input" id="signatureName" placeholder="例：NJF　太郎">
+        <input type="text" class="field-input" id="signatureName" placeholder="例：NJF 太郎">
         <div class="field-err">署名者名を入力してください</div>
       </div>
 
@@ -1380,7 +1380,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbwvswZrw4wtrA1XgrfveOibTDcjU8FYFLY4pLubJaIkcC8L2YmZRoMGGYUhxPc9mtsqKQ/exec" style="font-size:11px;">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1441,9 +1441,7 @@ let config = {
   qrYearly: 40000,                    // QR年額（税別）
   devices: [
     { name: 'レジスター', price: 90000 },
-    { name: 'プリンター', price: 29000 },
-    { name: 'タブレット', price: 35000 },
-    { name: 'キッチンモニター', price: 60000 },
+    { name: 'プリンター', price: 0 },
     { name: 'キャッシュドロア', price: 0 }
   ]
 };
@@ -1634,15 +1632,11 @@ function searchZip(zipId, prefId, cityId, townId) {
 
 // ─── Copy address ───
 function copyAddress() {
-  ['zip','addr_pref','addr_city','addr_town'].forEach(key => {
-    const from = document.getElementById(key.replace('addr', 'addr1').replace('zip', 'zip1'));
-    const to   = document.getElementById(key.replace('addr', 'addr2').replace('zip', 'zip2'));
-    if (from && to) to.value = from.value;
-  });
-  document.getElementById('zip2').value    = document.getElementById('zip1').value;
-  document.getElementById('addr2_pref').value = document.getElementById('addr1_pref').value;
-  document.getElementById('addr2_city').value = document.getElementById('addr1_city').value;
-  document.getElementById('addr2_town').value = document.getElementById('addr1_town').value;
+  // 郵便番号・都道府県・市区町村・番地建物名をすべてコピー
+  document.getElementById('zip2').value        = document.getElementById('zip1').value;
+  document.getElementById('addr2_pref').value  = document.getElementById('addr1_pref').value;
+  document.getElementById('addr2_city').value  = document.getElementById('addr1_city').value;
+  document.getElementById('addr2_town').value  = document.getElementById('addr1_town').value;
 }
 
 // ─── Agree check ───
@@ -1679,6 +1673,25 @@ function clearSig() {
   sigHasData = false;
 }
 
+function reinitSignature() {
+  const canvas = document.getElementById('sigCanvas');
+  // canvasの実際の表示サイズに合わせてリサイズ（解像度を保持）
+  const rect = canvas.getBoundingClientRect();
+  if (rect.width > 0) {
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width  = rect.width  * dpr;
+    canvas.height = rect.height * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.strokeStyle = '#1a1f3a';
+    ctx.lineWidth = 2.5;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    sigHasData = false;
+    // イベントリスナーを再登録しないよう、initSignatureは呼ばない
+  }
+}
+
 // ═══════════════════════════════════════════
 //  NAVIGATION
 // ═══════════════════════════════════════════
@@ -1687,13 +1700,19 @@ function goPage(n) {
   currentPage = n;
   document.getElementById('page' + n)?.classList.add('active');
   renderSteps();
-  // 即座にトップへスクロール（smoothだとモバイルで効かない場合あり）
+  // 即座にトップへスクロール
   setTimeout(function() {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, 10);
-  if (n === 5) renderConfirmSummary();
+  if (n === 5) {
+    renderConfirmSummary();
+    // 署名Canvasをページ表示後に再初期化（hiddenのままだとサイズが0になる問題を修正）
+    setTimeout(function() {
+      reinitSignature();
+    }, 50);
+  }
 }
 
 function goNext(from) {
@@ -1902,6 +1921,10 @@ function showSuccess(data) {
     <div class="row"><span>申込日</span><span>${data.dateStr}</span></div>
   `;
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 1.5秒後にSTORESモーダルを表示
+  setTimeout(function() {
+    openStoresModal();
+  }, 1500);
 }
 
 // ═══════════════════════════════════════════
@@ -1970,6 +1993,22 @@ function saveAdmin() {
   alert('設定を保存しました。');
 }
 
+// ─── STORES モーダル ───
+function openStoresModal() {
+  var m = document.getElementById('storesModal');
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeStoresModal() {
+  var m = document.getElementById('storesModal');
+  m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+// モーダル背景クリックで閉じる
+document.getElementById('storesModal').addEventListener('click', function(e) {
+  if (e.target === this) closeStoresModal();
+});
+
 // ─── Admin long-press（3秒長押しで管理パネル表示）───
 (function() {
   var fab = document.getElementById('adminFab');
@@ -2012,5 +2051,61 @@ function saveAdmin() {
 // ─── Boot ───
 init();
 </script>
+
+<!-- ════ STORES 決済申込モーダル ════ -->
+<div id="storesModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;">
+  <div style="background:white;border-radius:20px 20px 0 0;padding:0;width:100%;max-width:480px;animation:slideUp 0.35s cubic-bezier(0.34,1.1,0.64,1);">
+    <!-- ハンドル -->
+    <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0;"></div>
+    <!-- ヘッダー -->
+    <div style="background:linear-gradient(135deg,#1a1f3a,#2d3561);margin:10px 16px 0;border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:14px;">
+      <div style="background:white;border-radius:10px;padding:7px 12px;font-family:'Arial Black',sans-serif;font-size:18px;font-weight:900;color:#1a1f3a;letter-spacing:-0.5px;flex-shrink:0;">STORES</div>
+      <div>
+        <div style="color:white;font-size:14px;font-weight:700;letter-spacing:0.5px;">キャッシュレス決済を導入しませんか？</div>
+        <div style="color:rgba(255,255,255,0.6);font-size:10px;margin-top:2px;">申込完了のついでにまとめて手続き</div>
+      </div>
+    </div>
+    <!-- コンテンツ -->
+    <div style="padding:18px 16px;">
+      <!-- 2カラム stats -->
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;background:#f0f4ff;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:#1a1f3a;line-height:1;">1.98%<span style="font-size:12px;font-weight:400;color:#888;">〜</span></div>
+          <div style="font-size:10px;color:#888;margin-top:4px;font-weight:500;">決済手数料</div>
+        </div>
+        <div style="flex:1;background:#f0fff6;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:#1a1f3a;line-height:1;">最短<span style="font-size:16px;">3</span>日</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;font-weight:500;">導入まで</div>
+        </div>
+      </div>
+      <!-- 特徴 -->
+      <div style="background:#fafafa;border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#444;line-height:1.5;">
+          <div>✅　<b>初期費用・月額費用　無料</b></div>
+          <div>✅　クレジットカード・交通系IC・QRコード対応</div>
+          <div>✅　最短3営業日で導入完了</div>
+          <div>✅　売上は最短翌営業日に振込</div>
+        </div>
+      </div>
+      <!-- ボタン -->
+      <a href="https://dashboard.stores.app/referral?ac=njf_st" target="_blank"
+        onclick="closeStoresModal()"
+        style="display:block;background:linear-gradient(135deg,#1a1f3a,#2d3561);color:white;text-align:center;padding:16px;border-radius:12px;font-size:15px;font-weight:700;letter-spacing:1px;text-decoration:none;box-shadow:0 4px 16px rgba(26,31,58,0.3);margin-bottom:10px;">
+        STORES 決済を申し込む　→
+      </a>
+      <button onclick="closeStoresModal()"
+        style="width:100%;padding:13px;background:none;border:1.5px solid #ddd;border-radius:12px;font-size:14px;color:#888;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">
+        今は申し込まない
+      </button>
+      <div style="text-align:center;font-size:10px;color:#bbb;margin-top:10px;padding-bottom:env(safe-area-inset-bottom);">
+        ※ NJFREGIとは別サービスです。STORESのサイトへ移動します。
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+@keyframes slideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+</style>
+
 </body>
 </html>
