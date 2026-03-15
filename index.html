@@ -2067,9 +2067,12 @@ function closeStoresModal() {
   document.body.style.overflow = '';
 }
 // モーダル背景クリックで閉じる
-document.getElementById('storesModal').addEventListener('click', function(e) {
-  if (e.target === this) closeStoresModal();
-});
+var _sm = document.getElementById('storesModal');
+if (_sm) {
+  _sm.addEventListener('click', function(e) {
+    if (e.target === this) closeStoresModal();
+  });
+}
 
 // ─── Admin long-press（3秒長押しで管理パネル表示）───
 (function() {
