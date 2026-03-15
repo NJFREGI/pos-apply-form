@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>NJF REGI - サービス申込</title>
+<title>NJF REGI - サービス申し込み</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap');
 
@@ -1380,7 +1380,7 @@ body {
     <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
     <div class="admin-field">
       <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
-      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/AKfycbxT_cRM-mXD8GU_-x8SzjRwVWKEPdJdxDulcoZFU9yhklbVAQpDHckPYEW6JZsR2JlSIg/exec" style="font-size:11px;">
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;">
     </div>
 
     <div class="drawer-section">送信先メール</div>
@@ -1459,10 +1459,29 @@ const STEP_LABELS = ['契約者', '店舗', 'サービス', '確認', '署名'];
 function loadConfig() {
   try {
     const s = localStorage.getItem('njfConfig');
-    if (s) config = { ...config, ...JSON.parse(s) };
+    if (s) {
+      const saved = JSON.parse(s);
+      // gasUrlとemailのみlocalStorageから復元（devicesや料金はコードの設定を優先）
+      if (saved.gasUrl) config.gasUrl = saved.gasUrl;
+      if (saved.email)  config.email  = saved.email;
+    }
   } catch(e) {}
 }
-function saveConfig() { /* 本番環境では保存不要 */ }
+function saveConfig() {
+  try {
+    localStorage.setItem('njfConfig', JSON.stringify({
+      gasUrl: config.gasUrl,
+      email:  config.email,
+    }));
+  } catch(e) {}
+}
+
+// バージョン管理：古いlocalStorageデータをクリア
+const CONFIG_VERSION = '2';
+if (localStorage.getItem('njfConfigVersion') !== CONFIG_VERSION) {
+  localStorage.removeItem('njfConfig');
+  localStorage.setItem('njfConfigVersion', CONFIG_VERSION);
+}
 loadConfig();
 
 // ═══════════════════════════════════════════
@@ -1598,7 +1617,7 @@ function searchZip(zipId, prefId, cityId, townId) {
   }
 
   const gasUrl = config.gasUrl;
-  if (!gasUrl || gasUrl.includes('https://script.google.com/macros/s/AKfycbxT_cRM-mXD8GU_-x8SzjRwVWKEPdJdxDulcoZFU9yhklbVAQpDHckPYEW6JZsR2JlSIg/exec')) {
+  if (!gasUrl || gasUrl.includes('YOUR_GAS_URL')) {
     alert('GAS URLが設定されていません');
     return;
   }
@@ -1675,20 +1694,17 @@ function clearSig() {
 
 function reinitSignature() {
   const canvas = document.getElementById('sigCanvas');
-  // canvasの実際の表示サイズに合わせてリサイズ（解像度を保持）
   const rect = canvas.getBoundingClientRect();
   if (rect.width > 0) {
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width  = rect.width  * dpr;
-    canvas.height = rect.height * dpr;
+    // canvasサイズをCSSサイズに合わせてリセット（scaleは使わない）
+    canvas.width  = Math.floor(rect.width);
+    canvas.height = Math.floor(rect.height);
     const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
     ctx.strokeStyle = '#1a1f3a';
     ctx.lineWidth = 2.5;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     sigHasData = false;
-    // イベントリスナーを再登録しないよう、initSignatureは呼ばない
   }
 }
 
