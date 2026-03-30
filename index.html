@@ -1,1056 +1,2176 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<title>小票录入</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NJF REGI - サービス申込</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(0,0,0,0.06)}
-body{font-family:-apple-system,'Noto Sans JP',sans-serif;background:#f2f2f7;color:#1c1c1e;min-height:100vh}
-.screen{display:none}.screen.active{display:block}
-.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);border-top:1px solid #e5e5ea;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0px)}
-.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 6px;cursor:pointer;gap:3px;border:none;background:transparent;font-family:inherit}
-.nav-tab:active{background:#f2f2f7}
-.nav-icon{font-size:22px}
-.nav-lbl{font-size:10px;color:#8e8e93;font-weight:500}
-.nav-tab.active .nav-lbl{color:#007AFF}
-.page-header{background:#fff;padding:52px 20px 16px;border-bottom:1px solid #e5e5ea}
-.page-title{font-size:22px;font-weight:700}
-.page-sub{font-size:13px;color:#8e8e93;margin-top:2px}
-.page-body{padding:16px;padding-bottom:90px}
-.month-card{background:#1c1c1e;color:#fff;border-radius:20px;padding:16px 20px 20px;margin-bottom:16px}
-.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.month-arrow{background:rgba(255,255,255,0.12);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
-.month-arrow:active{background:rgba(255,255,255,0.25)}
-.month-arrow:disabled{opacity:0.3;cursor:default}
-.mc-lbl{font-size:12px;opacity:0.6;letter-spacing:0.04em;text-align:center;flex:1}
-.mc-amt{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:12px;font-variant-numeric:tabular-nums;text-align:center}
-.mc-row{display:flex;justify-content:center;gap:32px}
-.mc-stat{text-align:center}
-.mc-stat-num{font-size:17px;font-weight:600}
-.mc-stat-lbl{font-size:10px;opacity:0.45;margin-top:2px}
-.upload-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.btn-cam{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:26px 20px;background:#007AFF;color:#fff;border:none;font-size:18px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;-webkit-appearance:none}
-.btn-cam:active{background:#0062cc}
-.cam-icon{font-size:34px;margin-bottom:8px}
-.cam-sub{font-size:13px;opacity:0.85;margin-top:4px}
-.btn-gal{display:flex;align-items:center;justify-content:center;width:100%;padding:17px;background:#fff;color:#007AFF;border:none;border-top:1px solid #e5e5ea;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;-webkit-appearance:none}
-.btn-gal:active{background:#f2f2f7}
-input[type=file]{display:none}
-.sec-title{font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
-.rlist{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.ritem{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid #f2f2f7;gap:12px;cursor:pointer}
-.ritem:last-child{border-bottom:none}
-.ritem:active{background:#f7f7f7}
-.ricon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.rinfo{flex:1;min-width:0}
-.rname{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rmeta{font-size:11px;color:#8e8e93;margin-top:2px}
-.ramt{font-size:15px;font-weight:600;flex-shrink:0;font-variant-numeric:tabular-nums}
-.empty{text-align:center;padding:36px 20px;color:#8e8e93;font-size:14px}
-.empty-icon{font-size:36px;margin-bottom:10px}
-/* Processing */
-#screen-proc{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#fff}
-#screen-proc.active{display:flex}
-.proc-img{width:140px;height:180px;border-radius:12px;overflow:hidden;margin-bottom:28px;box-shadow:0 4px 24px rgba(0,0,0,0.15);background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:48px;flex-shrink:0}
-.proc-img img{width:100%;height:100%;object-fit:cover}
-.proc-title{font-size:20px;font-weight:700;margin-bottom:4px}
-.proc-sub{font-size:14px;color:#8e8e93;margin-bottom:28px}
-.proc-steps{width:100%;max-width:300px}
-.step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f2f2f7;opacity:0.3;transition:opacity 0.3s}
-.step:last-child{border-bottom:none}
-.step.active,.step.done{opacity:1}
-.step-dot{width:26px;height:26px;border-radius:50%;background:#f2f2f7;border:1.5px solid #c7c7cc;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;transition:all 0.3s}
-.step.done .step-dot{background:#34c759;border-color:#34c759;color:#fff}
-.step.active .step-dot{border-color:#007AFF;color:#007AFF;animation:pulse 1s ease infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,122,255,0.3)}50%{box-shadow:0 0 0 5px rgba(0,122,255,0)}}
-.step-label{font-size:14px;color:#3a3a3c}
-.step.done .step-label{font-weight:500}
-/* Result */
-#screen-result{background:#f2f2f7;min-height:100vh;padding-bottom:80px}
-.top-hdr{background:#fff;padding:52px 20px 16px;border-bottom:1px solid #e5e5ea;display:flex;align-items:center;gap:12px}
-.back-btn{background:#f2f2f7;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0}
-.back-btn:active{background:#e5e5ea}
-.hdr-title{font-size:17px;font-weight:700}
-.hdr-sub{font-size:12px;color:#34c759;margin-top:1px}
-.result-body{padding:16px}
-.edit-banner{background:#fff7ed;color:#92400e;border:1px solid #fde68a;padding:10px 16px;border-radius:12px;font-size:13px;margin-bottom:12px;display:none}
-.edit-banner.show{display:block}
-.err-banner{background:#fee2e2;color:#991b1b;padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.5;margin-bottom:12px;display:none}
-.err-banner.show{display:block}
-.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.card-pad{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.card-ttl{font-size:11px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px}
-.sum-inner{display:flex;align-items:center;gap:14px;padding:16px}
-.sum-thumb{width:56px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:28px}
-.sum-thumb img{width:100%;height:100%;object-fit:cover}
-.sum-shop{font-size:15px;font-weight:600;line-height:1.3}
-.sum-date{font-size:12px;color:#8e8e93;margin-top:3px}
-.sum-total{font-size:26px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
-.conf-row{display:flex;align-items:center;gap:6px;margin-top:6px}
-.conf-bar{flex:1;height:3px;background:#e5e5ea;border-radius:2px;overflow:hidden}
-.conf-fill{height:100%;border-radius:2px;background:#34c759;transition:width 0.6s}
-.conf-lbl{font-size:11px;color:#8e8e93;white-space:nowrap}
-.frow{display:flex;align-items:center;border-bottom:1px solid #f2f2f7}
-.frow:last-child{border-bottom:none}
-.fkey{font-size:12px;color:#8e8e93;padding:12px 0 12px 16px;width:80px;flex-shrink:0}
-.fval-input{flex:1;border:none;outline:none;font-family:inherit;font-size:14px;font-weight:500;color:#1c1c1e;background:transparent;padding:12px 8px;min-width:0}
-.fval-input:focus{background:#f0f7ff;color:#007AFF}
-input[type=date].fval-input{color:#1c1c1e;-webkit-appearance:none;appearance:none}
-input[type=date].fval-input::-webkit-calendar-picker-indicator{opacity:0.5;cursor:pointer}
-.fbadge{font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;flex-shrink:0;margin-right:12px}
-.bg{background:#d1fae5;color:#065f46}.ba{background:#fef3c7;color:#92400e}.br{background:#fee2e2;color:#991b1b}
-.tax-row{display:flex;align-items:center;border-bottom:1px solid #f2f2f7}
-.tax-row:last-child{border-bottom:none}
-.tax-lbl{font-size:13px;color:#3a3a3c;display:flex;align-items:center;gap:6px;padding:10px 0 10px 16px;flex:1}
-.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.tax-val-input{border:none;outline:none;font-family:inherit;font-size:13px;font-weight:500;color:#1c1c1e;background:transparent;text-align:right;padding:10px 16px 10px 8px;width:110px;font-variant-numeric:tabular-nums}
-.tax-val-input:focus{background:#f0f7ff;color:#007AFF;border-radius:8px}
-.tax-row.total-row .tax-lbl{font-weight:700;font-size:15px}
-.tax-row.total-row .tax-val-input{font-weight:700;font-size:16px}
-.item-row{display:flex;align-items:center;border-bottom:1px solid #f2f2f7;gap:4px}
-.item-row:last-child{border-bottom:none}
-.item-name-input{flex:1;border:none;outline:none;font-family:inherit;font-size:13px;color:#1c1c1e;background:transparent;padding:10px 8px 10px 16px;min-width:0}
-.item-name-input:focus{background:#f0f7ff;color:#007AFF}
-.item-qty{font-size:12px;color:#8e8e93;flex-shrink:0;white-space:nowrap;padding:0 4px}
-.item-price-input{border:none;outline:none;font-family:inherit;font-size:13px;font-weight:500;color:#1c1c1e;background:transparent;text-align:right;padding:10px 16px 10px 4px;width:90px;font-variant-numeric:tabular-nums}
-.item-price-input:focus{background:#f0f7ff;color:#007AFF;border-radius:8px}
-.items-footer{display:flex;align-items:center;border-top:1.5px solid #e5e5ea;padding:10px 16px}
-.items-footer-lbl{flex:1;font-size:14px;font-weight:700}
-.items-footer-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:#007AFF}
-/* Category - accounting style */
-.cat-select{width:100%;border:none;outline:none;font-family:inherit;font-size:14px;font-weight:500;color:#1c1c1e;background:transparent;padding:12px 16px;-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:36px}
-.cat-select:focus{background-color:#f0f7ff;color:#007AFF}
-.note-input{width:100%;border:none;outline:none;font-family:inherit;font-size:14px;color:#1c1c1e;background:transparent;resize:none;min-height:36px;padding:4px 0}
-.note-input::placeholder{color:#c7c7cc}
-.submit-wrap{padding:12px 16px 16px}
-.submit-btn{display:block;width:100%;padding:16px;background:#007AFF;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;-webkit-appearance:none;text-align:center}
-.submit-btn:active{background:#0062cc}
-/* Detail */
-#screen-detail{background:#f2f2f7;min-height:100vh;padding-bottom:90px}
-.detail-body{padding:16px}
-.detail-actions{display:flex;gap:8px;margin-bottom:12px}
-.btn-edit2{flex:1;padding:12px;background:#fff;border:1px solid #e5e5ea;border-radius:12px;font-size:14px;font-weight:500;color:#007AFF;cursor:pointer;font-family:inherit;-webkit-appearance:none;text-align:center}
-.btn-edit2:active{background:#f2f2f7}
-.btn-del2{padding:12px 16px;background:#fff;border:1px solid #e5e5ea;border-radius:12px;font-size:14px;font-weight:500;color:#ff3b30;cursor:pointer;font-family:inherit;-webkit-appearance:none}
-.btn-del2:active{background:#fff0f0}
-.detail-info{background:#fff;border-radius:16px;padding:18px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.det-shop{font-size:20px;font-weight:700;margin-bottom:4px;line-height:1.3}
-.det-date{font-size:13px;color:#8e8e93;margin-bottom:10px}
-.det-total{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:10px}
-.det-cat-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:500;background:#f2f2f7;color:#3a3a3c}
-.det-note{font-size:13px;color:#8e8e93;margin-top:10px;padding-top:10px;border-top:1px solid #f2f2f7;font-style:italic}
-.tax-card-d{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.tline{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f7;font-size:13px}
-.tline:last-child{border-bottom:none;font-weight:700;font-size:15px;padding-top:10px}
-.tline-lbl{color:#8e8e93}
-.tline.total .tline-lbl{color:#1c1c1e}
-.tline-val{font-variant-numeric:tabular-nums;font-weight:500}
-.items-card-d{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
-.di-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f7;gap:8px}
-.di-row:last-child{border-bottom:none}
-.di-name{font-size:13px;color:#1c1c1e;flex:1}
-.di-qty{font-size:12px;color:#8e8e93;flex-shrink:0}
-.di-price{font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;flex-shrink:0}
-/* Records */
-.month-section{margin-bottom:20px}
-.month-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.month-name{font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.04em}
-.month-tot{font-size:13px;font-weight:600;color:#1c1c1e;font-variant-numeric:tabular-nums}
-.month-recs{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.rec-item{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid #f2f2f7;gap:12px;cursor:pointer}
-.rec-item:last-child{border-bottom:none}
-.rec-item:active{background:#f7f7f7}
-.rec-info{flex:1;min-width:0}
-.rec-shop{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rec-meta{font-size:11px;color:#8e8e93;margin-top:2px}
-.rec-right{text-align:right;flex-shrink:0}
-.rec-amt{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
-.rec-cat{font-size:11px;color:#8e8e93;margin-top:2px}
-/* Stats */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.stat-cell{background:#f2f2f7;border-radius:12px;padding:12px}
-.stat-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
-.stat-lbl{font-size:11px;color:#8e8e93;margin-top:2px}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.bar-lbl{font-size:11px;color:#3a3a3c;width:56px;flex-shrink:0}
-.bar-wrap{flex:1;height:8px;background:#f2f2f7;border-radius:4px;overflow:hidden}
-.bar-fill{height:100%;border-radius:4px;background:#007AFF;transition:width 0.6s}
-.bar-val{font-size:11px;font-weight:500;width:70px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
-/* Success */
-#screen-suc{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#fff;text-align:center}
-#screen-suc.active{display:flex}
-.suc-icon{width:80px;height:80px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 20px;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
-@keyframes pop{from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1}}
-.suc-title{font-size:24px;font-weight:700;margin-bottom:6px}
-.suc-sub{font-size:15px;color:#8e8e93;margin-bottom:28px;line-height:1.5}
-.suc-card{background:#f2f2f7;border-radius:16px;padding:18px 20px;width:100%;max-width:320px;text-align:left;margin-bottom:28px}
-.suc-shop{font-size:14px;font-weight:600;margin-bottom:4px}
-.suc-amt{font-size:30px;font-weight:700;margin-bottom:4px;font-variant-numeric:tabular-nums}
-.suc-date{font-size:13px;color:#8e8e93}
-.btn-again{display:block;width:100%;max-width:320px;padding:15px;background:#1c1c1e;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;-webkit-appearance:none}
-.btn-again:active{opacity:0.85}
-.btn-link{font-size:15px;color:#007AFF;cursor:pointer;padding:10px;display:block}
-.dup-toast{position:fixed;top:60px;left:16px;right:16px;background:#1c1c1e;color:#fff;padding:14px 16px;border-radius:14px;font-size:14px;z-index:200;display:none;line-height:1.5}
-.dup-toast.show{display:block}
-.dup-btns{display:flex;gap:8px;margin-top:10px}
-.dup-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-.dup-cancel{background:rgba(255,255,255,0.15);color:#fff}
-.dup-ok{background:#fff;color:#1c1c1e}
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap');
 
-/* Login */
-#screen-login{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#f2f2f7}
-#screen-login.active{display:flex}
-.login-logo{font-size:48px;margin-bottom:12px}
-.login-title{font-size:24px;font-weight:700;margin-bottom:4px}
-.login-sub{font-size:14px;color:#8e8e93;margin-bottom:32px}
-.login-card{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:340px;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
-.login-field{margin-bottom:14px}
-.login-label{font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
-.login-input{width:100%;padding:12px 14px;border:1.5px solid #e5e5ea;border-radius:10px;font-size:16px;font-family:inherit;outline:none;background:#fff;color:#1c1c1e;-webkit-appearance:none}
-.login-input:focus{border-color:#007AFF}
-.login-btn{display:block;width:100%;padding:14px;background:#007AFF;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:8px;-webkit-appearance:none}
-.login-btn:active{background:#0062cc}
-.login-err{color:#ff3b30;font-size:13px;text-align:center;margin-top:10px;min-height:18px}
-.user-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;padding:8px 16px;border-bottom:1px solid #e5e5ea;font-size:13px;color:#3a3a3c}
-.user-name{font-weight:500}
-.logout-btn{color:#ff3b30;cursor:pointer;font-size:13px;border:none;background:none;font-family:inherit}
+:root {
+  --navy:       #1a1f3a;
+  --navy-dark:  #0d1124;
+  --gold:       #c9a84c;
+  --gold-light: #e4c97a;
+  --gold-pale:  #fdf6e3;
+  --text:       #1e1e2e;
+  --text-sub:   #6b6b82;
+  --border:     #e2ddd6;
+  --bg:         #f7f5f0;
+  --white:      #ffffff;
+  --red:        #d63031;
+  --green:      #00b894;
+  --radius:     12px;
+  --radius-sm:  8px;
+}
 
-/* Split */
-.split-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f2f2f7}
-.split-row:last-child{border-bottom:none}
-.split-cat-sel{flex:1;border:1px solid #e5e5ea;border-radius:8px;padding:7px 8px;font-size:12px;font-family:inherit;outline:none;background:#fff}
-.split-amt-input{width:90px;border:1px solid #e5e5ea;border-radius:8px;padding:7px 8px;font-size:13px;font-family:inherit;outline:none;text-align:right}
-.split-del{background:none;border:none;color:#ff3b30;font-size:18px;cursor:pointer;padding:0 4px}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html { font-size: 16px; }
+
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ─── STICKY HEADER ─── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  background: var(--navy-dark);
+  padding: calc(env(safe-area-inset-top) + 12px) 16px 12px;
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-badge {
+  width: 36px; height: 36px;
+  background: var(--gold);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--navy-dark);
+  flex-shrink: 0;
+}
+.logo-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: 1px;
+}
+.logo-sub {
+  font-size: 9px;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 1.5px;
+  display: block;
+}
+.header-company {
+  font-size: 9px;
+  color: var(--gold-light);
+  text-align: right;
+  line-height: 1.5;
+  letter-spacing: 0.5px;
+}
+
+/* ─── STEP PROGRESS ─── */
+.step-nav {
+  background: var(--navy);
+  padding: 10px 16px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 60px);
+  z-index: 199;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.step-nav::-webkit-scrollbar { display: none; }
+.step-list {
+  display: flex;
+  gap: 6px;
+  min-width: max-content;
+}
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+.step-item.active {
+  background: var(--gold);
+}
+.step-item.done {
+  background: rgba(201,168,76,0.25);
+}
+.step-dot {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  flex-shrink: 0;
+}
+.step-item.active .step-dot {
+  background: var(--navy-dark);
+  color: var(--gold);
+}
+.step-item.done .step-dot {
+  background: rgba(201,168,76,0.5);
+  color: var(--white);
+}
+.step-label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.step-item.active .step-label { color: var(--navy-dark); font-weight: 700; }
+.step-item.done .step-label { color: rgba(255,255,255,0.7); }
+
+/* ─── PAGE WRAPPER ─── */
+.pages-wrap {
+  position: relative;
+  overflow: hidden;
+}
+.page {
+  display: none;
+  padding: 16px;
+  animation: fadeIn 0.3s ease;
+}
+.page.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ─── PAGE TITLE ─── */
+.page-title {
+  margin-bottom: 18px;
+}
+.page-title h2 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 2px;
+}
+.page-title p {
+  font-size: 11px;
+  color: var(--text-sub);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+/* ─── CARD ─── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.card-head {
+  background: var(--navy);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-head-num {
+  width: 24px; height: 24px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-dark);
+  flex-shrink: 0;
+}
+.card-head-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px;
+  color: var(--white);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+.card-body { padding: 16px; }
+
+/* ─── FORM FIELDS ─── */
+.field-group {
+  margin-bottom: 14px;
+}
+.field-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-sub);
+  font-weight: 500;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+.req-badge {
+  font-size: 9px;
+  background: #fde8e8;
+  color: var(--red);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+.field-input,
+.field-select,
+.field-textarea {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.field-input:focus,
+.field-select:focus,
+.field-textarea:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(26,31,58,0.08);
+}
+.field-input.error { border-color: var(--red); background: #fff8f8; }
+.field-hint {
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+.field-err {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+.has-error .field-err { display: block; }
+.has-error .field-input { border-color: var(--red); }
+
+/* ─── ZIP ROW ─── */
+.zip-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.zip-row .field-input { flex: 1; }
+.zip-btn, .same-btn {
+  padding: 0 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+.zip-btn {
+  background: var(--gold);
+  color: var(--navy-dark);
+}
+.same-btn {
+  background: var(--navy);
+  color: var(--white);
+  font-size: 11px;
+}
+.zip-btn:active, .same-btn:active { opacity: 0.75; }
+
+/* ─── SERVICE PLAN CARDS ─── */
+.plan-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.plan-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.plan-card.selected {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.18);
+}
+.plan-card input[type="radio"] { display: none; }
+.plan-card-head {
+  background: var(--navy);
+  padding: 10px 12px;
+  font-family: 'Noto Serif JP', serif;
+  font-size: 12px;
+  color: var(--white);
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.plan-card-body { padding: 12px; }
+.plan-price {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1.1;
+}
+.plan-price-unit {
+  font-size: 10px;
+  color: var(--text-sub);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 400;
+}
+.plan-desc { font-size: 10px; color: var(--text-sub); margin-top: 4px; line-height: 1.4; }
+.plan-check {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 20px; height: 20px;
+  background: var(--gold);
+  border-radius: 50%;
+  display: none;
+  align-items: center; justify-content: center;
+  font-size: 11px;
+  color: var(--navy-dark);
+  font-weight: 900;
+}
+.plan-card.selected .plan-check { display: flex; }
+
+/* ─── OPTION CARD ─── */
+.option-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.option-card.selected { border-color: #3498db; }
+.option-head {
+  padding: 14px 16px;
+  background: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.option-head label {
+  display: flex; align-items: center; gap: 12px;
+  cursor: pointer; width: 100%;
+  font-size: 13px;
+  color: var(--white);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.option-head input[type="checkbox"] {
+  width: 20px; height: 20px;
+  accent-color: var(--gold);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.option-body {
+  padding: 14px 16px;
+  display: none;
+  background: #f0f4f8;
+}
+.option-card.selected .option-body { display: block; }
+
+/* ─── DEVICE LIST ─── */
+.device-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.device-item:last-child { border-bottom: none; }
+.device-info { flex: 1; }
+.device-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.device-price { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+.device-qty-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.qty-btn {
+  width: 36px; height: 36px;
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--navy);
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  transition: background 0.15s;
+}
+.qty-btn:active { background: var(--border); }
+.qty-val {
+  width: 36px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  border: none;
+  background: none;
+  outline: none;
+  pointer-events: none;
+}
+
+/* ─── TOTAL DISPLAY ─── */
+.total-display {
+  background: var(--navy-dark);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  text-align: center;
+  margin-top: 16px;
+}
+.total-label {
+  font-size: 11px;
+  color: var(--gold-light);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+.total-amount {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+.total-amount .yen { font-size: 22px; margin-right: 2px; }
+.total-amount .incl { font-size: 13px; color: var(--gold-light); font-family: 'Noto Sans JP', sans-serif; font-weight: 400; margin-left: 6px; }
+.total-breakdown {
+  margin-top: 12px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.8;
+}
+.total-breakdown b { color: var(--gold-light); }
+
+/* ─── TERMS ─── */
+.terms-box {
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  max-height: 180px;
+  overflow-y: auto;
+  padding: 14px;
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--text);
+  background: #fafaf8;
+  margin-bottom: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+.terms-box::-webkit-scrollbar { width: 4px; }
+.terms-box::-webkit-scrollbar-thumb { background: var(--navy); border-radius: 2px; }
+.terms-box h4 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 12px;
+  color: var(--navy);
+  margin: 10px 0 4px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid var(--border);
+}
+.terms-box h4:first-child { margin-top: 0; }
+.terms-box ul { padding-left: 16px; }
+.terms-box li { margin-bottom: 4px; }
+
+.agree-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--gold-pale);
+  border: 1.5px solid var(--gold);
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.agree-row input[type="checkbox"] {
+  width: 20px; height: 20px;
+  accent-color: var(--navy);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.agree-row label {
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  line-height: 1.5;
+}
+
+/* ─── SIGNATURE ─── */
+.sig-wrap {
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.sig-toolbar {
+  background: var(--navy);
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.sig-toolbar span { font-size: 11px; color: var(--gold-light); letter-spacing: 1px; }
+.sig-clear-btn {
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.15);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+}
+#sigCanvas {
+  display: block;
+  width: 100%;
+  height: 160px;
+  background: var(--white);
+  cursor: crosshair;
+  touch-action: none;
+}
+.sig-err {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 6px;
+  display: none;
+}
+
+/* ─── NAV BUTTONS ─── */
+.nav-btns {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-bottom: 30px;
+}
+.btn-back, .btn-next, .btn-submit {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+.btn-back {
+  background: var(--bg);
+  color: var(--text-sub);
+  border: 1.5px solid var(--border);
+  flex: 0 0 90px;
+}
+.btn-next {
+  background: var(--navy);
+  color: var(--white);
+}
+.btn-submit {
+  background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(13,17,36,0.3);
+}
+.btn-submit::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(201,168,76,0.15) 60%, transparent 100%);
+  transform: translateX(-100%);
+  animation: shimmer 2.5s infinite;
+}
+@keyframes shimmer { to { transform: translateX(200%); } }
+.btn-back:active { opacity: 0.7; }
+.btn-next:active, .btn-submit:active { transform: scale(0.98); opacity: 0.9; }
+
+/* ─── INLINE INPUTS ─── */
+.inline-pair {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.inline-pair .field-input { flex: 1; }
+.inline-pair span { color: var(--text-sub); font-size: 14px; flex-shrink: 0; }
+
+/* ─── SUCCESS PAGE ─── */
+.success-page {
+  display: none;
+  padding: 40px 20px;
+  text-align: center;
+}
+.success-page.active { display: block; }
+.success-icon {
+  width: 80px; height: 80px;
+  background: var(--green);
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px;
+  animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.success-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 22px;
+  color: var(--navy);
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.success-msg {
+  font-size: 14px;
+  color: var(--text-sub);
+  line-height: 1.8;
+}
+.success-detail {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-top: 24px;
+  text-align: left;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.07);
+}
+.success-detail h4 {
+  font-size: 12px;
+  color: var(--text-sub);
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.success-detail .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.success-detail .row:last-child { border-bottom: none; }
+.success-detail .row span:first-child { color: var(--text-sub); }
+.success-detail .row span:last-child { font-weight: 500; color: var(--text); }
+
+/* ─── LOADING OVERLAY ─── */
+#loading {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(13,17,36,0.82);
+  z-index: 9999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+#loading.show { display: flex; }
+.spin {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(201,168,76,0.2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+#loading p {
+  color: var(--white);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 15px;
+  letter-spacing: 3px;
+}
+
+/* ─── ADMIN FAB ─── */
+#adminFab {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom) + 20px);
+  right: 16px;
+  width: 46px; height: 46px;
+  background: var(--navy);
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  color: var(--gold);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  z-index: 100;
+}
+
+/* ─── ADMIN DRAWER ─── */
+.admin-drawer {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--white);
+  border-radius: 20px 20px 0 0;
+  z-index: 300;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.34, 1.1, 0.64, 1);
+  max-height: 85vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.admin-drawer.open { transform: translateY(0); }
+.drawer-handle {
+  width: 40px; height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  margin: 10px auto 0;
+}
+.drawer-head {
+  background: var(--navy-dark);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.drawer-head span {
+  font-family: 'Noto Serif JP', serif;
+  color: var(--gold);
+  font-size: 15px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+.drawer-close {
+  background: none; border: none;
+  color: var(--white); font-size: 20px; cursor: pointer;
+  width: 30px; height: 30px;
+  display: flex; align-items: center; justify-content: center;
+}
+.drawer-body {
+  padding: 16px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+}
+.drawer-section {
+  font-size: 10px;
+  color: var(--text-sub);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 5px;
+  margin-bottom: 10px;
+  margin-top: 16px;
+}
+.drawer-section:first-child { margin-top: 0; }
+.drawer-section.warn { color: var(--red); border-color: var(--red); }
+.admin-field { margin-bottom: 10px; }
+.admin-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+.admin-field input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-family: 'Noto Sans JP', sans-serif;
+  outline: none;
+}
+.admin-field input:focus { border-color: var(--navy); }
+.admin-price-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.admin-device-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.admin-device-row input[type="text"] {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+}
+.admin-device-row input[type="number"] {
+  width: 85px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  text-align: right;
+}
+.del-btn {
+  background: var(--red);
+  color: var(--white);
+  border: none;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.add-device-btn {
+  width: 100%;
+  padding: 10px;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
+.save-admin-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: var(--navy-dark);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  letter-spacing: 2px;
+  margin-top: 14px;
+  margin-bottom: 30px;
+}
+.drawer-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 299;
+}
+.drawer-overlay.show { display: block; }
+
+/* ─── UTILS ─── */
+.divider { height: 1px; background: var(--border); margin: 16px 0; }
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 3px; height: 14px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+.err-inline {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 6px;
+  display: none;
+}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div class="screen active" id="screen-login">
-  <div class="login-logo">🧾</div>
-  <div class="login-title">小票录入</div>
-  <div class="login-sub">请先登录</div>
-  <div class="login-card">
-    <div class="login-field">
-      <div class="login-label">用户名</div>
-      <input class="login-input" id="login-user" type="text" placeholder="输入用户名" autocomplete="username" autocapitalize="none">
-    </div>
-    <div class="login-field">
-      <div class="login-label">密码</div>
-      <input class="login-input" id="login-pass" type="password" placeholder="输入密码" autocomplete="current-password">
-    </div>
-    <button class="login-btn" onclick="doLogin()">登录</button>
-    <div class="login-err" id="login-err"></div>
-  </div>
-</div>
-
-<!-- HOME -->
-<div class="screen" id="screen-home">
-  <div class="user-bar"><div class="user-name">👤 <span id="user-display">—</span></div><button class="logout-btn" onclick="doLogout()">ログアウト</button></div>
-  <div class="page-header"><div class="page-title">小票录入</div><div class="page-sub">拍照即可自动识别</div></div>
-  <div class="page-body">
-    <div class="month-card">
-      <div class="month-nav">
-        <button class="month-arrow" onclick="changeMonth(-1)">‹</button>
-        <div class="mc-lbl" id="mc-lbl">2026-03 合计</div>
-        <button class="month-arrow" id="btn-next" onclick="changeMonth(1)" disabled>›</button>
-      </div>
-      <div class="mc-amt" id="mc-amt">¥0</div>
-      <div class="mc-row">
-        <div class="mc-stat"><div class="mc-stat-num" id="mc-cnt">0</div><div class="mc-stat-lbl">已录入</div></div>
-        <div class="mc-stat"><div class="mc-stat-num" id="mc-tax">¥0</div><div class="mc-stat-lbl">消費税合計</div></div>
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="logo-row">
+      <img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAHkAyQDASIAAhEBAxEB/8QAHQABAAMBAQEBAQEAAAAAAAAAAAYHCAUEAwIBCf/EAFYQAAEDAgIEBAwTBwMEAQUAAAABAgMEBQYRByExQRJRYXEIExcidIGRk5ShstEUFRYyNjdCUlRVVmJyc7GzwcLSIzM0NYKSohgk8ENEdeFTJ0VjhMP/xAAcAQEAAgMBAQEAAAAAAAAAAAAABgcDBAUCAQj/xAA/EQABAwEDCAYJAwQDAQEBAAAAAQIDBAUGESExQVFhcbHREhMikaHBFBUzNFNygeHwFjI1I0JSkkNi8SSC0v/aAAwDAQACEQMRAD8AxkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmtckJ5g7Rffr4jKmtb6V0TtfDmb+0cnzWbe2uXbNimpZql/QibipqVldT0UfWTvRqbfJNP0IGSnDmAMU3xGyU9udTwO2T1P7NuXGmetU5kUvLCuA8N4eRklNRJUVTf+5qMnvz403N7SISgldHdX+6pd9E5/m8gloX6yq2jZ9Xck81+hU1l0LUTEa+8XeaZ21Y6ZiManJwnZqvcQmFt0eYOoETpdkgmcm11Qqy59pyqniJSCQwWTRwfsjT65eJEaq37Rql/qTLuTIncmB4qa0WmmREprZRQomxI4Gt+xD7upaVzeC6mhVOJWIfYG8jGomCIct0r3Liqqcmuwzh2taqVVjt0qr7padvC7uWZFL3ojwvXNc6h9E22VdnS3q9mfK12a9xULBBrTUFNOmEkaL9PPObtNatbTLjFK5Prk7sxnPFmjLEdia+ohibcqRutZKdFVzU+czanazTlIQbDIJpB0b2zETJKygbHQXTWvTGpkyVfnom/5ya+PMjFo3YwRX0q/RfJefeTayL7Krkjrk/8A0nmnmncZ3B7LzbK6z3GW33GnfT1ES5Oa77UXei8Z4yHuarVVrkwVCw2Pa9qOauKKAAeT0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD0soK19vfcW0szqNkiRunRi8Brl1oirxnXwJhatxXem0VPnHAzJ1TPlqjZ+KruT8EU0lbbJa6CxsssFJH6BbH0tYntRyPRdvC41XedyyrEkr2q9V6LdC615ayMW7eaKy3tianScudNSc10GTQWhpL0YTWzpt1w9G+ehTN0tN658Kcbd7m+NOXaVec2sopqOTq5UwXwXcdmz7Rp7QhSWB2KeKbFAANU3gAAAAAAAAAAAAAAAAAAAAAAf1EVyoiIqqupEQA/h3sIYSvWKKrpVtp8oWrlJUSao4+dd68iZqTfR5opnrUjuOJWvp6ZeuZSIuUkifPX3Kcm3mLooaSloaSOko6eOngjTJkcbeC1qcxJ7Lu5JPhJUdlurSvLiQm274RUuMNJ2n69Cc18OBFME6O7HhtGVDo0r7gmv0RM31q/Mbsbz615SYgE3p6aKnZ0Im4IVnVVk9XIss7lcu38yAAGc1gAAAAAAAAAAACLaRcHUeLLSrFRkVwhaq00+Wxfeu42r4tpmy4UdTQV01FWROhqIXqyRjtqKhrwqnT1hVtRRNxNRR/t4ERlWjU9ezYjudF1cy8hFrxWUksa1MadpM+1OacCcXQt10EqUcy9h37di6ty8fqUkACBlpgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA6WGrLXYgvENst8fDlkXW5fWsbvc5dyIeOipaitq4qSkidNPM9GRsamauVdiGk9G2EKfCdmSNyMkuE6I6qmTj94nzU8e069kWW6vly5GJnXy3nAvBbjLKgxTLI79qea7E8TpYQw9QYZssVtoW55ddLKqddK/e5fNuQ7ABZccbYmIxiYIhS80z5pFkkXFy5VUFY6S9GMF16bdcPsZT165ukp/WsmXjT3rvEvJtLOBgrKOGsj6uVMU4bjas+0aiz5klgdgvguxTINVTz0tTJTVML4Zo3K18b25OaqblQ+RpbSDgW2YrpllVG0tyY3KKpa3b816b08abuJc94jsdzw/cn0F0p3Qyt1tXa16e+au9CurUsiagdiuVq5l56lLesS8FParME7L0zt801pw0nNAByTvgAAAAAAAAAAAAAAAA6+FcPXPEt0bQW2HhO2ySO1Mib75y7vxPccbpHIxiYqpjllZCxZJFwRM6qeK1W+tutfFQ2+mkqKiVcmMYmvn5E5VL70caOKHDrY7hckjrLrtR2WbIF+bntX53cy39zA2ELXhS39JpG9NqnonT6l6dfIvFyN5PtJET2yLAZS4Sz5X+Cff8Qqq8F6pK1Vgpl6MevS7kmzv1AAElIaAAAAAAACMYpx5hrDyuiq65J6pv/b0/XvReJdze2qGKaeOBvTkciJtM9PSzVL+hC1XLsTEk4KLxBpjvNSro7PRQUEe6ST9rJz6+tTuKQm54qxHc3Ktbe66VF2sSZWs/tTJPER+ovRSxrhGiu8E8cvgSykuRXSpjM5GeK+GTxNVAyAk0yP4aSvR/vuEuZeOgPEdRcrXV2eunfNNRqkkT5HK5yxu2pmvEqf5IerOvCysnSFWdFVzZcfJDxbF0ZLOplqGydNEwxyYZ9OdSzgASMh4PlV08NXSTUtQxJIZmLHI1djmqmSofUHxURUwU+oqouKGTsUWqWx4hrrTLmq00qtaq+6btavbRUXtnNLR6Ii2JT4goLqxuSVcCxvVN7mLt7jkTtFXFUWjTei1T4tCLk3Z08C+LIrfTaKOdc6pl3pkXxAANI6QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALK0K4L9OK9L9cos6Clf+xY5NU0ifa1vjXVxm1R0klXMkUedfDaaVo18VBTunlXIniuhEJdoXwT6UUbb9c4crhUM/YxuTXBGv2OXxJq3qWWAWjR0kdJCkUeZPHaUdaNfLaFQ6eVcq+CaEQAA2jSAAABysUYeteJLa6hulOkjdscianxu42ruX7d51QeJI2yNVj0xRTJFK+F6SRrgqZlQzJj3BV0wnV/tmrUUL3ZQ1TG9avI73ruTuEXNe11JTV1JLSVkEc8EreC+N7c0chROkrRpU2Tpl0srZKq263Pj2yU6fmby7U38ZBLXu+6nxlp8rdWlOaFpXfvYyrwgq16L9C6Hcl8F0aiuAARgmoAAAAAAAAAAJDgXCdwxXdkpaVFip48lqKhUzbG38XLuT8DJDC+Z6RxpiqmGoqI6eNZZVwamdT84IwrcsVXRKSjbwIWZLPUOTrYm/ivEm/uqaPwth+24btTLfbYeAxNcki63yu985d6/YfTDtlt9gtUVttsKRQxprX3T3b3OXeqnRLHsix2UDOk7K9c66tifmUp68F4ZbUk6DckaZk17V/MgAB2iNgAAAA/MskcUTpZXtjjYiuc5y5I1E2qqgImJ+jgYvxfZMMU/DuNTnO5M46aLrpH9rcnKuSEA0gaWWxrJbsLK17tbX1rkzRPoIu3nXVxJvKfq6ierqZKmqmknmkXhPkkcrnOXjVVItad5I4cY6btO16E58CcWLc2WoRJazst1aV36uO4meMtJl+vyvp6WRbZQrq6VC7r3J85+1eZMk5yDgEKqKqapf05XYqWTSUVPRx9XAxGps89f1AAMBtAnugeqdBpAhhRckqaeWNeXJOH+UgRMdCyKukq1ZbunZ95eb1mOVtZEqf5JxOXbbUdZ06L/AIO8EVTSQALXKIAAAK46IOjSfBkFUiddTVbVz+a5rkXx8EoM0ppliSXRvdUy1sSN6dqVv4Zmayvb0R9GtRdbU808i27kSq+zlav9rlTwRfMAAjhMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfuGOSaZkMTHPke5Gsa1M1cq6kRBnCrhlU7eBcN1OKMQQ26DNkXr6iVE/dxptXn3JyqadtlDS223wUFFEkVPAxGRsTcifjykd0ZYUjwth5kMjWrX1GUlU9PfbmIvE3Zz5rvJUWTYdmehQ9J6dt2fZs5lNXnttbSqehGv8ATZm2rpXls3gAHcIyAAAAAAAAAAAAVTpL0XR1nTbthqJsVRrdLRpqbJys4l5Ni8m+lZopIJnwzRvjkY5WvY9MlaqbUVNxsAhekXAFvxTC6qg4FJdGt6ydE62Tia9N/PtTl2EUte7zZsZqZMHaU0Lu1KTu797nU+FPWri3Q7Sm/Wnim0zgD3X20XCyXGS33OmfTzs3LscnGi705UPCQd7HMcrXJgqFmskbI1HsXFF0gAHk9gA6eGbJX4hvENst8fClkXNzl9bG3e5y7kQ9MY6RyNamKqeJZGRMV71wRMqqerBWGa/FN4bQ0beBG3J086p1sTONeNeJN/dU0phqyW/D9pittui4EUaZq5fXSO3ucu9VPhg/DtBhizR26hbmvrppVTrpX73L+CbkOyWRY1kNoY+k7K9c+zYhTl4rwPtSXoMyRNzJr2r5agADtkaAAAABwMbYstmFLb6JrX9MneipBTtXr5V/BONfx1GOWVkLFfIuCIZYKeSokSKJuLlzIe/EF5t1htslwudS2CFmpM9bnrua1N6mftIWP7nimV1NHwqO2NXrKdrtb+JXrvXk2J4zjYtxJdMTXNa25TZomaRQt1MibxNT8dqnGK/te3ZKxVjiyM8V38i2bAuvFZ6JNP2pPBu7bt7gACPEtAAAAAABPtA1Os2kCORE/cU0si9tEb+YgJbfQ4USur7vcVTVHFHC1ePhKrl8lO6dSxY+srok2492U4l5JkhsuZ2tMO/J5l0AAtEo8AAAi+ljLqd3jP8A+FPLaZkNK6ZJOlaN7su9zY2p25WIZqIDetf/AKmJ/wBfNS1biJ/8Mi/914IAARgmwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALZ0DYTSpqVxPXRZxQuVlG1yanP3v7WxOXPiK+wdYqnEeIaa1U+adMdnK/L93Gnrndzx5IajttFTW63wUFHGkVPAxI42puRCT3bs3r5fSHp2W5tq/bkQq+Ns+iweiRL2n59jfvm3YnoABPiqQAAAAQ/GuP7Vha7UdvqY3zvl66fpa64GbnKm9VXdxIq8WeGeoip2dOVcENilpJquTqoG9J2rcTAHnttdSXKiiraGojqKeVOEyRi5ov/ADiPQZUcjkxTMYHNVqq1yYKgAB9PgAAAAABxcXYZtWJ7ctHcoc3NzWKZuqSJeNF/DYpnnHGD7rhSu6VWM6bSvX9jVMTrH8i8TuT7TUB5rnQUdzoZaGvp46inlTJ8b0zRfMvKca1bGir29JMj9fMkdhXjnst3QXtRrnTVtT8wXxMigsDSTo4rMOukuNsSSrtWearlm+D6XGnzu7y1+V3VUstLIscqYKW7RV0FdEk0DsUXw2LqUF56BKrDjbO+ko3cC8vXhVSS5I96Js4HG1OLjzzKMPrSVE9JUx1NLNJDNG5HMkY7JzV40Uz2bXegzpL0cfzRtNW2bM9Z0qwdNW6f/daGvgVlo00nQXbpVqxA9lPXrk2Oo9bHOvEvvXeJeTYWaWZSVkNXH1kS4pw3lL2hZ1RZ8yxTtwXwXagABtGiACK6RcZ0eE7bn1s9xmavoenz/wAncTU8exN6phnnjp41kkXBEM9LSy1UrYYUxcp/dIWM6DCdvzfwZ7hK1fQ9Mi7fnO4m/bu5M5327V97uctxuVQ6aokXWq7GpuaibkTiPxd7jW3a4zXC4TvnqJnZve77E4kTch5Ct7VtaSvfhmYmZPNdvAuSwbAhsqLHPIudfJNnEAA5BIAAAAAAAAAAaF0D25aLAjKlzcn1s75te3gp1ieSq9sz7BFJPPHBE1XySORjGpvVVyRDWdioGWqy0Vtjy4NNAyLNN+SIir29pKbq0/TqHSr/AGph9V/8INfqr6ukZAmdy4/RPuqHtABPCrQAACvtPtT0nAfSs9dRVxx5cyOd+Uz6XL0R9YiU9nt6Lrc+SZycWSIifa4pori8knTr3JqRE8/MuK5sPV2W13+Sqvjh5AAHBJSAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACW6KcNeqTFUUc0fCoaXKapzTUqIupn9S6ubMzU8D6iVsTM6mvV1MdLC6aRcjUxLW0JYX9JcO+mdVHwa64Ij9aa2Re5b29q86cRYARERMk1IC1qSmZSwtiZmQoevrZK6ofPJncvdqT6AAGyagADlRrVc5URETNVXYgBxsaYhpcM4fnulTk5zU4MMeeSySLsb+K8iKZfu1fVXS5VFwrZVlqJ3q97l4/wRNiISfSvix2J8QubTvX0upFWOmTc/wB8/t7uRE5SHFcW9afpk3QYvYbm2rr5FxXWsX1dTdZIn9R+fYmhOe3cSTA2MbrhSt6ZSP6dSPXOalevWP5U967l7uZofCWJbVia2pWW2bNUySWF2p8S8Tk/HYplQ99hvFxsdyjuFsqXQTs3pscm9rk3pyHyybbkol6D8rNWrdyPtvXZhtNFkj7MmvQu/nn3mtAQ3R3j63YqhbTS8GkujW9fTqup/G5i705NqeMmRYNPUR1MaSRLiilS1dHNRyrFM3ByAAGc1gAAAAAA5Ec1WuRFRUyVF3lQaS9FqP6bdsMQojtbpaFuxeNY/wBPc4i3waVbQQ1sfQlTculNx0bMtSos2XrYF3poXeY+ex0b3Me1WvauTmqmSovEp+TRGkfR3Q4lY+uoeBR3VE9flkybkflv+dt5ygrvba603CWguNM+nqIlycx6eNONOVCurSsqagfg7K1cy/mZS37Gt2ntWPFmR6Z26U5pt7zyFo6NNJ81t6VasRSPnokybFUrm58KcTt7m+NOXdVwNajrZqOTrIlwXwXebtoWbT2hCsU7cU8U2oa/pp4amnjqKeVk0MjUcx7HZtci70U+hmvR7ju5YUqEhXhVVse7OSmc71vG5i7l5Ni+Muytx3h+DCbsRRVbZ4F62OJFykdJl+7VNy8fJr2FhUFt09VErnL0VRMVReKa0KktW7VXQzoxqdNrlwaqcF1KfXH+LaLCdoWpmylq5c201Pnre7jXiam9TNl7ulbebnNcbhO6aomdm5y7E4kRNyJxH3xPfK/EV4ludwk4Uj1ya1PWxt3Nam5E/wDZyyGWxaz6+TBMjEzJ5r+ZCx7vWDHZcOLssjs6+SbOPcAAcYkQAAAAAAAAAAABNNDFo9Ncd0j3t4UNEi1UnO31v+St7imjyteh/svoLDM93lZlLXyZMVf/AI2ZonddwvEWUWTd6l6iiRVzuy8vApu9td6VaLmouRnZ5+OT6AAHcIwAD+Pc1jHPe5GtamaquxEAM+aea/0Zjx9M12baOnjh5M1zevlInaIAdDElwW7Ygr7kuf8Auah8jc9zVXUnaTJDnlSV0/X1D5Nar9i/bMpvRaOKHS1ERd+nxAANU3gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaU0S4b9TuE4WzR8Gtq8p6jNNaKqda3tJ41Up3RBh30/xfCszOFR0WVRPmmpcl61vbXxIppEmd1qH91U5Niea+XeVzfi1P20TF2u8k8+4AAmRXQAAAK006Yr9K7QlhopcquubnMqLrjh2L23bOZFJ/fLlS2e0VNzrH8GCnjV7uNeJE5VXJE5zLGIrtVXy9VV1rHZy1D1dlnqamxGpyImSdojl4rR9Gg6li9p3gmnvzd5L7oWP6ZU+kSJ2GeLtHdnX6azngAr0twAAA/cE0sEzJ4JHxSxuRzHsdk5qpsVFTYXZo00oRV3SrTiSVkNVqbFVrqZLyP3Ndy7F5N9IA36C0ZqGTpxrk0poU5dq2RTWnF0JkypmXSn5qNhgobRppMqbN0q13x0lTbkybHN66SBPzN5NqbuIvSiqqatpY6qknjnglbwmSMdm1ycili2facNezpRrl0ppT81lP2vYtTZcvQlTFq5l0L99h9QAdE5AAAAAAAOBjTCdqxVQeh6+PgTsRek1LE6+NfxTjRf/Z3wY5YmTMVkiYoplgnkp5Ekidg5MyoZaxlhW64WuHoa4RcKJ6r0moYnWSpyLuXjTb9pwTW95tlBeLfJQXKmZUU8idc1ybF40XcvKhQOkfR5X4YkfW0fDrLUq6pcuuh5H5eVs5iA2vYL6TGWHKzxT7be8ta796o6/CCo7Mng7dqXZ3aiDDNcstwBHCYAAAAAAAAAAAAAAAA9dmt891u1LbaZM5qmVsbeTNdq8ibTyFrdD3YPRFzqcQzs/Z0qLDTqqbZHJ1ypzNXL+o3bPpFq6hsSac+7Sc61q9tBRvnXOiZN+jxLktdFBbbbTW+mbwYaeJsTE5ETI9IBa7Wo1MEzFDOcrnK52dQAD6fARbSvdvSjAlxma7gyzs9DRceb9S5czeEvaJSUr0RN4SWvt9jifm2Bq1EyJ752pqc6Iir/AFHMtip9Go3v0qmCb1yfc7V3qL0y0Y41zIuK7ky+Ob6lTAAq0vEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHe0f2RcQ4toba5qrC5/Dn5I263d3ZzqhkiidK9I251XAxTzMgidK/M1FVfoXfoYsHpLg6KeVnBqrhlUSZprRqp1je5r53KTYNRGtRrURERMkRNwLapadtPC2JuZEKDrat9ZUPnfncuP2+mYAAzmqADlYtvUGH8PVl2nyVIGdYxV9e9dTW9tcjxI9sbVe5cETKZIonzPSNiYqq4JvUqrT/ibp9ZFhqkk/ZwZS1WS7XqnWt7SLn204ipj7V1VPXVs1ZVSLJPPIskjl3uVc1U+JVNfWOrKh0rtObYmgvayrPZZ9Iynboz7V0r+aAADTOiAAAAAACVYBxvc8KVfBiVam3vdnNSudqX5zV9y77d5FQZYJ5IHpJGuCoYKmliqolimbi1dBq/DN/teI7a2vtdQkjF1PYup8bveuTcv/EOoZPw3fbnh65Mr7XULFImpzV1skb71yb0NC6P8c2zFdMjGKlNcWNzlpnO1/Savuk8ab+WwbJtyOtRI5Mj/Bd3Iqa37sS2cqyw9qPxTfzJWADvkUAAAAAAB/JGMkjdHIxr2ORUc1yZoqLtRUP6AMxTGkvRa6Hpt2wxCr49bpaJutW8ax8afN7nEVIqKiqioqKm1FNhFe6StG1JiBJLlaUjpLptcmyOf6XE7l7vGkQte7qPxmpUy6W8uXcWDd+96swp65cU0O1b+ffrM/A9Fyoau3VstFXU8lPURO4L43pkqL/zeechSorVwXOWS1yORHNXFFAAPh9AAAAAAAAAPrSwTVVTFTU8ayTSvRkbE2ucq5IhqfB1kiw9hujtMWSrCz9o5PdvXW5e7n2siotAeG/R15lxBUx509F1kGaanSqm3+lF7qoXoTq7FD1cS1LkyuyJu+68Cr77Wp1szaNi5GZV3ryTiAASsggAAB+ZpY4YXzSvRkcbVc9y7ERNaqZTxbdn33ElfdX55VEyuYi7WsTU1O01EQvHThffSnB76KJ+VTcVWFuS60j2vXuZN/qM8kHvVWdKRtO3RlXeubw4lm3Gs/oQvq3JldkTcmfvXgAARInwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAALr6Hey9Kt9dfpWdfO70PCq+8brcqcirkn9JS0bHSSNjY1XPcqI1E2qqmrsJ2plkw3QWpiJnTwta9U3v2uXtuVVJLdil62qWVczE8V/FIZfau6iiSBq5Xr4JlXxwOmACwCpwAAAUh0QOIfRV0p8PU784qRElqMl2yOTrU7TV/yLiv8AcoLPZau6VK/sqaJZFTP1ypsTnVck7ZlG51k9xuFRX1T+HPUSOkkXlVcyL3nreqhSBud2fcnNSb3Js3rql1U9MjM29eScUPOACBFqAAAAAAAAAAAAA+tJU1FHUx1VLNJDPE7hMkY7JzV40U+QPqKqLih8VEVMFL30aaTae79KtV/eynuC5Njn9bHOvEvvXeJd2Wwswx4Wlo00nzW7pVqxFI+ej1Niql658KcTt7m+NOXdMrIvFjhDVLudz59+srq8F0MMaihTe3/+eXdqLxB+KaeGpgZUU8rJYpGo5j2Oza5F3oqH7Jii45UK6VFRcFAAPoAAAAAAI3jnBtqxXRcCqb0mrY3KGqYnXM5F983k7mRnnFmG7rhm5LRXODg55rFK3WyVONq/htQ1UeC/2e3X22yW+50zZ4H8e1q7nNXcvKcK1rEjrU6bMj9evfzJPYN5prMVI5O1Hq0pu5ZtxksEy0h4BuOFZ3VEfCq7W53WVCJrZxNem5eXYviIaV7UU8lNIscqYKhbdJVw1kSTQuxaoABhNkAAAHotlFU3G4U9BSRrJPUSJHG3jVVPOXJoBwtwWyYorI9a5xUSKm7Y5/5U/qN6zqJ1bUNiTNp2Icy2LSZZtI6d2fQmtdH32Fl4UstPh+wUlppslbAzJ78vXvXW53bXM6gBakbGxtRjUwRCipZXyvWR64qq4rvAAPZ4ABFNKmIvU7hGonifwayo/YU2S60cqa3dpM158jDPM2CJ0r8yJiZ6WmfVTNhjzuXApjS9iD0+xjUdJfwqSj/28OS6lyXrndt2faRCHAFTVE7qiV0r86riX3R0rKSBkDMzUwAAMJsgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEt0RWr02x7b2PbwoqZy1MnMzWn+XBTtmlioOhxtuUV1u7m7VbTRrzdc77WFvli3bp+qokeudyqvkVBfKr6+0ljTMxET65144fQAAkBEwAACp+iGvnSbfR4fhfk6od0+dE941cmovO7Nf6SlCQaRLz6fYxuFe13Ch6Z0uDi6W3Uipz5Z9sj5Vlr1fpdW96Zsybk/MS8rAoPQKCOJUy4YrvXlm+gABzTsgAAAAAAAAAAAH9aiucjWoqqq5Iibz0XKhrLbVupK+llpp2ZK6ORqtVM9hbuhnAPSUhxLeof2i5PooHp61N0jk4+JO3xZT7GuErViqg6RXR8CdiL0mpYnXxr+KcaL/wCySU13J56brVXBy5k2bdWOgh1bfGmpq3qETpMTI5yaF2a0TT4ZsuWwd3GOFrrha4+hbhFnG5V6TUMTrJU5F3LxptQ4RH5YnxPVj0wVCWQTxzxpJE7Fq5lQmGj3HlywrOkDuFVWx7s5KdV1t43MXcvJsXxmg8P3q2362suFrqWzwu1LucxfeuTcpkw7GFMR3TDVySttk/BVckkidrZK3icn47UO5ZFuyUeEcuVnim7kRe37rxWgizQ9mTwdv27e81WCM4Exna8V0fCpndIrWNzmpXu65vKnvm8vdyJMWBDNHOxJI1xRSqKmmlppFimbg5NAABlMAAAAAAB+KiGKogfBPEyWKRqtex7c2uRdqKi7Sk9Jei+Wg6bdsNxvmpNbpaRNb4uVu9zeTanLuu8GhX2dDXR9GRMuhdKHUsq2KmzJenCuRc6aF/NZjwF86S9GdPeem3SxNjpriubpIdkc6/ldy7F38ZRlbS1FFVSUtXDJBPE7gvje3JzV5UK5tCzZqB/RkTJoXQv5qLgsi2qa1IunEuDkzppT7bT4gH9a1z3I1rVc5VyRETNVU551zt4Gw9UYnxFT2yHhNjVeHPIifu402rz7k5VQ1DQ0sFFRw0dLG2KCFiRxsTY1qJkiEU0UYTTDGHkWpYnpjV5SVK72e9Z2t/Kq8hMSyLBs30ODpPTtuz7NScym702z6xquhGv9NmRNq6V5bN4AB3SMAAAAzlpkxJ6fYrkggk4VFQZww5Lqc7Pr3dtUy5kQtvS7ib1O4WkbBJwa+tzhp8l1t1dc/tIvdVDNxDb0V+alYu1fJPPuLFuRZWV1dImxvmvl3gAEMLGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANJaGaD0Do9t+bcn1PDnfy8Jy5f4o0mJ47HSJQWWhoUTL0PTxxZfRaifgewt2ki6mBkepETwPz/X1HpFVJN/k5V71AANg1ARzSZd/SXBNyrGP4Mzo+kwrv4b+tRU5s1XtEjKg6I26ZR2uzMdtV1TInN1rPznOtap9Go3yJnwwTeuQ69g0fploRRLmxxXcmX7FNgAqsvQAAAAAAAAAAAAFq6HtH3o90WIL5B/tGrwqWnen75dz3J73iTfzbflol0duur4r5fIVbQIvCggcmudffL8z7ebbebURrUa1ERETJETYhLrCsPp4VFQmTQmvauzVrK/vTebq0WjpF7WZzk0bE2610b8wAE3K0PHerXQXm3SUFypmVFPImtrk2Lxou5eVCgNI2j2vwxI6spOHWWpV1S5ddFxI9E8rYvJsNFn5ljZLG6OVjXseitc1yZoqLtRUOXaVlQ17O1kcmZfzOh27Gt2osqTFmVi526PpqX8Ux8C29Jei18HTbthiJz4tbpaJNbm8ax8afN28XElSqioqoqZKm1Cuq2hmopOrlTcuhdxcFm2pT2jD1sC4600pvPvb6yqt9ZFWUVRJT1ETuEyRi5Kil76NdJVLfkjtl4WOlunrWO2R1C8nE7k37uJKAP6iqi5ouSoZbOtOagfizKi500L99pr2xYlPakfRkTByZnaU5psNhApbRppRfT9KtOJpXSQ6mxVq63M4kfxp87bx57UueKSOWJssT2yRvRHNc1c0ci7FRSxqC0Ia6PpxrvTShT9qWTU2ZL1cyZNC6F3cj9AA3jmAAAAAAAiuPsEWzFdLwpESmuDG5RVTW6/ouT3Tfs3EqBhngjnYsciYopnpqqallSWF2Dk0mUMTWC54duTqC6U6xSJrY9NbJG++au9P+KWBoMwf6NrExLcIv9tTuypGuT95Inu+Zu7l5i3cSWK2YhtrqC6UyTRLra7Y6NeNq7lPZQUlPQ0UNHSRNighYjI2N2NRNhHaS7bIKvrVXFiZUTTjt3Ewr75SVVB1LW9GR2Rypmw2b/A+wAJQQgAAAH5lkZFE+WV7WMY1XOc5ckRE2qp+irtPGK0orc3DdFJ/uKtvCqVavrItzed32JympXVbKOB0r9HiuhDfsyz5LQqW08enOupNKlZaSMSvxPieeta53oSL9lStXcxF25carr7eW4jQBVU0z55FkeuVcpetNTx00TYY0wa1MEAAMRnAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB78OU6VeIbbSqmaTVcUeXO9E/E8BINHMaSY7sjV3Vkbu4uf4Ganb05mN1qnE16t/V073poRV8DUYALfPz4AAADNumS4emGkG4ZOzjpuDTs5OCnXf5K40i5yNarnLkiJmq8Rke7Vbq+61dc/11RO+VedzlX8SKXrm6MLI9a493/pO7h0/SqZZl/tRE71+x5QAQUtAAAAAAAAH6jY+WRscbHPe9Ua1rUzVVXYiIAuQ/Ja+inRs6tWG+YhhVtLqfT0r01y8Tnp73iTfzberov0YtpFivGJIWvqNToKN2tsfE5/GvJu369lrkysW7+aeqTc3ny7yurx3sz01Eu93k3n3aw1Ea1GtREREyRE3AAmZXIAAAAAB+ZZGRRulke1jGIrnOcuSIibVVTM2k+8Wq94rnq7RRxwwJ1qytTJahyLrkVNiZ91dqkq0x4+9MpJMP2Wb/ZMXKpnYv75U9yi+9Tj3822rSB3itZlQvo8WVEzrt2fmUtO6NgyUjfS58Uc5Miak27V1aN+YACLE4BN9HOkGvwvK2jquHV2pV66FV66LjVir9mxeTaQgGemqZaaRJIlwVDVrKOCtiWGduLV/MmpTW9lutBebdHcLbUsqKeRNTm7l4lTcvIp7DLGDsU3XC9xSqt0ucblTp0D/WSpypx8S7UND4JxbasVUHT6GTpdQxE6fTPXr41/FOVPFsLCsq2oq5Og7I/Vr3cipLeu1PZjlkZ2o9erYvPNwJAADuEZAAAAAAAAAAAAAAVURFVVyRADlYsvlJh2xVN1q1zbE3JjM8lkevrWpzr4s1Mu3m41V3ulTcq2Th1FQ9XvXdzJyImpORCW6X8X+qS+ehKOTO2UTlbFkuqV+xX/AIJyc5BiubftP0ubq2L2G+K6+X3LgupYvq+n62VP6j/BNCea/YAA4BKwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAASTRiqJj+yqvwpv4kbO1gWZKfGllmVckbXQ5ryK9EU2KRejOxdqcTUr2q6llamlq8DVIALdPz+AAAc3FM602GLrUIuSxUUz07TFUycapx6irgi+InxfP5CmViD3sVetjTYvEs24TU6iZdqcAACJE+AAAABOMB6N7viNzKqqR1vtq6+nPb18ifMb+K6ucz09NLUv6uJuKmrWVsFFGss7kan5m1kWsVouN7uDKC2Ur6id+5qampxuXYicql+6OtHlvwwxlbVKysuqprlVOti40Yi+Vt5thI8M4ftWHbelFaqZsTNr3rrfIvG5d6/8AEOoT2yrAjpMJJe0/wTdzKst69U1oYwwdmPxXfs2d4ABISIgAAAAAAp3TDpCRUmw5Yp9WtlZUsXuxtX7V7XGfTS3pGRiTWDD8/X62VVWxfW8bGLx8a9pOSmiG27bmenp13r5J5li3Xux+2sq02tavFfJPqAAQwsYAAAAAAHqtVxrbVXxV1vqZKeoiXNr2Lr5l405FPKD61ytXFFwU8uY17Va5MUU0Po30i0WJGMoLh0ukuqJkjc8mT8rOX5vcz3Twx6xzmPR7HK1zVzRUXJUUuHRppSz6VacUTcTYq53iST9Xd4ybWReFJMIapcF0Lr38ytLwXRdFjUUSYt0t0pu1pszlwg/jXNe1HNcjmqmaKi5oqH9JcQEAAAAAAAAAFX6cMZel1EuHLdLlWVLP9y9q64o19zzu+znQl2kHFNNhWwvrH8F9VJmylhVfXv415E2r3N6GZbhV1NfWzVtZK6aomer5Hu2qqkYvFavUM9HjXtOz7E5rwJtdGwvSpfS5k7Dc21eScfqfAAEBLVAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB9KaV9PURzxrk+N6PbzouaHzB9RcMp8VEVMFNfUc8dVSQ1MS5xzRtkavIqZofUh+h26pdMBUObs5aRFpZOTget/wAVaTAt2mmSeFsqaURT8/VtMtLUPhX+1VTuAAM5rHlvNL6Os9bQ/CKeSL+5qp+Jkd7XMerHIrXNXJUXcpsIojSPo5vqYnq66y291XRVT1mTpbm5sc7W5uSrntzyy3KhFbz0Uk7GSxtVcMUXDLnJ1cm0oaaSSGZyNR2CoqrgmKaPHwKzBKabR5jOd/BZYahvLI5jE8aoSSzaG77UKjrnXUlCxdrWZyvTtJknjInFZdZKuDY17sOJPJ7cs6BMXzN+i4r3JipWRIMLYPv+JJE9LqF3SM8nVEvWRN/q38yZqXbhzRhha0K2WWmdcp018OqVHNReRidb3cyasa1jEYxqNa1MkREyREJBR3WcvaqXYbE5kTtG/LGoraNmK63Zu7nhuIFgrRdZbGrKq45XOubrRZG/smL81u/nXPtE+AJdTUkNKzoRNwQgFZX1FbJ1k71cv5mTQAAbBqAAAAA+VXU09JTSVVVNHDBE1XPke7JrU41U+KqImKn1EVVwQ+qqiIqqqIibVUpjStpK6ektjw5PlFrZUVjF9fxtYvFxu37tWteXpP0kz3zplpsj3wWz1skux9R5m8m1d/EVuQm2rf6eMFMuTSuvdzLKu5dTqsKmtTLobq2rt2aNOXMABESwAAAAAAAAAAAAAAACfaN9I1bhxzLfcemVdqzyRueb4OVvGnze5lvvy1XCiulBFXW+pjqKeVM2PYupeTkXkMikhwTi664UrunUT+mUz1Tp1M9eskT8F5U8ewklkW++lwinys8U+34hDbwXUjrsZ6bsyaU0O5Lt79ZqIHEwfii1YotyVdum69uXToH6pIl4lTi4l2KdsnsUrJWI9i4opVc0EkEixyJg5M6KAAZDEDyXm5Udotk9xr5kip4G8J7l8SJxqq6kQ9MskcMT5ZXtjjY1XOc5ckaibVVTO+ljGz8T3P0HRPc21Uzv2SbOnO2cNU+xOLnOXatpMoIekuVy5k/NCHbsKxpLVqOgmRifuXZq3ro7zh44xLWYpvslxqc2RJ1lPDnqiZuTn3qvGcIArKWV8r1e9cVUuuCCOCNsUaYNTIiAAGMygAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFlaA7+lvxFLZqh/BguDU6XmupJW7O6mac6IXyZAp5paeeOeB7o5Y3I9j2rkrXIuaKhpvR3ieDFOHYqxFa2riyjqo09y/jy4l2p3NxOLsWgjmLSvXKmVN2lPoVlfayVZKlbGmR2R2/Qv1TJ9NpJAAS0gIAAAAAAAAAAAAAAAAIFj/SXa8PpJRW7gXC5JqVrV/ZxL85U2r81O3ka9TVRUrOsldght0VDPWypFA3FfzPqJTifEFrw5bnV10qUiZsYxNb5F4mpvX/AIpnzH+ObniupWN6rTW5js4qZrtS/Ocvul8Sbjh3683K+3B9fdKp9RM7UirsanE1NiJyIc8gFq27LW4xs7LPFd/Itawrrw2bhLL2pNehN3PgAAcElQAAAAAAAAAAAAAAAAAAAAB7rJdbhZbjHcLbUvp6iPY5uxU4lTenIpoDR1pAt+KIm0lTwKS6tTroVXrZeNWKu3m2py7TOJ+4ZJIZWSxSOjkYqOa9q5K1U2Ki7jqWZa01A/s5WrnT8zKcO2rBp7Vj7eR6Znc9afiGwAVPo00osqulWnE0rY59TYq1dTX8j+JeXYu/Lf8A3TNj1KOOTDlln/3L04NXOxf3bV9wi++Xeu7n2TpbbpfRVqEdk1acdRV6XarvTUo1blXTow14/i6DjaZseemEkmHbPNnRsdlVTMX985PcIvvU38a8m2rACvK2skrJllk/8TUW7ZtnQ2dTpBCmRM66VXWoABqG+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADu4JxLW4WvbLhSLw4162eFVybKzi5F4l3d04QMkUr4no9i4KhingjnjWKRMWrkVDWWHL3b8QWqK5W2ZJIX6lRfXMdva5NyodEythHE11wxcUrLbNkjsklhfrjlTiVPx2oX7gnH1kxPGyKOVKSvVOupZXa1X5i+6Tx8hYdlW5FWIjJF6L/AAXdyKit27E9nOWSJOlHr0pv55txLAAd4iwAAAAAAAOPiLFFhw/GrrpcoYX5ZpEi8KR3M1Nfb2HiSRkTek9cE2mSKGSZ6MjaqquhMp2Dk4lxHZsO0voi61rIc0zZGmuST6LU1rz7Cp8W6Ya2pR9Ph2l9Bxrq9ETIjpF5m7G9vMrGuq6quqn1VbUS1E71zdJI9XOXtqRivvPFHi2nTpLr0c1JrZVyp5lR9YvQbqTPyTx3E6xzpQu18SSjtfDttAupeC79rInznJsTkTuqV8AQypq5qp/TldipY1FQU9DH1cDeinHeukAA1zcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/WqrVRUVUVNaKm4/gAJthrSdiizNbDJUtuNO3UjKpFc5E5H+u7uZPrTpmsszUbcrbWUj96xqkrO7qXxFFg61NbdbTpg1+Kaly/c4Nbdmzatek+PBdaZPt4GlKbSXgqdEVLyka8UkEjcv8cj7u0hYMa3Nb9T5cjXr+BmQHRS9VVhlY3x5nHW4lCq5Hv705Gi63StgynRel1tRVKm6Knd+ZEI3dtNVO1FbarJK9dz6mVG5f0tzz7pTANeW8tdJmVG7k54m3BcyzIlxciu3rywJjftJWLbsjmLcPQULv8Ap0jel/5a3eMiEj3yPc+Rznvcuaucuaqp+QcaeplnXpSuVV2kipqOnpW9GBiNTYmAABhNkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAvzDejPCNbh221lRRTOmnpIpZFSoembnMRV1Z8anv6lWDPgE/hL/OSPBvsQs3YEH3bTqlpQWZRrG1VibmTQhR1TbVoNmeiTuwxX+5dZB+pVgz4BP4S/zjqVYM+AT+Ev85OAZPVdF8Jvchh9d2j8d3+ylPaTtGtqtuGZLnYKeWOWlXhzsdI5/Cj3qmfFt5synTYMrGSxuikaj2PRWuaqZoqLtRTMGkPDr8M4oqbeiL6GcvTaZy7412dtNadoid47LZArZ4W4NXIqJr+5PbnW3JVI6mqHKrkyoq51TSn089hHQARUnQAAB6rRDHUXWjp5UVY5Z2MciLlmiuRFNA9SrBnwCfwl/nKCw/8Az639lReUhrUl12aSCdkiysR2CpnTHWV/fWvqaWSFIJFbii44KqaiD9SrBnwCfwl/nHUqwZ8An8Jf5ycAlHqui+E3uQhHru0fju/2Uyxjy3UtpxfcrdRMVlPBLwY2q5VVEyRdqnDJPpU9sK8/X/lQjBWNY1G1EjUTIirxLrs97n0kTnLiqtbwQAA1zcAAAAAABJNGdpor5jShtlxjdJTTJJw2tcrVXKNzk1pyohGyZ6FPbJtnNN90826BjX1UTXJiiuTic+1ZHR0Mz2LgqNcqL9FLY6lWDPgE/hL/ADjqVYM+AT+Ev85OAWX6rovhN7kKY9d2j8d3+ykH6lWDPgE/hL/OUTi+ip7dim50FI1WwU9VJHG1VzVGo5UTWauMtaQ/Z1e+zpfKUjd5aSCCFixMRq46Ew0EyuXaFVVVEjZ5FciN0qq6TggAhpYoAOnhqx3LEN0jt1sgWSV2tzl1Njbvc5dyHpjHSORrUxVTxJIyJiveuCJnU5hJ8P4DxTe2tkpbXJFA7Wk1R+zaqcaZ61TmRS6cD6OrJhyOOeWJtfcU1rUStzRi/MbsTn28pMyX0V1lVEdUuw2Jz/N5X9pX5RrlZRMx/wCy+Sc+4pa26FKx6I65XyCFd7YIVk8aq37DvUuhnDrERai4XOZ3zXsYnkqvjLLB3I7BoI/+PHeqqRea9Nqyrllw3IieRAo9EuD2J10NZJ9KoX8Mj6popwYn/Y1C/wD7L/OTgGyllUSf8Te5DUW3LSX/AJ3d6kH6lWDPgE/hL/OOpVgz4BP4S/zk4A9V0Xwm9yHz13aPx3f7KQfqVYM+AT+Ev846lWDPgE/hL/OTgD1XRfCb3IPXdo/Hd/spB+pVgz4BP4S/zmeaxjY6uaNiZNbI5qcyKa+Mh3H+YVH1rvtUi156WGBI+qYjcccyYaic3KrqmqdN18iuw6OGKqus+AAIkT4AAAtnodsEYexnNe236mlnSkbAsPAmczLhdMz2Lr9ahb/UO0d/FlV4ZJ5yCdB9/EYm+hS/bKaFAK16h2jv4sqvDJPOOodo7+LKrwyTzllAArXqHaO/iyq8Mk846h2jv4sqvDJPOWUACteodo7+LKrwyTzjqHaO/iyq8Mk85ZQAK0XQdo8X/wC21Sc1ZJ5z4TaB8ASethuMX0KpfxRS0gAUzXdDvhWRFWjvF4p3Ls6Y6ORE7XBRfGRa9dDpdomudZ8RUdWu1GVMLoV5s0V34GjwAYkxdgHFuFUWS82aeKnRf4iPKSL+5uaJzLkpGD/QCRjJGOjka17HJk5rkzRU4lKN0x6FaWqp575g2mSCqYivmt7EyZKm9Y09y75uxd2S7QM4g/rmua5WuRWuRclRU1op/AAAAAAWxoa0Q1eLEjvV86bR2TPONqapKr6PEz52/dxoBX2GMNX3E1b6DsVsqK6VPXKxvWs5XOXrWpzqhbWHeh2u9Qxsl9vtLQ561ipo1mdzKqq1EXmzNB2O0WyyW2O3Wmiho6WNOtjibknOvGvKutT3AFP0PQ94Nhai1VwvNS/f+1YxvcRmfjOnHoL0etTJ1DWv5XVb/wACzQAVr1DtHfxZVeGSecdQ7R38WVXhknnLKABWvUO0d/FlV4ZJ5x1DtHfxZVeGSecsoAFa9Q7R38WVXhknnI3pO0SYIsWArxd7db6iOrpYOHE51U9yIuaJsVcl2l3EN02+1TiHsX8yAGLwAAAD1Wq31t1uMFvt1NJVVc7uBFFGmbnL/wA37gDykiwpgnFOKHJ6SWapqYs8lnVEZEn9bsm9rPMvvRfoOtVoiiuOLGRXO4anJS7aeFeJU/6i8+rkXaXHFHHFE2KJjY42Jk1rUyRE4kQAzdY+h1vc7WvvN+oqJF1qynjdM5ORVXgpn3SW0HQ8YUiRFrbveKhye8dHG1e1wVXxlzAAq+HQTo/YmTqWvl5XVbvwyPt1DtHfxZVeGSecsoAFa9Q7R38WVXhknnHUO0d/FlV4ZJ5yygAVr1DtHfxZVeGSecdQ7R38WVXhknnLKABWvUO0d/FlV4ZJ5x1DtHfxZVeGSecsoAGL9M9gtuGdIdfZrRE+KjhZErGuer1RXRtcutde1VIaWN0SPtvXX6uD7lhXIANWWTQrgCqstDVTW2pWWanjkeqVciZqrUVd5lM3jhn2N2vsOLyEAIN1DtHfxZVeGSecdQ7R38WVXhknnLKABWvUO0d/FlV4ZJ5wWUACq8G+xCzdgQfdtOqcrBvsQs3YEH3bTqlv0/sm7k4H57q/bv3rxAAMxgBBNNWGvTzC7q2nj4VbbkWVmSa3x+7b3Ez7XKTsKiKmS60NeqpmVMLon5lNqhrJKKoZPHnav/qfXMY8BLdKuGvU3iuaKGPg0VVnNTZJqRFXW3+ldXNkRIqiogfBK6J+dC+aSpjqoWzRrkcmIABhNg92H/59b+yovKQ1qZKw/wDz639lReUhrUm10v2S708ytb/e0g3O8gACXlfGY9KnthXn6/8AKhGCT6VPbCvP1/5UIwVJXe8yfMvEv2zPcoflbwQAA1TeAAAAAABM9Cntk2zmm+6eQwmehT2ybZzTfdPN2zffIvmbxQ5ts/x0/wAjuCmkAAWwUMDLWkP2dXvs6XylNSmWtIfs6vfZ0vlKRS9nsI9/kTu4fvUvy+ZwQAQUtA+1DS1FdWw0dLE6WeZ6RxsTa5yrkiGm8AYVpMK2NlJEjX1UiI6qnRNcj+L6KbET8VUrToe7CypuNXf52cJtL+xp8/fuTrl50bkn9RdpOrs2c1kXpT0yrm2J9+BV99LXdJN6FGvZb+7aur6cdwABKyCAELxvpGsmGpX0aI6vr27YInIiMX57t3Mma8hW9y0w4mqHKlHT0NGzdlGr3Jzq5cvEcirtyjpXKxzsVTQmX7HfoLs2jWsSRjMGrpXJ9/AvwGap9JONZlXhXx7U4mQxt+xp5H46xe/biCu7T8vsOc69dLoY7w5nYbcStX90jfHkagBl31bYt+UNw78o9W2LflDcO/Kef1XT/wCC+B7/AEHV/Fb48jUQMu+rbFvyhuHflHq2xb8obh35R+q6f/BfAfoOr+K3x5GojIdx/mFR9a77VO16tsW/KG4d+Uj73Oe9XuVVc5c1Vd6nDtq1o7QRiMaqdHHPtwJPduwJrJWRZHIvSwzY6MeZ/AAcAlQAABfvQffxGJvoUv2ymhTPXQffxGJvoUv2ymhQAAeS8yPitFbLG5WvZTvc1ybUVGrkoB6wYo6pGPPlZde/qOqRjz5WXXv6gG1wYo6pGPPlZde/qOqRjz5WXXv6gG1wYp6pGPPlZde/qeqi0saQ6R6OjxPVPy3TMZIi/wBzVANmAo3RRpy9NrjBZcWwwU887kZDWwpwY3OXYj2r63P3yauRNpeQAAABmjon8ER2q7RYst0KMpbhJwKtrU1MnyzR39SIufKi8ZShtvSrZGYg0e3q2uYjpHUrpYdX/UZ17PG1E7ZiQAAHUwnY6zEmI6Gx0Kft6uVGIqpqYm1zl5ERFVeYAn2gTRv6r7qt3u0TvSSjfk5q6vRMm3gJ81NSuXmTfmmroo44omRRMbHGxqNa1qZI1E2IibkOfhmy0OHrDR2a2x9LpqWNGM43LvcvKq5qvKp0gAAfGtqqaipJausnjp6eFqvklkcjWsam1VVdgB9gURjfog6amqJKXCdsbWcFcvRdXm2N30WJk5U5VVOYrq46bNIlW5VjvENG1fcQUkeXdcir4wDXgMWy6T8fyLm7FVwT6Lkb9iHz6pGPPlZde/qAbWBijqkY8+Vl17+o6pGPPlZde/qAbXIbpt9qnEPYv5kMtdUjHnysuvf1PPcsdYwuVDNQ1+I7jU0szeDJFJMqtcnEqAEcAAB+o2PkkbHGxz3vVGta1M1VV2IiGttB2jiDBllbX3CJj77VsRZnrr6Q1dfSmr9q715EQqnoYMHtvOJpcSVsSOo7UqJCjk1PqF1ov9Ka+dWmoAAAAADw3272yxWyW5Xetho6SJOukkXJOZN6qu5E1qUdi/oh0ZK+DCtnbI1NSVVcq5LypG1UXuu7QBf4MfXLTLpErXKvp96GYvuKenjYidvg8LxnLdpKx65c1xXdO1MqAG1QYo6pGPPlZde/qOqRjz5WXXv6gG1wYo6pGPPlZde/qOqRjz5WXXv6gG1wYo6pGPPlZde/qOqRjz5WXXv6gHb6JH23rr9XB9ywrk9l4ulwvFwkuF0rJqyrkREfLK7hOdkmSZrzIh4wAbxwz7G7X2HF5CGDjeOGfY3a+w4vIQA6IAAAAAKrwb7ELN2BB9206pysG+xCzdgQfdtOqW/T+ybuTgfnur9u/evEHmbXUy3R9t6YiVLYWz8Bd7Fcrc07aa+dD0lR6WL7PhzSbZbrDmrY6NElYi+vjWR3Cb3NnKiGCvrEo40ldmxRF3KbdlWe60Jlhb+7BVTemXD65i3AfGiqYK2jhrKaRJIJmJJG9NjmqmaKfY3EVFTFDnKitXBc5ENLOGvVHhSVsEfCrqTOamyTW5UTrmdtPGiGazYZnbTPhr0ixS6rp4+DRXDOaPJNTX+7b3Vz5l5CH3ooMUSqYmxfJfLuLDuRauCuoZF2t808+8goAIWWOe7D/wDPrf2VF5SGtTJWH/59b+yovKQ1qTa6X7Jd6eZWt/vaQbneQABLyvjMelT2wrz9f+VCMEn0qe2Fefr/AMqEYKkrveZPmXiX7ZnuUPyt4IAAapvAAAAAAAmehT2ybZzTfdPIYTPQp7ZNs5pvunm7ZvvkXzN4oc22f46f5HcFNIAAtgoYGWtIfs6vfZ0vlKalMtaQ/Z1e+zpfKUil7PYR7/Indw/epfl8zggAgpaBpDQtQpRaPKB3ByfUufO/lzcqJ/ijSZnIwXAlNg+zwZZKyhhRefgJn4zrlt0UfVU0bNSJwKBtKZZqyWRdLl4gielbEj8NYUlqKZ3Brah3SKdfeuVFzd2kRe3kSwpXoj6pzrlaKLPrY4ZJcuVzkT8pq2zUupqN7258yfXIb13aJlZaMcT0xbnX6JiVRI98j3SSOc97lVXOcuaqq71PyAVcXgAAAAAAAAAAAAAAAAAAX70H38Rib6FL9spoUz10H38Rib6FL9spoUAHiv38jr+xpPJU9p4r9/I6/saTyVAMFAAAAAAAAAG2dEt4mv8Ao4sl0qHq+eSmRkr12uexVY5y8qq1VMTGxeh9gfT6ILEyRFRzmzSdp0z1TxKgBPQAAfxyI5qtciKipkqKYDrI0hrJoW7GSOanaXI31PKyGGSaRcmRtVzl4kRM1MBzyLLM+V217lcvbUA/BoDoTMNNX0yxXUR5qi+g6VVTZsdIqf4pn9Iz+bV0PWdLHo1sdDwODI6lbPLx8OTr1z5uFl2gCWgAAGXuiQx/Ner9Lha2zq210EnBqOCuqedNufG1q6kTjRV4jRuLbl6TYWut2TLhUdHLO3PerWKqJ3UQwnI98kjpJHK971VznKuaqq7VAPyAAAAAAAAAAAAAd/R1aUvmOrLant4Uc9ZGkqccaLwn/wCKKAa10PYebhnR5arc6PgVD4kqKnVr6a/rlRebNG/0kuAAB86meGmppamokbFDExXyPcuSNaiZqq8iIfQq7omb++z6OH0UD1bPdJm02pdaR63P7SoiNX6QBQel3HlbjjEck3THx2qncraKnVckRvv1T3ztq8WzcQoAAAAAAAAAAAAAAAAAG8cM+xu19hxeQhg43jhn2N2vsOLyEAOiAAAAACq8G+xCzdgQfdtOqcrBvsQs3YEH3bTqlv0/sm7k4H57q/bv3rxBRfRF+yq39gp5by9Ci+iL9lVv7BTy3nHvJ7g7enEkdzf5Ru5eB2tAGJ+nUsuGauTr4UWWkVV2sz65naVc+2vEW0ZIstxqbRdqa50b+DPTyI9i7l40XkVM0XnNUYdutNe7LS3WkXOKojRyJnrau9q8qLmnaMF27Q6+DqHr2m8Ptm7jZvlZPotT6VGnZfn2O++fvPeRzSPh1uJsLVFC1qeimftaZy7pETUnMqZp2yRgkE0LJo1jemRchEqeofTStmjXBzVxQx9Ix8cjo3tVr2qqOaqZKipuPyWPp1w16VYhS800eVJcVVX5JqbMnrv7tvPwiuCqKylfSzuhfnQvizq1ldTMqGZnJ3LpT6Ke7D/8+t/ZUXlIa1MlYf8A59b+yovKQ1qS26X7Jd6eZAr/AHtINzvIAAl5XxmPSp7YV5+v/KhGCT6VPbCvP1/5UIwVJXe8yfMvEv2zPcoflbwQAA1TeAAAAAABM9Cntk2zmm+6eQwmehT2ybZzTfdPN2zffIvmbxQ5ts/x0/yO4KaQABbBQwMtaQ/Z1e+zpfKU1KZa0h+zq99nS+UpFL2ewj3+RO7h+9S/L5nBAP6iZrkQUtA13bo+lW+miRMuBE1vcRD7hEyRE4gXI1MEwPzq5ekqqCl9PlqulfiWgkobbWVTG0aNc6GBz0ReG7UqohdANK0KJK2BYXLhidGybSdZtSlQ1uKoi5N5lH1N4i+Ibr4HJ5h6m8RfEN18Dk8xq4HA/ScXxF7iWfr2f4Kd6mUfU3iL4huvgcnmHqbxF8Q3XwOTzGrgP0nF8Re4fr2f4Kd6mUfU3iL4huvgcnmHqbxF8Q3XwOTzGrgP0nF8Re4fr2f4Kd6mUfU3iL4huvgcnmHqbxF8Q3XwOTzGrgP0nF8Re4fr2f4Kd6mUfU3iL4huvgcnmOW5Fa5WuRUVFyVF3GwjIdx/mFR9a77VOJbNkMs5GK12PSx8MCS3dvBJa6yI9iN6OGZdePI+AAOESgAAAv3oPv4jE30KX7ZTQpnroPv4jE30KX7ZTQoAPFfv5HX9jSeSp7T41sDaqjmpnOVrZY3MVU2oipkAYDBpP/TnYflDcu9s8w/052H5Q3LvbPMAZsBpP/TnYflDcu9s8w/052H5Q3LvbPMAZsBpT/TnYflDc+9s8x7bf0PeD4JEfV3G8VeXuFlYxq8+Tc/GAZ3wbhy5YrxDTWa1xK+WZ3Xvy62Jnunu4kT/ANbVNu2S3U9os9HaqRMoKSBkEee3gtRETPl1HiwrhewYXo1pLDbIKKN2XDVuavfl75y5q7tqdkAAAAiel+8Nseja+Vyv4L1pXQRcfDk6xuXMrs+0YpL06KnGEdZX0uEKGVHR0jun1qtXV01UyYztIqqv0k4iiwD1WikWvu1HQt21M7Ik/qcifib2jY2ONsbGo1jURrUTciGItF8KT6SMNxqmaemlOqpzSNX8Db4AAABCNO80kOie/LC1znviZEjWpmq8KRjV8SqY99AV3wOo707zG+QAYG9AV3wOo707zD0BXfA6jvTvMb5ABgb0BXfA6jvTvMPQFd8DqO9O8xvkAGBvQFd8DqO9O8w9AV3wOo707zG+QAYG9AV3wOo707zH5ko6uNivfSzsam1XRqiIb7Ibpt9qnEPYv5kAMXlodDDRJVaVYJ1TP0HSTT82aJH+cq8uroR4UdjK7z5a2W/gf3SNX8oBpgAAAzj0Xlcr75YrZwuthppJ1T6bkb//ADNHGWOiskV+kyBq7I7ZE1P75F/EAqQAAHZsmFcS3ukdV2ixXCvp2vWNZIIHPajkRFVM035KndPd1Pcc/JK8+CP8xf3Qo+1rVf8AlJfu4i3QDEnU9xz8krz4I/zDqe45+SV58Ef5jbYAMSdT3HPySvPgj/MOp7jn5JXnwR/mNtgAxJ1Pcc/JK8+CP8w6nuOfklefBH+Y22ADBF2ttwtNc+hudHPR1UaIr4ZmK17c0zTNF5FQ8hY3RI+29dfq4PuWFcgA3jhn2N2vsOLyEMHG8cM+xu19hxeQgB0QAAAAAVXg32IWbsCD7tp1TlYN9iFm7Ag+7adUt+n9k3cnA/PdX7d+9eIKL6Iv2VW/sFPLeXoUX0Rfsqt/YKeW8495PcHb04kjub/KN3LwKwLT0B4n9B3KTDlXJlBVqslMqrqbKia2/wBSJ3U5SrD6U00tNUR1EEjo5Yno9j27WuRc0VCB0NW6jnbM3R4ppLRtSz2WhSvp36c2xdCmvwcLAeIIsTYZprmzgpMqcCoYnuJE9cnNvTkVDulrRStlYj2Lii5SiZ4HwSOikTBzVwU42NbFDiPDdXapeCj5G8KF6+4kTW1e7qXkVTLVXTzUlVLS1EaxzQvVkjF2tci5Khr4o/T9hr0Jc4sR0seUNWqR1OSamyompe2id1OUjF56DrIkqWJlbkXd9ia3JtXqZlo5FyPypv8AunDaV1h/+fW/sqLykNamSsP/AM+t/ZUXlIa1Md0v2S708zPf72kG53kAAS8r4zHpU9sK8/X/AJUIwSfSp7YV5+v/ACoRgqSu95k+ZeJftme5Q/K3ggABqm8AAAAAACZ6FPbJtnNN908hhM9Cif8A1Jtn0Zvunm7ZvvkXzN4oc22f46f5HcFNIAAtgoYGWtIfs6vfZ0vlKalMtaQvZ1e+zpfKUil7PYR7/Indw/epfl8zgn6j/eN50PyfqP8AeN50IKhaCmwQAXKfnQAHFv8AirD9hqY6a73FlLLIzhsarHOzbmqZ6kXeimOSVkTek9URNuQyQwyTu6ETVcupExXwO0CJ9UfBXx7F3mT9I6o+Cvj2LvMn6TB6wpPit705m36pr/gP/wBV5EsBE+qPgr49i7zJ+kdUfBXx7F3mT9I9YUnxW96cx6pr/gP/ANV5EsBE+qPgr49i7zJ+kdUfBXx7F3mT9I9YUnxW96cx6pr/AID/APVeRLARPqj4K+PYu8yfpHVHwV8exd5k/SPWFJ8VvenMeqa/4D/9V5EsMh3H+YVH1rvtU0h1R8FfHsXeZP0mbq17ZKyd7Fza6RyovGmZE70VEUzYurci4Y5lRdRPLkUlRTum65itx6OdFTXrPiACIlgAAAF+9B9/EYm+hS/bKaFM9dB9/EYm+hS/bKaFAAAAAAAAAAAAAAAABU+mPS9bsMU81osM0VbfHIrFc1UdHS8rl2K7ib3eJeNpsg0wyQzpQSRSWXJeE2zo5syt+ei9evKjVVOMze5FRyo5FRUXWigH7qp5qqplqamV8s0r1fJI9c3Ocq5qqrvVVPmAASnRGqN0nYcVfjGJP8kNsmGdH1QlJjzD9Sq5NiudO53MkjczcwAAAAB5brcaC00Elfc6yGjpY8uHNM9GsbmqImarxqqJ2zhdULA3yts3hbPOAScEY6oWBvlbZvC2ecdULA3yts3hbPOAScEY6oWBvlbZvC2ecdULA3yts3hbPOAScEY6oWBvlbZvC2ecdULA3yts3hbPOASchum32qcQ9i/mQ9fVCwN8rbN4WzzkU0uY1wjcdG18oqDElrqamam4McUVS1znrwk1IiLrAMnl49CIqeqO+Jv9CR+WUcXR0JEyNxtdafPW+2q/+2RifmANNAAAGVeipYrdJ0ar7q3RKn9z0/A1UZn6LilVmMbRW5aprf0rPlZI5fzoAUqAADUvQo+1rVf+Ul+7iLdM66ANI2EsJ4Jntl9uMlPVPr5JmsbTyP6xWMRFzaiptapYfVt0c/HU3gU36QCxwVx1bdHPx1N4FN+kdW3Rz8dTeBTfpALHBArTpewFdbpS2yiu0slVVTNhhYtJK3hPcuSJmrck1qT0AAAAyH0SPtvXX6uD7lhXJY3RI+29dfq4PuWFcgA3jhn2N2vsOLyEMHG8cM+xu19hxeQgB0QAAAAAVXg32IWbsCD7tp1TlYN9iFm7Ag+7adUt+n9k3cnA/PdX7d+9eIKL6Iv2VW/sFPLeXoUX0Rfsqt/YKeW8495PcHb04kjub/KN3LwKwABXBcJPdCuJ/SPEqUFTJwaG4Kkbs11Mk9w7x5Lz8hoYx4mpc0NKaJsTeqTC0azycKvpMoanNdbtXWv7aeNFJpde0MUWleu1PNPPvK3vvZOCpXRpnyO8l8u4l5zsS2imvtiq7VVJ+zqI1ajstbHbWuTlRclOiCXvY17Va5MUUr+OR0T0excFTKhlOkoam2Ywp7fVs4E9PXMjenKj02chqwqrTDhrLEFoxPSx6lqoYavJN/CTgPXyf7S1TgWHRuo5Z4lzYphuy4ErvNaLbRgpp251R2OxcmP5qAAJCREzHpU9sK8/X/lQjBJ9KnthXn6/8qEYKkrveZPmXiX7ZnuUPyt4IAAapvAAAAAAAnOgyNX6RKVyJ+7hlcv9ip+JBi0Oh1onS4luFerc2U9L0vPic9yZeJrjpWQxX10SJrx7spx7wSpFZk7l/wAVTvyeZeYALTKMBlbHjuHja+OT4wnTuSKapMl4imSpxBcahFzSWqlei871UiV7Hf0o02qT64TcZ5nbE4/Y8B+o/wB43nQ/J+o/3jedCDoWapsEAFyn50BRfRF+ym39hJ5bi9Ci+iL9lNv7CTy3HBvJ7g7enElNzf5Ru5eBWAAK4LiAAAAAAAAAAAAAAAAAAL96D7+IxN9Cl+2U0KZ66D7+IxN9Cl+2U0KADzXSZ9PbKqojyR8UL3tzTejVVD0niv38jr+xpPJUAy11dtIHwqg8EaOrtpA+FUHgjSrwAWh1dtIHwqg8Eafan0+Y8iciv9Kp04n0qon+LkKpABfNk6Iyta9rb3hynlYvrn0cysVP6XZ591C3cCaQ8L4zbwLRXK2ra3hPpJ28CZqceWxycrVUxSfahqqmhrIqyjnkp6iFyPjljcrXMcmxUVADfgK80G4/9W+HXsrlY28UPBZVIiZJIi+tkROXJc03Km5FQsMAFU6bdFVFiignvNkpo6e/RNV6oxEa2rRPcu+fxO7S8aWsAD/P97HRvcx7XNe1cnNVMlReJT8ls9E3hRljxoy80kSMpLu10jkRNTZ25cPu5tdzqpUwB+4JXwTxzRrk+NyOavEqLmhva11cdfbaWvh/d1MLJmczmoqfaYGNhdD5ekvOi22Zv4U1CjqKVOLgetT+xWAFgAAAiWmO3Oumi/EFIxvCclG6ZqcaxqkieSYqP9AJY2SxPikaj2ParXNXYqLtQw5j/D0+FsX3GxzNdlTzL0py+7iXWx3baqdvMA4QAAAAAAAAAAABZvQy1qUmlekhV2SVdNNBz9bw/wAhWR3MA3ZLFjWzXZzuDHTVkb5V+Zwsn/4qoBuYBNaZoAAUl0W9rWfC9ou7G5rR1boXKm5sjc8+7Gidsu0juknD6YowPdbIiIss8CrAq7pWrwmc3XInazAMPg/csckMr4pWOZIxytc1yZK1U2op+AAAAAAACSaLfbJw1/5Sn+8abeMQ6LfbJw1/5Sn+8abeAAAAMh9Ej7b11+rg+5YVyWN0SPtvXX6uD7lhXIAN44Z9jdr7Di8hDBxvHDPsbtfYcXkIAdEAAAAAFV4N9iFm7Ag+7adU5WDfYhZuwIPu2nVLfp/ZN3JwPz3V+3fvXiCi+iL9lVv7BTy3l6FF9EX7Krf2CnlvOPeT3B29OJI7m/yjdy8CsAAVwXCCUaMcSuwzimGpkeqUc/7GqT5ir67+ldfdTeRcGWCZ8EjZGZ0ymCqpo6qF0MiYtcmCmwmOa9qOa5HNVM0VFzRUP6V1oMxP6bYfWz1UmdZb0RrM11vh9yva9bzcHjLFLXo6plVC2ZmZfzAoe0KKShqX08mdq96aF+qHyq6aGrp309RGkkT9rV5FzTx6z6gGxgmOJqYrhgAAfT4Zj0qe2Fefr/yoRgk+lT2wrz9f+VCMFSV3vMnzLxL9sz3KH5W8EALQtmh6vrrbTVrb1TMbUQslRqwuVURyIuW3lPR1FLj8e0veXec3EsOvcmKR+KcznuvPZTVVqzJimxeRU4LY6ilx+PaXvLvOE0KXDffaXvDvOffUVofD8U5nz9UWT8ZO5eRU4Lcj0JVS+vxDC36NKq/mQ91HoToWuT0XfqiVN6RU7Y/tVx7bd+0Hf8eH1TmY33tslqe1x+juRTNPDNUzx09PE+WWRyNYxiZucq7ERDSeizC7sL4ZZT1CJ6OqHdOqctfBXLU3PkTx5nqwpgrD2GndNt1HwqnLJaiZ3Dky5F2J2kQkRKLFsNaJ3Wyri7ZmT7kHvJedLSakECKjM6451+wABIyHnOxNcG2nD1wuTlRPQ9O+RvK5E1J21yQyautc1Lw6IK/tprRT4fgf+1q3JLOiLsjaupF53J/iUeQC9FUktSkSf2p4r+IWvcihWCidO5Mr18EzeOIP1H+8bzofk/Uf7xvOhGUJopsEAFyn50BRfRF+ym39hJ5bi9Ci+iL9lNv7CTy3HBvJ7g7enElNzf5Ru5eBWAAK4LiAAAAAAAAAAAAAAAAAAL96D7+IxN9Cl+2U0KZ66D7+IxN9Cl+2U0KADxX7+R1/Y0nkqe08V+/kdf2NJ5KgGCgAAAAAAAAT3QHfX2LSfa3K9WwVz/QUyZ6lSTU3uP4C9o2KYDoamSjrYKuJcpIJGyMXlauafYb4p5WTwRzxrmyRqOavIqZgH0AABWHRNWplw0XVFXwc5LdURVDV35K7pa+J+faMmG2tLFMlXozxHEqZ5W6aRE5WNVyfYYlABc/Qq4nbbsT1eG6mTgw3NnDgzXUkzEXV/U3P+1CmD0W6sqbfX09fRyuhqaeRssUjdrXNXNF7oBvoEa0a4spMZ4TpbxTK1syp0uqhRf3UqJ1zebenIqElABWmnLRq3G1tjr7b0uK90jFbErlybOzb0ty7lzzVF3Kq57c0ssAGCLtba+0V8tBc6OajqolyfFKxWuT/ANcu88huzEmG7DiOmSnvlqpa5iJ1qys65n0XJrb2lQra9dD7g+re59urbnblXYxJElYnacnC/wAgDLgL/quhvkRVWmxc1U3JJQZeNJPwPIvQ43XPVieiXnpnecAosF6f6crt8pqLwd3nH+nK7fKai8Hd5wCiwXp/pyu3ymovB3ec5GMdBtxw3hivvk1/pKhlHF0x0bYHIrtaJlnnygFRAAA2doVxG3E2jm2VjpOHU08foWp16+mRoiZryqnBd/UTQyl0N+NWYbxY60V8yMtt1VsaucuqKZPWO5EXPgrzou41aAAAAZ56IXRbVrXz4uw5SunjmVX19LE3NzHb5Wom1F2uTai69irlQZ/oEQjF+ivBWJ5n1Nbakpqt65uqaN3SnuXjVE61y8qoqgGNAaKuXQ40D3qttxRUwN3NqKVsi91rm/Yct/Q43NF6zFFIqctK5PzAFEgvT/TldvlNReDu84/05Xb5TUXg7vOAVfot9snDX/lKf7xpt4oXCWgW52TFFrvEmIaSZlFVxVDo2wORXIxyOyRc+QvoAAAAyH0SPtvXX6uD7lhXJY3RI+29dfq4PuWFcgA3jhn2N2vsOLyEMHG8cM+xu19hxeQgB0QAAAAAVXg32IWbsCD7tp1TlYN9iFm7Ag+7adUt+n9k3cnA/PdX7d+9eIKL6Iv2VW/sFPLeXoUX0Rfsqt/YKeW8495PcHb04kjub/KN3LwKwABXBcIAAB2MHX2fDmIqW6wZqkTspWIvr411Ob3PHkaloaqCuooaylkSSCdiSRvTe1UzRTIRdGgDE/TaeXDFXJ18WctIqrtb7pnaXX214iU3ZtDqpVp3rkdm3/cg99LJ6+BKyNO0zP8AL9uCqW2ACeFWAAAGY9KnthXn6/8AKhGCT6VPbCvP1/5UIwVJXe8yfMvEv2zPcoflbwQ1jhX2MWrsKHyEOkc3CvsYtXYUPkIdItaH2bdyFEVPtn714gAGUwgAAAAKqIma6kABy8U36gw5Z5blcJOCxiZMYi9dI7c1vKv/ALI/jDSTh6wsfFDO25Vqakhp3IrUX5z9ieNeQorFuJbrie4+jLlNmjc0ihZqZEnE1Px2qR+1LehpWqyJek/wTfyJXYd1qiuekk6K2PbnXdz4nmxJeKu/Xqputa7OWd2fBTYxu5qciJqOcAV497nuVzlxVS3Y42xMRjEwRMiA/Uf7xvOh+T9R/vG86HlD2psEAFyn50BRfRF+ym39hJ5bi9Ci+iL9lNv7CTy3HBvJ7g7enElNzf5Ru5eBWAAK4LiAAAAAAAAAAAAAAAAAAL96D7+IxN9Cl+2U0KZ66D7+IxN9Cl+2U0KADxX7+R1/Y0nkqe08V+/kdf2NJ5KgGCgAAAAAAAADcuj2r9HYDsNZnmstugc76XS25+PMw0bC6HquSu0S2fN2b6dJIH8nBkdl/irQCwAAAc/ElMtbh25UaJms9JLFlx8Jip+Jg0/0CMH4poFteJrpbVbwfQtZLDl9F6p+ABzQAATLRNjutwLiFKuNHz2+oyZW0yL69u5yfOTXl203mwMPXm23+0QXW01bKqknbm17V2caKm5U3ouwwaSbAGOL/gq4rU2epzhkVOn0suaxTJypuXlTJQDbgKzwLppwjiKOOCvqEsleupYqpyJGq/Nk2ZfSyXkLJikjljbLE9skbkza5q5oqcaKAfsAAAAAAAAAhum32qcQ9i/mQmRDdNvtU4h7F/MgBi8AAA03oB0pxXukgwxiCpRl2iajKWeRf4pqbEVf/kT/AC58zMh/WOcx6PY5WuauaKi5KigH+gIM4aL9O1RQRRWvGTJaynaiNZXxpnK1P/yJ7vnTXzqX5h+/2XEFGlXZbnS10OWtYnoqt5HJtavIqIAdMAAAAAAAAAAAAAAGQ+iR9t66/VwfcsK5LG6JH23rr9XB9ywrkAG8cM+xu19hxeQhg43jhn2N2vsOLyEAOiAAAAADN+HsZXOmsFup2QUasipYmNVWOzyRiJr6493q4u3wei/sd+oAsiGV/VtyrmQpuohj613ZTOujaPVxdvg9F/Y79RWelu71N4vlLPUsiY5lMjESNFRMuE5d6rxgHMtt7lpFRV0odq7MTG17VRETIvAhYAIUWUAAAD22OvqbXeKS4Ub+BPBKj2Lu5l5FTUvOAe4lVHoqazHM1HRuRUyYKXn6uLt8Hov7HfqHq4u3wei/sd+oAsnrX61KZ6iP/FO4eri7fB6L+x36h6uLt8Hov7HfqAHWv1qOoj/xTuKYxvVyV+K7hVzNY2SWXNyNTJNibDjAFd1WWd+9eJcFAmFLGif4pwL1smM7pBZaGBkFGrY6eNiKrHZ5I1E98ev1cXb4PRf2O/UAWDFK/oJlXMVJPDH1ruymddA9XF2+D0X9jv1D1cXb4PRf2O/UAe+tfrUxdRH/AIp3HnqMf3mNFVtNQduN/wCoj910s4jpdUdHal54pP1gGvPPIiZHL3m5TU0LnZWJ3IcSq0tYwmRUjno6fPfHTouX92ZG71inEV5arLleKueNdsfD4LF/pbkniAIfX1c7n9Fz1VNWKlh2VQUrGI9sTUXXgmPfgcYAHLO2AAAD+s1OReUAIFL/APVxdvg9F/Y79Q9XF2+D0X9jv1AFmda/WpSvUR/4p3D1cXb4PRf2O/UVnpbu9TeL3ST1LImOZTcBEjRUTLhOXeq8YByLbe5aRUVdKEguzExte1UREyLwIWACFFlAAAAAAAAAAAAAAAAAAFp6AMSV2HpbytFFTSdPbDwunNcuXB4eWWSpxlr9Uq+/BLb3t/6wAB1Sr78Etve3/rPNdNI17lttVE6ltyI+F7VyjfnravzwADLwAAAAAAAABc+gjGV2sWGqy30sdLLD6LWVOnNcqtVWtRcsnJq61AACw+qVffglt72/9Y6pV9+CW3vb/wBYAA6pV9+CW3vb/wBZn3SpVur8eXKufFFE+ocyR7Y0VG8JWNzVM1Vda6+2AARcAAAAAA6lkxFfrG7Oz3mvodeatgncxq86IuS9sAAmFv006RKNEa69sqmpsSeljd40ai+M79s0/Y1dK2KWjskufunU8iL4pEQAAmdt0tYjqWI6SitSKvvYpP1nTTSVfVT+Etve3/rAAP71Sr78Etve3/rHVKvvwS297f8ArAAHVKvvwS297f8ArI9pIx3d7nga7UE9NQtimg4LlYx6ORM02ZuUAAzsAAAAAAfehrKuhqW1NDVT0s7fWyQyKxycyprAAJraNL+kK2taxmIJKmNPc1UTJVX+pU4XjJVZtPeNJZ2wTUdklRfdLTyIvikRPEAATe36VMQ1DEc+jtaLyRSfrPb1Sr78Etve3/rAAHVKvvwS297f+sdUq+/BLb3t/wCsAAdUq+/BLb3t/wCsdUq+/BLb3t/6wAB1Sr78Etve3/rHVKvvwS297f8ArAAKD0wXSovOPq64VTImSyMiRUjRUbqjam9V4iIgAA0/ZtIt7gs9FCylt6tjp42oqxvzyRqJ74AA9fVKvvwS297f+sdUq+/BLb3t/wCsAAdUq+/BLb3t/wCsAAH/2Q==" alt="NJF REGI" style="height:36px;width:auto;object-fit:contain;">
+      <div>
+        <div class="logo-text">NJFREGI サービス申し込み</div>
+        <span class="logo-sub">新日本富士アシスト株式会社</span>
       </div>
     </div>
-    <div class="upload-card">
-      <label for="inp-cam" class="btn-cam"><span class="cam-icon">📷</span>拍照扫描小票<div class="cam-sub">自动识别金额与消費税</div></label>
-      <label for="inp-gal" class="btn-gal">🖼&nbsp; 从相册选择（支持多张）</label>
+  </div>
+</header>
+
+<!-- STEP NAV -->
+<nav class="step-nav">
+  <div class="step-list" id="stepList"></div>
+</nav>
+
+<!-- PAGES WRAPPER -->
+<div class="pages-wrap">
+
+<!-- ════ PAGE 1: 契約者情報 ════ -->
+<div class="page active" id="page1">
+  <div class="page-title">
+    <h2>ご契約者情報</h2>
+    <p>CONTRACT INFORMATION</p>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num">1</div>
+      <div class="card-head-title">会社・法人情報</div>
     </div>
-    <input type="file" id="inp-cam" accept="image/*" capture="environment">
-    <input type="file" id="inp-gal" accept="image/*" multiple>
-    <div class="sec-title">最近录入</div>
-    <div class="rlist" id="home-list"><div class="empty"><div class="empty-icon">🧾</div>暂无记录</div></div>
+    <div class="card-body">
+
+      <div class="field-group" id="fg-company">
+        <div class="field-label">会社名・商号 <span class="req-badge">必須</span></div>
+        <input type="text" class="field-input" id="company" placeholder="例：NJFREGI株式会社">
+        <div class="field-err">会社名を入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">フリガナ</div>
+        <input type="text" class="field-input" id="companyKana" placeholder="例：エヌジェイエフレジカブシキガイシャ">
+      </div>
+
+      <div class="field-group" id="fg-rep">
+        <div class="field-label">代表者名 <span class="req-badge">必須</span></div>
+        <input type="text" class="field-input" id="repName" placeholder="例：NJF 太郎">
+        <div class="field-err">代表者名を入力してください</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group" id="fg-zip1">
+        <div class="field-label">郵便番号 <span class="req-badge">必須</span></div>
+        <div class="zip-row">
+          <input type="text" class="field-input" id="zip1" placeholder="例：1100016" maxlength="8" inputmode="numeric">
+          <button class="zip-btn" onclick="searchZip('zip1','addr1_pref','addr1_city','addr1_town')">検索</button>
+        </div>
+        <div class="field-hint">ハイフンなしで入力後、検索ボタンを押してください</div>
+        <div class="field-err">郵便番号を入力してください</div>
+      </div>
+
+      <div class="field-group" id="fg-pref1">
+        <div class="field-label">都道府県 <span class="req-badge">必須</span></div>
+        <input type="text" class="field-input" id="addr1_pref" placeholder="例：東京都">
+        <div class="field-err">都道府県を入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">市区町村</div>
+        <input type="text" class="field-input" id="addr1_city" placeholder="例：台東区台東">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">番地・建物名</div>
+        <input type="text" class="field-input" id="addr1_town" placeholder="例：4-31-7-203">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group" id="fg-tel">
+        <div class="field-label">電話番号 <span class="req-badge">必須</span></div>
+        <input type="tel" class="field-input" id="tel" placeholder="例：090-0000-0000" inputmode="tel">
+        <div class="field-err">電話番号を入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">携帯電話</div>
+        <input type="tel" class="field-input" id="mobile" placeholder="例：090-1234-5678" inputmode="tel">
+      </div>
+
+      <div class="field-group" id="fg-email">
+        <div class="field-label">メールアドレス <span class="req-badge">必須</span></div>
+        <input type="email" class="field-input" id="email" placeholder="例：example@email.com" inputmode="email">
+        <div class="field-err">有効なメールアドレスを入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">担当者名</div>
+        <input type="text" class="field-input" id="contactName" placeholder="例：NJF 太郎">
+      </div>
+
+    </div>
   </div>
-  <div class="nav-bar">
-    <button class="nav-tab active" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
-    <button class="nav-tab" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
-    <button class="nav-tab" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
+  <div class="nav-btns">
+    <button class="btn-next" onclick="goNext(1)">次へ　→</button>
   </div>
 </div>
 
-<!-- PROCESSING -->
-<div class="screen" id="screen-proc">
-  <div class="proc-img" id="proc-thumb">🧾</div>
-  <div class="proc-title">识别中…</div>
-  <div class="proc-sub">正在分析小票内容</div>
-  <div class="proc-steps">
-    <div class="step" id="s0"><div class="step-dot">1</div><div class="step-label">图像预处理</div></div>
-    <div class="step" id="s1"><div class="step-dot">2</div><div class="step-label">OCR 文字识别</div></div>
-    <div class="step" id="s2"><div class="step-dot">3</div><div class="step-label">AI 结构化解析</div></div>
-    <div class="step" id="s3"><div class="step-dot">4</div><div class="step-label">税额分类提取</div></div>
+<!-- ════ PAGE 2: 設置先情報 ════ -->
+<div class="page" id="page2">
+  <div class="page-title">
+    <h2>設置先（店舗）情報</h2>
+    <p>INSTALLATION INFORMATION</p>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num">2</div>
+      <div class="card-head-title">ご利用店舗の情報</div>
+    </div>
+    <div class="card-body">
+
+      <div class="field-group" id="fg-shop">
+        <div class="field-label">店舗名 <span class="req-badge">必須</span></div>
+        <input type="text" class="field-input" id="shopName" placeholder="例：NJF酒場">
+        <div class="field-err">店舗名を入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">フリガナ</div>
+        <input type="text" class="field-input" id="shopKana" placeholder="例：エヌジェイエフサカバ">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">業種</div>
+        <select class="field-select" id="industry">
+          <option value="">選択してください</option>
+          <option>飲食店</option>
+          <option>ファストフード／麻辣湯</option>
+          <option>カフェ・喫茶店</option>
+          <option>居酒屋・バー</option>
+          <option>ラーメン・中華料理</option>
+          <option>和食・定食</option>
+          <option>イタリアン・洋食</option>
+          <option>テイクアウト専門</option>
+          <option>小売業</option>
+          <option>その他</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group" id="fg-zip2">
+        <div class="field-label">郵便番号 <span class="req-badge">必須</span></div>
+        <div class="zip-row">
+          <input type="text" class="field-input" id="zip2" placeholder="例：1100016" maxlength="8" inputmode="numeric">
+          <button class="zip-btn" onclick="searchZip('zip2','addr2_pref','addr2_city','addr2_town')">検索</button>
+          <button class="same-btn" onclick="copyAddress()">契約者と同じ</button>
+        </div>
+        <div class="field-err">郵便番号を入力してください</div>
+      </div>
+
+      <div class="field-group" id="fg-pref2">
+        <div class="field-label">都道府県 <span class="req-badge">必須</span></div>
+        <input type="text" class="field-input" id="addr2_pref" placeholder="例：東京都">
+        <div class="field-err">都道府県を入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">市区町村</div>
+        <input type="text" class="field-input" id="addr2_city" placeholder="例：台東区台東">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">番地・建物名</div>
+        <input type="text" class="field-input" id="addr2_town" placeholder="例：4-31-7-203">
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="field-group">
+        <div class="field-label">店舗電話番号</div>
+        <input type="tel" class="field-input" id="shopTel" placeholder="例：03-0000-0000" inputmode="tel">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">設置責任者名</div>
+        <input type="text" class="field-input" id="shopContact" placeholder="例：NJF 太郎">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">営業時間</div>
+        <div class="inline-pair">
+          <input type="text" class="field-input" id="openTime" placeholder="11:00" inputmode="numeric">
+          <span>〜</span>
+          <input type="text" class="field-input" id="closeTime" placeholder="22:00" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">定休日</div>
+        <input type="text" class="field-input" id="closedDay" placeholder="例：毎週月曜日">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">オープン予定日</div>
+        <input type="text" class="field-input" id="openDate" placeholder="例：新規 / 2026年3月1日">
+      </div>
+
+    </div>
+  </div>
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goPage(1)">← 戻る</button>
+    <button class="btn-next" onclick="goNext(2)">次へ　→</button>
   </div>
 </div>
 
-<!-- RESULT -->
-<div class="screen" id="screen-result">
-  <div class="top-hdr">
-    <button class="back-btn" onclick="resultBack()">←</button>
-    <div><div class="hdr-title" id="result-title">确认信息</div><div class="hdr-sub" id="conf-indicator">✓ 所有字段均可点击修改</div></div>
+<!-- ════ PAGE 3: サービス選択 ════ -->
+<div class="page" id="page3">
+  <div class="page-title">
+    <h2>設備・サービス選択</h2>
+    <p>EQUIPMENT & SERVICE</p>
   </div>
-  <div class="result-body">
-    <div class="edit-banner" id="edit-banner">✏ 编辑模式 — 修改后点击「更新记录」保存</div>
-    <div class="err-banner" id="err-banner"></div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="sum-inner">
-        <div class="sum-thumb" id="r-thumb">🧾</div>
-        <div style="flex:1;min-width:0">
-          <div class="sum-shop" id="r-shop">—</div>
-          <div class="sum-date" id="r-date">—</div>
-          <div class="sum-total" id="r-total">—</div>
-          <div class="conf-row"><div class="conf-bar"><div class="conf-fill" id="r-cbar" style="width:0%"></div></div><div class="conf-lbl" id="r-clbl">—</div></div>
+
+  <!-- 機器 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num">3</div>
+      <div class="card-head-title">機器（初期費用）</div>
+    </div>
+    <div class="card-body">
+      <div id="deviceList"></div>
+    </div>
+  </div>
+
+  <!-- 基本サービス -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num" style="background:var(--gold-light)">★</div>
+      <div class="card-head-title">基本サービス料金<span style="font-size:10px;font-weight:400;margin-left:8px;color:rgba(255,255,255,0.6);">（必選）</span></div>
+    </div>
+    <div style="background:rgba(201,168,76,0.1);padding:9px 16px;font-size:11px;color:#8a7340;border-bottom:1px solid rgba(201,168,76,0.25);">
+      ※ サービス料の課金開始日は、翌月1日からとなります。
+    </div>
+    <div class="card-body">
+      <div class="plan-cards" id="planCards">
+        <div class="plan-card" id="card-monthly" onclick="selectBasic('monthly')">
+          <input type="radio" name="basicPlan" value="monthly">
+          <div class="plan-check">✓</div>
+          <div class="plan-card-head">月額プラン</div>
+          <div class="plan-card-body">
+            <div class="plan-price">¥<span id="priceMonthlyDisp">8,000</span></div>
+            <div class="plan-price-unit">／月（税別）</div>
+            <div class="plan-desc">月々の支払いで柔軟にご利用</div>
+          </div>
+        </div>
+        <div class="plan-card" id="card-yearly" onclick="selectBasic('yearly')">
+          <input type="radio" name="basicPlan" value="yearly">
+          <div class="plan-check">✓</div>
+          <div class="plan-card-head">年額プラン</div>
+          <div class="plan-card-body">
+            <div class="plan-price">¥<span id="priceYearlyDisp">80,000</span></div>
+            <div class="plan-price-unit">／年（税別）</div>
+            <div class="plan-desc">年一括で<span id="savingDisp">16,000</span>円お得</div>
+          </div>
+        </div>
+      </div>
+      <div class="err-inline" id="basicError">※ 基本サービス料金をお選びください</div>
+    </div>
+  </div>
+
+  <!-- オプション -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num" style="background:rgba(255,255,255,0.2)">+</div>
+      <div class="card-head-title">オプション<span style="font-size:10px;font-weight:400;margin-left:8px;color:rgba(255,255,255,0.6);">（任意）</span></div>
+    </div>
+    <div class="card-body" style="padding:0">
+      <div class="option-card" id="optionCard">
+        <div class="option-head">
+          <label>
+            <input type="checkbox" id="qrOption" onchange="toggleQR()">
+            QRコード注文サービス
+          </label>
+        </div>
+        <div class="option-body" id="qrOptionBody">
+          <div id="qrPriceInfo"></div>
         </div>
       </div>
     </div>
-    <div class="card">
-      <div class="frow"><div class="fkey">店舗名</div><input class="fval-input" id="e-shop" type="text"><span class="fbadge bg" id="fb-shop">—</span></div>
-      <div class="frow"><div class="fkey">日付</div><input class="fval-input" id="e-date" type="date"><span class="fbadge bg" id="fb-date">—</span></div>
-      <div class="frow"><div class="fkey">インボイス番号</div><input class="fval-input" id="e-no" type="text" placeholder="T+13桁"><span class="fbadge ba" id="fb-no">—</span></div>
+  </div>
+
+  <!-- 合計 -->
+  <div class="total-display">
+    <div class="total-label">お支払い合計金額</div>
+    <div class="total-amount">
+      <span class="yen">¥</span><span id="totalAmount">0</span><span class="incl">税込</span>
     </div>
-    <div class="card-pad">
-      <div class="card-ttl">消費税内訳</div>
-      <div class="card" style="margin-bottom:0;box-shadow:none;border:1px solid #f2f2f7">
-        <div class="tax-row"><div class="tax-lbl"><div class="tdot" style="background:#3b82f6"></div>小計（税抜）</div><input class="tax-val-input" id="e-sub" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
-        <div class="tax-row"><div class="tax-lbl"><div class="tdot" style="background:#3b82f6"></div>8% 軽減税率</div><input class="tax-val-input" id="e-tax8" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
-        <div class="tax-row"><div class="tax-lbl"><div class="tdot" style="background:#34c759"></div>10% 標準税率</div><input class="tax-val-input" id="e-tax10" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
-        <div class="tax-row total-row"><div class="tax-lbl">合計（税込）</div><input class="tax-val-input" id="e-total" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
+    <div class="total-breakdown" id="totalBreakdown"></div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goPage(2)">← 戻る</button>
+    <button class="btn-next" onclick="goNext(3)">次へ　→</button>
+  </div>
+</div>
+
+<!-- ════ PAGE 4: 重要事項確認 ════ -->
+<div class="page" id="page4">
+  <div class="page-title">
+    <h2>重要事項の確認</h2>
+    <p>TERMS & CONDITIONS</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num">4</div>
+      <div class="card-head-title">契約重要事項説明書</div>
+    </div>
+    <div class="card-body">
+      <div class="terms-box">
+        <h4>契約期間について</h4>
+        <p>本サービスの契約期間は2年間です。契約期間満了後は、2年毎の自動更新となります。</p>
+        <h4>ご利用開始日について</h4>
+        <p>ご利用開始日は、本サービス・オプションサービス専用機器の設置（設定含む）が完了した日とさせていただきます。ご利用開始日以降になる場合がございます。</p>
+        <h4>中途解約について</h4>
+        <p>利用開始日より24ヶ月（最低利用期間）経過前に利用契約を中途解約する場合は、既に支払い済みの利用料金を除く最低利用期間分の利用料金をお支払いいただきます。</p>
+        <h4>接続機器について</h4>
+        <p>ご契約者様がご利用される無線機器、プリンター等の接続機器について、当社推奨機器以外をご利用される場合は当社は、一切の動作保証を行いません。外部接続機器メーカー保障外の故障の場合は、機器の再購入又は修理費用が発生致します。</p>
+        <h4>データ保存について</h4>
+        <p>お客様のデータ保存期間は最大24ヶ月間です。25ヶ月目以降データは消去されますので、お客様ご自身でデータのバックアップをお願いします。</p>
+        <h4>オプションサービスについて</h4>
+        <p>オプションサービスをご利用の場合は、当社指定の無線LAN機器のご利用が必須となります。</p>
+        <h4>初期登録について</h4>
+        <p>初期登録に必要な帳票は、「サービス加入申込書」「契約確認書」のご提出が必須です。提出期限は、設置日を基点とし、10営業日前に「基本情報」「店舗ロゴデータ」、7営業日前までに「メニューデータ」のご提出をお願い致します。</p>
+        <h4>免責事項</h4>
+        <p>お客様は、自己の責任により本サービスを利用するものとし、本サービスの利用から生じる損害については、自己の責任と負担によりこれを解決するものとし、当社は責任を負わないことに同意するものとします。</p>
+        <h4>解約について</h4>
+        <p>ご契約者様からの申し出により本サービスを解約される場合は、１ヶ月前の書面（解約申請書）による申請が必要です。担当者までご連絡ください。</p>
+        <h4>キャンペーン割引について</h4>
+        <p>他商材とキャンペーン割引でご契約をされたお客様に関して契約期間中にいずれかのサービスを解約した際には、費用のキャンペーン割引の適用は終了し、継続利用するサービスについては通常料金が適用されます。</p>
+      </div>
+      <div class="agree-row" id="agree1Wrap">
+        <input type="checkbox" id="agree1" onchange="checkAgree()">
+        <label for="agree1">上記の契約重要事項をすべて確認し、内容に同意します</label>
       </div>
     </div>
-    <div class="card-pad" id="items-card" style="display:none">
-      <div class="card-ttl">商品明細 <span id="items-cnt" style="font-weight:400;color:#8e8e93"></span></div>
-      <div class="card" style="margin-bottom:0;box-shadow:none;border:1px solid #f2f2f7">
-        <div id="items-list"></div>
-        <div class="items-footer"><div class="items-footer-lbl">明細合計</div><div class="items-footer-val" id="items-sum">¥0</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num">4</div>
+      <div class="card-head-title">個人情報の取り扱い</div>
+    </div>
+    <div class="card-body">
+      <div class="terms-box">
+        <h4>個人情報の利用目的</h4>
+        <p>本サービスにおいて取得する顧客の氏名、住所、電話番号、メールアドレス、注文履歴その他の個人情報は、個人情報保護法その他関係法令に基づき、適切に管理・保護されるものとします。</p>
+        <p>事業者は取得した個人情報を以下の目的に限り利用します。</p>
+        <ul>
+          <li>レジ業務および注文処理の遂行</li>
+          <li>売上管理・分析およびサービス改善</li>
+          <li>顧客からの問い合わせ対応</li>
+          <li>法令に基づく対応</li>
+        </ul>
+        <h4>第三者提供について</h4>
+        <p>事業者は、個人情報を第三者に提供・開示することはありません。ただし、本人の同意がある場合、法令に基づき開示を求められた場合、個人情報の取扱いを第三者に委託する場合を除きます。</p>
+        <h4>管理責任者</h4>
+        <p>個人情報の管理責任者は、新日本富士アシスト株式会社とし、情報漏洩、滅失、毀損の防止に努めます。</p>
+        <h4>業務データの取り扱い</h4>
+        <p>本サービスを通じて蓄積される売上情報、注文履歴、顧客属性、在庫情報、従業員の勤務データその他、店舗運営に関するあらゆる情報は、利用店舗に帰属するものとします。新日本富士アシスト株式会社は、業務データの機密性を保持し、正当な理由なく第三者に開示、漏洩、転用しないものとします。</p>
+      </div>
+      <div class="agree-row" id="agree2Wrap">
+        <input type="checkbox" id="agree2" onchange="checkAgree()">
+        <label for="agree2">個人情報の取り扱いおよび業務データの保護に関する内容を確認し、同意します</label>
       </div>
     </div>
-    <!-- 会计科目选择 -->
-    <div class="card-pad">
-      <div class="card-ttl">会計科目</div>
-      <div class="card" style="margin-bottom:0;box-shadow:none;border:1px solid #f2f2f7">
-        <select class="cat-select" id="e-cat">
-          <optgroup label="── 仕入・原材料 ──">
-            <option value="仕入高">仕入高（食材・飲料）</option>
-            <option value="食材費">食材費</option>
-            <option value="飲料費">飲料費</option>
-            <option value="消耗品費">消耗品費（包材・容器・備品）</option>
-          </optgroup>
-          <optgroup label="── 経費 ──">
-            <option value="外注費">外注費（デリバリー・配達）</option>
-            <option value="広告宣伝費">広告宣伝費（チラシ・SNS）</option>
-            <option value="水道光熱費">水道光熱費</option>
-            <option value="通信費">通信費（ネット・電話）</option>
-            <option value="修繕費">修繕費（設備修理）</option>
-          </optgroup>
-          <optgroup label="── 交際・会議 ──">
-            <option value="交際費">交際費（接待・手土産）</option>
-            <option value="会議費">会議費（ミーティング飲食）</option>
-          </optgroup>
-          <optgroup label="── 旅費交通費 ──">
-            <option value="旅費交通費（交通）">旅費交通費・交通</option>
-            <option value="旅費交通費（宿泊）">旅費交通費・宿泊</option>
-          </optgroup>
-          <optgroup label="── その他 ──">
-            <option value="雑費">雑費</option>
-          </optgroup>
-        </select>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goPage(3)">← 戻る</button>
+    <button class="btn-next" onclick="goNext(4)">次へ　→</button>
+  </div>
+</div>
+
+<!-- ════ PAGE 5: 署名・送信 ════ -->
+<div class="page" id="page5">
+  <div class="page-title">
+    <h2>署名・送信</h2>
+    <p>SIGNATURE & SUBMIT</p>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num">5</div>
+      <div class="card-head-title">お客様署名</div>
+    </div>
+    <div class="card-body">
+
+      <div class="field-group" id="fg-signame">
+        <div class="field-label">署名者名 <span class="req-badge">必須</span></div>
+        <input type="text" class="field-input" id="signatureName" placeholder="例：NJF 太郎">
+        <div class="field-err">署名者名を入力してください</div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">役職</div>
+        <input type="text" class="field-input" id="signatureRole" placeholder="例：代表">
+      </div>
+
+      <div style="margin-bottom:8px; font-size:12px; color:var(--text-sub);">
+        下の枠内に指でご署名ください
+      </div>
+      <div class="sig-wrap">
+        <div class="sig-toolbar">
+          <span>SIGNATURE AREA</span>
+          <button class="sig-clear-btn" onclick="clearSig()">クリア</button>
+        </div>
+        <canvas id="sigCanvas" width="700" height="160"></canvas>
+      </div>
+      <div class="sig-err" id="sigError">※ 署名を記入してください</div>
+
+    </div>
+  </div>
+
+  <!-- 申込内容確認 -->
+  <div class="card">
+    <div class="card-head">
+      <div class="card-head-num" style="background:rgba(255,255,255,0.2)">✓</div>
+      <div class="card-head-title">申込内容の確認</div>
+    </div>
+    <div class="card-body" id="confirmSummary" style="font-size:13px;line-height:1.9;color:var(--text-sub);">
+      <!-- JS で生成 -->
+    </div>
+  </div>
+
+  <div class="nav-btns">
+    <button class="btn-back" onclick="goPage(4)">← 戻る</button>
+    <button class="btn-submit" onclick="submitForm()">申込を送信する</button>
+  </div>
+</div>
+
+</div><!-- /pages-wrap -->
+
+<!-- ════ SUCCESS ════ -->
+<div class="success-page" id="successPage">
+  <div class="success-icon">✓</div>
+  <div class="success-title">申込が完了しました</div>
+  <div class="success-msg">
+    担当者より折り返しご連絡いたします。<br>
+    しばらくお待ちください。
+  </div>
+  <div class="success-detail" id="successDetail"></div>
+</div>
+
+<!-- ADMIN FAB -->
+<!-- 管理者FABボタン（長押し3秒で表示）-->
+<button id="adminFab" title="管理者設定" style="opacity:0;pointer-events:auto;">⚙</button>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeAdmin()"></div>
+
+<!-- ADMIN DRAWER -->
+<div class="admin-drawer" id="adminDrawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-head">
+    <span>管理者設定</span>
+    <button class="drawer-close" onclick="closeAdmin()">×</button>
+  </div>
+  <div class="drawer-body">
+
+    <div class="drawer-section warn">★ GAS Web App URL（必須）</div>
+    <div class="admin-field">
+      <label style="color:var(--red)">デプロイ後に貼り付けてください</label>
+      <input type="text" id="adminGasUrl" placeholder="https://script.google.com/macros/s/.../exec" style="font-size:11px;">
+    </div>
+
+    <div class="drawer-section">送信先メール</div>
+    <div class="admin-field">
+      <label>受信メールアドレス</label>
+      <input type="email" id="adminEmail" value="info@njfregi.co.jp">
+    </div>
+
+    <div class="drawer-section">機器設定</div>
+    <div id="adminDeviceList"></div>
+    <button class="add-device-btn" onclick="adminAddDevice()">＋ 機器を追加</button>
+
+    <div class="drawer-section">基本サービス料金</div>
+    <div class="admin-price-grid">
+      <div class="admin-field">
+        <label>月額（税別）</label>
+        <input type="number" id="adminMonthly" value="8000">
+      </div>
+      <div class="admin-field">
+        <label>年額（税別）</label>
+        <input type="number" id="adminYearly" value="80000">
       </div>
     </div>
-    <div class="card-pad">
-      <div class="card-ttl">备注</div>
-      <textarea class="note-input" id="e-note" placeholder="如：与○○公司接待、出差地点等" rows="2"></textarea>
+
+    <div class="drawer-section">QRコード注文料金</div>
+    <div class="admin-price-grid">
+      <div class="admin-field">
+        <label>月額（税別）</label>
+        <input type="number" id="adminQrMonthly" value="4000">
+      </div>
+      <div class="admin-field">
+        <label>年額（税別）</label>
+        <input type="number" id="adminQrYearly" value="40000">
+      </div>
     </div>
-    <!-- 拆分金额 -->
-    <div class="card-pad" id="split-card" style="display:none">
-      <div class="card-ttl">拆分录入 <span style="font-weight:400;color:#8e8e93;font-size:11px">— 同一小票按科目分开录入</span></div>
-      <div id="split-list"></div>
-      <button onclick="addSplit()" style="width:100%;padding:10px;background:#f2f2f7;border:1px dashed #c7c7cc;border-radius:10px;font-size:13px;color:#007AFF;cursor:pointer;font-family:inherit;margin-top:8px">+ 添加拆分项</button>
-    </div>
-    <div style="padding:0 16px 8px;display:flex;gap:8px">
-      <button onclick="toggleSplit()" id="split-toggle-btn" style="flex:1;padding:12px;background:#fff;border:1px solid #e5e5ea;border-radius:12px;font-size:13px;font-weight:500;color:#8e8e93;cursor:pointer;font-family:inherit">＋ 需要拆分科目</button>
-    </div>
-    <div class="submit-wrap">
-      <button class="submit-btn" id="submit-btn" onclick="submitEntry()">✓ 提交至财务审核</button>
-    </div>
+
+    <button class="save-admin-btn" onclick="saveAdmin()">設定を保存</button>
   </div>
 </div>
 
-<!-- DETAIL -->
-<div class="screen" id="screen-detail">
-  <div class="top-hdr">
-    <button class="back-btn" id="det-back" onclick="goTo('screen-records');loadRecords()">←</button>
-    <div><div class="hdr-title">小票详情</div><div class="hdr-sub" id="det-hdr-sub">—</div></div>
-  </div>
-  <div class="detail-body">
-    <div class="detail-actions">
-      <button class="btn-edit2" id="btn-edit2" onclick="editCurrentDetail()">✏ 编辑修改</button>
-      <button class="btn-del2" onclick="deleteCurrentDetail()">删除</button>
-    </div>
-    <div class="detail-info">
-      <div class="det-shop" id="det-shop">—</div>
-      <div class="det-date" id="det-date">—</div>
-      <div class="det-total" id="det-total">—</div>
-      <div class="det-cat-badge" id="det-cat">—</div>
-      <div class="det-note" id="det-note" style="display:none"></div>
-    </div>
-    <div id="det-img-wrap" style="display:none;background:#fff;border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);text-align:center">
-      <div style="font-size:10px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">小票原图</div>
-      <img id="det-receipt-img" src="" style="max-width:100%;border-radius:8px;display:none" onclick="this.style.transform=this.style.transform?'':'scale(2)';this.style.transition='transform 0.2s'">
-    </div>
-    <div class="tax-card-d">
-      <div class="card-ttl">消費税内訳</div>
-      <div class="tline"><span class="tline-lbl">小計（税抜）</span><span class="tline-val" id="det-sub">—</span></div>
-      <div class="tline"><span class="tline-lbl">8% 軽減税率</span><span class="tline-val" id="det-tax8">¥0</span></div>
-      <div class="tline"><span class="tline-lbl">10% 標準税率</span><span class="tline-val" id="det-tax10">¥0</span></div>
-      <div class="tline total"><span class="tline-lbl">合計（税込）</span><span class="tline-val" id="det-total2">—</span></div>
-    </div>
-    <div class="items-card-d" id="det-items-card" style="display:none">
-      <div class="card-ttl">商品明細 <span id="det-items-cnt" style="font-weight:400;color:#8e8e93"></span></div>
-      <div id="det-items-list"></div>
-    </div>
-  </div>
-  <div class="nav-bar">
-    <button class="nav-tab" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
-    <button class="nav-tab active" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
-    <button class="nav-tab" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
-  </div>
-</div>
-
-<!-- RECORDS -->
-<div class="screen" id="screen-records">
-  <div class="page-header"><div class="page-title">录入记录</div><div class="page-sub" id="rec-sub">加载中…</div></div>
-  <div class="page-body" id="rec-body"><div class="empty">加载中…</div></div>
-  <div class="nav-bar">
-    <button class="nav-tab" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
-    <button class="nav-tab active" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
-    <button class="nav-tab" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
-  </div>
-</div>
-
-<!-- STATS -->
-<div class="screen" id="screen-stats">
-  <div class="page-header"><div class="page-title">统计报表</div><div class="page-sub">按月汇总</div></div>
-  <div class="page-body" id="stats-body"><div class="empty">加载中…</div></div>
-  <div class="nav-bar">
-    <button class="nav-tab" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
-    <button class="nav-tab" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
-    <button class="nav-tab active" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
-  </div>
-</div>
-
-<!-- SUCCESS -->
-<div class="screen" id="screen-suc">
-  <div class="suc-icon">✓</div>
-  <div class="suc-title">提交成功！</div>
-  <div class="suc-sub">小票已保存，财务端可查看</div>
-  <div class="suc-card">
-    <div class="suc-shop" id="suc-shop">—</div>
-    <div class="suc-amt" id="suc-amt">—</div>
-    <div class="suc-date" id="suc-date">—</div>
-  </div>
-  <button class="btn-again" onclick="startNew()">继续扫描下一张</button>
-  <div class="btn-link" onclick="tab('records')">查看所有记录</div>
-</div>
-
-<div class="dup-toast" id="dup-toast">
-  <div id="dup-msg">⚠ 发现可能重复的小票</div>
-  <div class="dup-btns">
-    <button class="dup-btn dup-cancel" onclick="hideDup()">取消</button>
-    <button class="dup-btn dup-ok" onclick="forceSubmit()">仍然提交</button>
-  </div>
+<!-- LOADING -->
+<div id="loading">
+  <div class="spin"></div>
+  <p>送信中...</p>
 </div>
 
 <script>
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+// ═══════════════════════════════════════════
+//  CONFIG & STATE
+// ═══════════════════════════════════════════
+// ★★★ 管理者設定（公開前にここを変更してください）★★★
+let config = {
+  email: 'liu922506@gmail.com',       // 受信メールアドレス
+  gasUrl: 'https://script.google.com/macros/s/AKfycby67sQygPjmPaUPwa_mQ21ZhU9rkRWx4Zv3obps6JlTz7E5nzPXs3DRqdst-dFWy5bRwQ/exec',       // GAS Web App URL
+  monthly: 8000,                      // 基本月額（税別）
+  yearly: 80000,                      // 基本年額（税別）
+  qrMonthly: 4000,                    // QR月額（税別）
+  qrYearly: 40000,                    // QR年額（税別）
+  devices: [
+    { name: 'レジスター', price: 90000 },
+    { name: 'プリンター', price: 0 },
+    { name: 'キャッシュドロア', price: 0 },
+    { name: 'タブレット', price: 35000 },
+    { name: 'キッチンモニター', price: 60000 }
+  ]
+};
+// ★★★★★★★★★★★★★★★★★★★★★★★★★★★
 
-// ── Auth ──
-let CURRENT_USER = null;
+let currentPage = 1;
+const TOTAL_PAGES = 5;
+let selectedBasic = null;
+let sigPainting = false;
+let sigHasData = false;
 
-async function doLogin(){
-  const username = document.getElementById('login-user').value.trim();
-  const password = document.getElementById('login-pass').value;
-  const errEl = document.getElementById('login-err');
-  errEl.textContent = '';
-  if(!username || !password){ errEl.textContent = 'ユーザー名とパスワードを入力してください'; return; }
-  try{
-    const res = await fetch('/api/login', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username, password})
-    });
-    if(!res.ok){ const e = await res.json(); errEl.textContent = e.detail || 'ログイン失敗'; return; }
-    CURRENT_USER = await res.json();
-    localStorage.setItem('receipt_user', JSON.stringify(CURRENT_USER));
-    afterLogin();
-  }catch(e){ errEl.textContent = '接続エラー: ' + e.message; }
+const STEP_LABELS = ['契約者', '店舗', 'サービス', '確認', '署名'];
+
+// ─── Load/Save config ───
+function loadConfig() {
+  // 古いlocalStorageデータを完全にクリア
+  try { localStorage.clear(); } catch(e) {}
+}
+function saveConfig() {
+  try {
+    localStorage.setItem('njfConfig', JSON.stringify({
+      gasUrl: config.gasUrl,
+      email:  config.email,
+    }));
+  } catch(e) {}
 }
 
-function afterLogin(){
-  const el = document.getElementById('user-display');
-  if(el) el.textContent = CURRENT_USER.display_name || CURRENT_USER.username;
-  goTo('screen-home');
-  loadHome();
+// localStorageは使用しない（コードの設定を常に優先）
+// loadConfig(); // 無効化
+
+// ═══════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════
+function init() {
+  renderSteps();
+  renderDeviceList();
+  renderAdminDeviceList();
+  syncAdminFields();
+  updateServicePriceDisplay();
+  initSignature();
 }
 
-function doLogout(){
-  CURRENT_USER = null;
-  localStorage.removeItem('receipt_user');
-  goTo('screen-login');
+// ─── Step nav ───
+function renderSteps() {
+  const el = document.getElementById('stepList');
+  el.innerHTML = '';
+  STEP_LABELS.forEach((label, i) => {
+    const div = document.createElement('div');
+    div.className = 'step-item' + (i + 1 === currentPage ? ' active' : '') + (i + 1 < currentPage ? ' done' : '');
+    div.onclick = () => { if (i + 1 < currentPage) goPage(i + 1); };
+    div.innerHTML = `<div class="step-dot">${i + 1 < currentPage ? '✓' : i + 1}</div><div class="step-label">${label}</div>`;
+    el.appendChild(div);
+  });
+  // Scroll active step into view
+  const active = el.querySelector('.step-item.active');
+  if (active) active.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
 }
 
-// Check saved login
-try{
-  const saved = localStorage.getItem('receipt_user');
-  if(saved){ CURRENT_USER = JSON.parse(saved); }
-}catch(e){ localStorage.removeItem('receipt_user'); }
-function fmt(n){return '¥'+(n||0).toLocaleString()}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-function catIcon(cat){
-  if(!cat)return'📦';
-  if(cat.includes('交際')||cat.includes('会議'))return'🍱';
-  if(cat.includes('交通'))return'🚃';
-  if(cat.includes('宿泊'))return'🏨';
-  if(cat.includes('消耗'))return'🖨';
-  if(cat.includes('旅費'))return'✈️';
-  return'📦';
+// ─── Device list (stepper UI) ───
+function renderDeviceList() {
+  const el = document.getElementById('deviceList');
+  if (!el) { console.error('deviceList element not found!'); return; }
+  el.innerHTML = '';
+  console.log('Rendering devices:', config.devices.length, config.devices);
+  config.devices.forEach((dev, i) => {
+    const div = document.createElement('div');
+    div.className = 'device-item';
+    div.innerHTML = `
+      <div class="device-info">
+        <div class="device-name">${dev.name}</div>
+        <div class="device-price">¥${dev.price.toLocaleString()} / 台（税別）</div>
+      </div>
+      <div class="device-qty-wrap">
+        <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+        <div class="qty-val" id="qty_${i}">0</div>
+        <button class="qty-btn" onclick="changeQty(${i}, 1)">＋</button>
+      </div>
+    `;
+    el.appendChild(div);
+  });
+  calcTotal();
 }
 
-function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
-function tab(t){if(t==='home'){goTo('screen-home');loadHome()}else if(t==='records'){goTo('screen-records');loadRecords()}else if(t==='stats'){goTo('screen-stats');loadStats()}}
-
-// Month switcher
-const now=new Date();
-let cY=now.getFullYear(), cM=now.getMonth()+1;
-function curMS(){return cY+'-'+String(cM).padStart(2,'0')}
-function changeMonth(d){
-  cM+=d; if(cM>12){cM=1;cY++} if(cM<1){cM=12;cY--}
-  const t=new Date(); document.getElementById('btn-next').disabled=(cY===t.getFullYear()&&cM===t.getMonth()+1);
-  loadHomeStats();
-}
-// ── Batch mode ──
-let BATCH_ITEMS=[];
-
-function startBatch(files){
-  BATCH_ITEMS=files.map(f=>({file:f,url:URL.createObjectURL(f),status:'pending',data:null,date:new Date().toISOString().slice(0,10),cat:localStorage.getItem('last_cat')||'仕入高'}));
-  goTo('screen-batch'); renderBatch(); processBatchQueue();
+function changeQty(i, delta) {
+  const el = document.getElementById(`qty_${i}`);
+  const cur = parseInt(el.textContent || 0);
+  const next = Math.max(0, cur + delta);
+  el.textContent = next;
+  calcTotal();
 }
 
-async function processBatchQueue(){
-  const pending=BATCH_ITEMS.filter(i=>i.status==='pending');
-  if(!pending.length){updateBatchBtn();return;}
-  await Promise.all(pending.slice(0,2).map(item=>processBatchItem(item)));
-  const stillPending=BATCH_ITEMS.filter(i=>i.status==='pending');
-  if(stillPending.length>0) await processBatchQueue();
-  else updateBatchBtn();
+// ─── Service plan selection ───
+function selectBasic(type) {
+  selectedBasic = type;
+  document.getElementById('card-monthly').classList.toggle('selected', type === 'monthly');
+  document.getElementById('card-yearly').classList.toggle('selected', type === 'yearly');
+  document.getElementById('basicError').style.display = 'none';
+  updateQROption();
+  calcTotal();
 }
 
-async function processBatchItem(item){
-  item.status='processing'; renderBatch();
-  try{
-    const fd=new FormData(); fd.append('file',item.file);
-    const res=await fetch('/api/ocr',{method:'POST',body:fd});
-    if(!res.ok) throw new Error(res.status);
-    item.data=await res.json();
-    item.date=item.data.date||item.date;
-    const shopKey='cat_'+((item.data.shop||'').trim().slice(0,20));
-    item.cat=localStorage.getItem(shopKey)||item.cat;
-    item.status='ok';
-  }catch(e){item.status='error';}
-  renderBatch();
+function updateQROption() {
+  if (!selectedBasic) return;
+  const isMonthly = selectedBasic === 'monthly';
+  const price = isMonthly ? config.qrMonthly : config.qrYearly;
+  const period = isMonthly ? '月額' : '年額';
+  document.getElementById('qrPriceInfo').innerHTML = `
+    <span style="font-family:'Noto Serif JP',serif;font-size:20px;font-weight:700;color:var(--navy);">¥${price.toLocaleString()}</span>
+    <span style="font-size:11px;color:var(--text-sub);">／${period}（税別）</span>
+    <div style="font-size:11px;color:var(--text-sub);margin-top:4px;">${isMonthly ? '基本月額プランに対応したQRコード注文サービス' : '基本年額プランに対応したQRコード注文サービス'}</div>
+  `;
 }
 
-function renderBatch(){
-  const ok=BATCH_ITEMS.filter(i=>i.status==='ok').length;
-  const proc=BATCH_ITEMS.filter(i=>i.status==='processing').length;
-  const total=BATCH_ITEMS.length;
-  const bi=document.getElementById('batch-info');
-  if(bi) bi.textContent=proc>0?'识别中… '+ok+'/'+total:' 共'+total+'张，'+ok+'张待确认';
-  const cats=['仕入高','食材費','飲料費','消耗品費','外注費','広告宣伝費','水道光熱費','通信費','修繕費','交際費','会議費','旅費交通費（交通）','旅費交通費（宿泊）','雑費'];
-  const bl=document.getElementById('batch-list');
-  if(!bl) return;
-  bl.innerHTML=BATCH_ITEMS.map((item,idx)=>{
-    const d=item.data;
-    const conf=d?(d.confidence||{}).overall||0:0;
-    const confC=conf>=85?'#34c759':conf>=60?'#f59e0b':'#ef4444';
-    const isDone=item.status==='submitted'||item.status==='skip';
-    const stText={pending:'⏳',processing:'⏳ 识别中',ok:'✓ 完成',error:'✗ 失败',submitted:'✓ 已提交',skip:'— 跳过'}[item.status]||'';
-    return '<div style="background:#fff;border-radius:16px;margin:10px 14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);opacity:'+(isDone?'0.55':'1')+'">'+
-      '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #f2f2f7">'+
-      '<div style="width:44px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f2f2f7">'+(item.url?'<img src="'+item.url+'" style="width:100%;height:100%;object-fit:cover">':'🧾')+'</div>'+
-      '<div style="flex:1;min-width:0">'+
-      '<div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(d?esc(d.shop):'识别中…')+'</div>'+
-      '<div style="font-size:20px;font-weight:700;font-variant-numeric:tabular-nums">'+(d?d.total:'—')+'</div>'+
-      (d?'<div style="font-size:11px;color:'+confC+'">准确度 '+conf+'%</div>':'<div style="font-size:11px;color:#8e8e93">'+stText+'</div>')+
-      '</div></div>'+
-      (!isDone&&item.status!=='processing'&&item.status!=='pending'?
-      '<div style="display:flex;gap:8px;padding:10px 14px;align-items:center">'+
-      '<input type="date" value="'+item.date+'" onchange="BATCH_ITEMS['+idx+'].date=this.value" style="border:1px solid #e5e5ea;border-radius:8px;padding:6px 8px;font-size:13px;font-family:inherit;outline:none">'+
-      '<select onchange="BATCH_ITEMS['+idx+'].cat=this.value" style="flex:1;border:1px solid #e5e5ea;border-radius:8px;padding:6px 8px;font-size:13px;font-family:inherit;outline:none;background:#fff;-webkit-appearance:none">'+
-      cats.map(c=>'<option value="'+c+'"'+(item.cat===c?' selected':'')+'>'+c+'</option>').join('')+
-      '</select>'+
-      '<button onclick="BATCH_ITEMS['+idx+'].status='skip';renderBatch();updateBatchBtn()" style="border:1px solid #e5e5ea;border-radius:8px;padding:6px 10px;font-size:12px;color:#8e8e93;background:none;cursor:pointer;font-family:inherit;white-space:nowrap">跳过</button>'+
-      '</div>':'')+'</div>';
-  }).join('');
+function toggleQR() {
+  const checked = document.getElementById('qrOption').checked;
+  document.getElementById('optionCard').classList.toggle('selected', checked);
+  calcTotal();
 }
 
-function updateBatchBtn(){
-  const n=BATCH_ITEMS.filter(i=>i.status==='ok').length;
-  const btn=document.getElementById('batch-submit-btn');
-  if(btn){btn.disabled=n===0;btn.textContent=n>0?'提交 '+n+' 张':'等待识别';}
+// ─── Calc total ───
+function calcTotal() {
+  let deviceTotal = 0;
+  config.devices.forEach((dev, i) => {
+    const qty = parseInt(document.getElementById(`qty_${i}`)?.textContent || 0);
+    deviceTotal += qty * dev.price;
+  });
+
+  let serviceBase = 0;
+  if (selectedBasic === 'monthly') serviceBase = config.monthly;
+  else if (selectedBasic === 'yearly') serviceBase = config.yearly;
+
+  const qrChecked = document.getElementById('qrOption')?.checked;
+  const qrBase = qrChecked ? (selectedBasic === 'monthly' ? config.qrMonthly : config.qrYearly) : 0;
+
+  const subtotal = deviceTotal + serviceBase + qrBase;
+  const tax = Math.floor(subtotal * 0.1);
+  const total = subtotal + tax;
+
+  document.getElementById('totalAmount').textContent = total.toLocaleString();
+
+  const parts = [];
+  if (deviceTotal > 0) parts.push(`機器 <b>¥${deviceTotal.toLocaleString()}</b>`);
+  if (serviceBase > 0) parts.push(`サービス料 <b>¥${serviceBase.toLocaleString()}</b>`);
+  if (qrBase > 0) parts.push(`QR注文 <b>¥${qrBase.toLocaleString()}</b>`);
+  if (tax > 0) parts.push(`消費税 <b>¥${tax.toLocaleString()}</b>`);
+  document.getElementById('totalBreakdown').innerHTML = parts.join('　＋　');
+
+  return { deviceTotal, serviceBase, qrBase, subtotal, tax, total };
 }
 
-async function batchSubmitAll(){
-  const toSubmit=BATCH_ITEMS.filter(i=>i.status==='ok');
-  if(!toSubmit.length) return;
-  const btn=document.getElementById('batch-submit-btn');
-  if(btn){btn.disabled=true;btn.textContent='提交中…';}
-  for(const item of toSubmit){
-    const d=item.data; if(!d) continue;
-    const cat=item.cat||'仕入高';
-    if(d.shop) localStorage.setItem('cat_'+d.shop.trim().slice(0,20),cat);
-    localStorage.setItem('last_cat',cat);
-    try{await fetch('/api/receipts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      shop:d.shop||'unknown',date:item.date,subtotal:d.subtotal_num||0,tax8:d.tax8_num||0,tax10:d.tax10_num||0,total:d.total_num||0,
-      category:cat,note:'',confidence:(d.confidence||{}).overall||0,
-      items:JSON.stringify(d.items||[]),image_data:'',
-      submitted_by:CURRENT_USER?(CURRENT_USER.display_name||CURRENT_USER.username):'',
-      invoice_no:d.invoice_no||''
-    })});}catch(e){console.error(e);}
-    item.status='submitted'; renderBatch();
-  }
-  if(btn) btn.textContent='✓ 完成';
-  setTimeout(()=>{goTo('screen-home');loadHome();},1500);
+function updateServicePriceDisplay() {
+  document.getElementById('priceMonthlyDisp').textContent = config.monthly.toLocaleString();
+  document.getElementById('priceYearlyDisp').textContent = config.yearly.toLocaleString();
+  document.getElementById('savingDisp').textContent = ((config.monthly * 12) - config.yearly).toLocaleString();
 }
 
-async function loadHomeStats(){
-  const m=curMS(); document.getElementById('mc-lbl').textContent=m+' 合计';
-  try{
-    const [recs,sum]=await Promise.all([fetch('/api/receipts?month='+m).then(r=>r.json()),fetch('/api/summary').then(r=>r.json())]);
-    const cur=sum.find(s=>s.month===m)||{total:0,count:0,tax8:0,tax10:0};
-    document.getElementById('mc-amt').textContent=fmt(cur.total||0);
-    document.getElementById('mc-cnt').textContent=cur.count||0;
-    document.getElementById('mc-tax').textContent=fmt((cur.tax8||0)+(cur.tax10||0));
-    REC_MAP={}; recs.forEach(r=>{REC_MAP[r.id]=r});
-    const el=document.getElementById('home-list');
-    if(!recs||!recs.length){el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>暂无记录<br>拍照上传第一张小票吧</div>';return}
-    el.innerHTML=recs.slice(0,6).map(r=>
-      '<div class="ritem" onclick="showDetail('+r.id+')"><div class="ricon" style="background:#f2f2f7;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+catIcon(r.category)+'</div><div class="rinfo"><div class="rname">'+esc(r.shop)+'</div><div class="rmeta">'+r.date+'  ·  '+esc(r.category)+'</div></div><div class="ramt">'+fmt(r.total)+'</div></div>'
-    ).join('');
-  }catch(e){console.error(e)}
-}
-function loadHome(){loadHomeStats()}
-
-// File inputs
-document.getElementById('inp-cam').addEventListener('change',function(){handleFile(this)});
-document.getElementById('inp-gal').addEventListener('change',function(){
-  if(this.files && this.files.length > 1){
-    startBatch(Array.from(this.files));
-    this.value='';
-  } else {
-    handleFile(this);
-  }
-});
-function handleFile(inp){
-  const f=inp.files&&inp.files[0]; if(!f)return;
-  const url=URL.createObjectURL(f); inp.value='';
-  EDIT_ID=null;
-  document.getElementById('edit-banner').classList.remove('show');
-  document.getElementById('submit-btn').textContent='✓ 提交至财务审核';
-  document.getElementById('result-title').textContent='确认信息';
-  startOCR(f,url);
-}
-
-// Steps
-function resetSteps(){[0,1,2,3].forEach(i=>{const s=document.getElementById('s'+i);s.classList.remove('active','done');s.querySelector('.step-dot').textContent=i+1})}
-function setStep(i,st){const s=document.getElementById('s'+i);s.classList.remove('active','done');s.classList.add(st);if(st==='done')s.querySelector('.step-dot').textContent='✓'}
-
-let PD=null, EDIT_ID=null, REC_MAP={}, DETAIL_ID=null;
-
-async function startOCR(file,url){
-  goTo('screen-proc'); resetSteps();
-  document.getElementById('proc-thumb').innerHTML='<img src="'+url+'">';
-  try{
-    setStep(0,'active'); await sleep(400); setStep(0,'done');
-    setStep(1,'active');
-    const fd=new FormData(); fd.append('file',file);
-    const res=await fetch('/api/ocr',{method:'POST',body:fd});
-    if(!res.ok){const t=await res.text();throw new Error('('+res.status+') '+t.slice(0,200))}
-    const d=await res.json();
-    setStep(1,'done'); setStep(2,'active'); await sleep(400); setStep(2,'done');
-    setStep(3,'active'); await sleep(300); setStep(3,'done'); await sleep(250);
-    // Upload image to cloud storage
-    let imageData = '';
-    try {
-      const fd2 = new FormData(); fd2.append('file', file);
-      const ir = await fetch('/api/upload-image', {method:'POST', body:fd2});
-      if(ir.ok){ const ij = await ir.json(); imageData = ij.image_data||''; }
-    } catch(e){ console.error('Image upload:', e); }
-    PD=Object.assign({},d,{_url:url, _imageData:imageData});
-    fillResult(PD); goTo('screen-result');
-  }catch(err){
-    console.error(err); [0,1,2,3].forEach(i=>setStep(i,'done')); await sleep(500);
-    PD={shop:'',date:new Date().toISOString().slice(0,10),no:'-',subtotal_num:0,tax8_num:0,tax10_num:0,total_num:0,
-        subtotal:'¥0',tax8:'¥0',tax10:'¥0',total:'¥0',items:[],items_json:'[]',category:0,
-        confidence:{overall:0,shop:0,date:0,total:0},_url:url};
-    fillResult(PD);
-    const eb=document.getElementById('err-banner'); eb.textContent='⚠ 识别出错：'+err.message+'。请手动填写。'; eb.classList.add('show');
-    goTo('screen-result');
-  }
-}
-
-function badge(id,conf){const e=document.getElementById(id);if(!e)return;e.textContent=conf+'%';e.className='fbadge '+(conf>=85?'bg':conf>=65?'ba':'br')}
-
-function fillResult(d){
-  document.getElementById('err-banner').classList.remove('show');
-  const th=document.getElementById('r-thumb');
-  th.innerHTML=d._url?'<img src="'+d._url+'" style="width:100%;height:100%;object-fit:cover">':'🧾';
-  document.getElementById('r-shop').textContent=d.shop||'—';
-  document.getElementById('r-date').textContent=d.date||'—';
-  document.getElementById('r-total').textContent=d.total||'¥0';
-  const conf=(d.confidence||{}).overall||0;
-  const cbar=document.getElementById('r-cbar');
-  cbar.style.width=conf+'%';
-  cbar.style.background=conf>=85?'#34c759':conf>=65?'#ff9500':'#ff3b30';
-  const clbl=document.getElementById('r-clbl');
-  clbl.textContent=(conf>=85?'✓ ':conf>=65?'⚠ ':'⚠ 请仔细核对 ')+'识别准确度 '+conf+'%';
-  clbl.style.color=conf>=85?'#34c759':conf>=65?'#ff9500':'#ff3b30';
-  // Show warning banner for low confidence
-  const eb=document.getElementById('err-banner');
-  if(conf>0 && conf<65){
-    eb.textContent='⚠ 识别准确度较低（'+conf+'%），请仔细核对所有字段后再提交。';
-    eb.classList.add('show');
-    eb.style.background='#fff7ed';eb.style.color='#92400e';
-  }
-  document.getElementById('e-shop').value=d.shop||'';
-  const rawDate = d.date || '';
-  // Normalize date to YYYY-MM-DD for date input
-  let normDate = rawDate;
-  const m1 = rawDate.match(/(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})/);
-  if(m1) normDate = m1[1]+'-'+String(m1[2]).padStart(2,'0')+'-'+String(m1[3]).padStart(2,'0');
-  document.getElementById('e-date').value = normDate;
-  document.getElementById('e-no').value=d.no||'';
-  badge('fb-shop',(d.confidence||{}).shop||0);
-  badge('fb-date',(d.confidence||{}).date||0);
-  document.getElementById('e-sub').value=d.subtotal_num||0;
-  document.getElementById('e-tax8').value=d.tax8_num||0;
-  document.getElementById('e-tax10').value=d.tax10_num||0;
-  document.getElementById('e-total').value=d.total_num||0;
-  // Items
-  const items=d.items||[];
-  const icard=document.getElementById('items-card');
-  if(items.length>0){
-    icard.style.display='block';
-    document.getElementById('items-cnt').textContent='('+items.length+'件)';
-    document.getElementById('items-list').innerHTML=items.map((it,idx)=>
-      '<div class="item-row">'+
-      '<input class="item-name-input" type="text" value="'+esc(it.name)+'" placeholder="商品名">'+
-      (it.qty!=null?'<span class="item-qty">×'+it.qty+'</span>':'')+
-      '<input class="item-price-input" type="number" value="'+(it.price||0)+'" oninput="recalcItems()">'+
-      '</div>'
-    ).join('');
-    recalcItems();
-  } else { icard.style.display='none'; }
-  // Auto-suggest: check shop history first, then fallback to keyword match
-  autoSelectCatSmart(d);
-}
-
-function autoSelectCat(d){
-  const sel=document.getElementById('e-cat');
-  // Check shop memory first
-  const shopKey = 'cat_'+((d.shop||'').trim().slice(0,20));
-  const remembered = localStorage.getItem(shopKey);
-  if(remembered){ sel.value=remembered; return; }
-  // Auto-detect from content
-  const text=((d.shop||'')+' '+(d.items||[]).map(i=>i.name).join(' ')).toLowerCase();
-  if(/jr|metro|電車|バス|タクシー|taxi|suica|新幹線|飛行機/.test(text))
-    sel.value='旅費交通費（交通）';
-  else if(/ホテル|hotel|宿|旅館/.test(text))
-    sel.value='旅費交通費（宿泊）';
-  else if(/業務|スーパー|市場|魚|肉|野菜|食材|米|酒|飲料|ビール|仕入/.test(text))
-    sel.value='仕入高';
-  else if(/包材|容器|ラップ|袋|ナプキン|割箸|文具|事務|備品/.test(text))
-    sel.value='消耗品費';
-  else if(/デリバリー|uber|出前|配達/.test(text))
-    sel.value='外注費';
-  else if(/電気|ガス|水道|光熱/.test(text))
-    sel.value='水道光熱費';
-  else
-    sel.value='仕入高';
-}
-
-function rememberShopCat(){
-  // Save selected category for this shop
-  if(!PD) return;
-  const shopKey = 'cat_'+((PD.shop||'').trim().slice(0,20));
-  const cat = document.getElementById('e-cat').value;
-  if(cat) localStorage.setItem(shopKey, cat);
-}
-
-function syncTotal(){
-  const t=parseInt(document.getElementById('e-total').value)||0;
-  document.getElementById('r-total').textContent=fmt(t);
-}
-function recalcItems(){
-  let s=0; document.querySelectorAll('.item-price-input').forEach(i=>s+=parseInt(i.value)||0);
-  document.getElementById('items-sum').textContent=fmt(s);
-}
-
-function resultBack(){
-  if(EDIT_ID){goTo('screen-detail')}
-  else{goTo('screen-home');loadHome()}
-}
-
-// Build payload with items JSON
-function buildPayload(){
-  const items=[];
-  const names=document.querySelectorAll('.item-name-input');
-  const prices=document.querySelectorAll('.item-price-input');
-  names.forEach((n,i)=>{if(n.value.trim())items.push({name:n.value.trim(),price:parseInt(prices[i]?.value)||0})});
-  return{
-    shop:document.getElementById('e-shop').value||'unknown',
-    date:(document.getElementById('e-date').value||new Date().toISOString().slice(0,10)).slice(0,10),
-    subtotal:parseInt(document.getElementById('e-sub').value)||0,
-    tax8:parseInt(document.getElementById('e-tax8').value)||0,
-    tax10:parseInt(document.getElementById('e-tax10').value)||0,
-    total:parseInt(document.getElementById('e-total').value)||0,
-    category:document.getElementById('e-cat').value||'交際費',
-    note:document.getElementById('e-note').value.trim(),
-    confidence:PD?(PD.confidence||{}).overall||0:0,
-    items:JSON.stringify(items),
-    image_data: PD ? (PD._imageData||'') : '',
-    submitted_by: CURRENT_USER ? (CURRENT_USER.display_name||CURRENT_USER.username) : '',
-    invoice_no: document.getElementById('e-no').value.trim() || ''
-  }
-}
-
-function showSuc(p,tag){
-  document.getElementById('suc-shop').textContent=p.shop;
-  document.getElementById('suc-amt').textContent=fmt(p.total);
-  document.getElementById('suc-date').textContent=p.date+'  ·  '+p.category+(tag?' · '+tag:'');
-  goTo('screen-suc');
-}
-
-async function submitEntry(){
-  rememberShopCat(); // Remember category for this shop
-  const p=buildPayload();
-  if(EDIT_ID){
-    try{await fetch('/api/receipts/'+EDIT_ID,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}catch(e){console.error(e)}
-    EDIT_ID=null; showSuc(p,'已更新'); return;
-  }
-  try{
-    const chk=await fetch('/api/check-duplicate?date='+encodeURIComponent(p.date)+'&total='+p.total).then(r=>r.json());
-    if(chk.duplicate){
-      document.getElementById('dup-msg').textContent='⚠ 已有同日期同金额记录（'+chk.shop+'），是否仍然提交？';
-      document.getElementById('dup-toast').classList.add('show');
-      window._pp=p; return;
-    }
-  }catch(e){}
-  if(SPLIT_MODE){
-    // Submit multiple entries
-    const rows = document.querySelectorAll('.split-row');
-    if(rows.length === 0){ await doSave(p); return; }
-    for(const row of rows){
-      const cat = row.querySelector('.split-cat-sel').value;
-      const amt = parseInt(row.querySelector('.split-amt-input').value)||0;
-      if(amt > 0){
-        await doSave(Object.assign({}, p, {category: cat, total: amt, subtotal: amt, tax8:0, tax10:0}));
-      }
-    }
-    SPLIT_MODE=false;
+// ─── Zip search（GASプロキシ経由）───
+function searchZip(zipId, prefId, cityId, townId) {
+  const zip = document.getElementById(zipId).value.replace(/[^0-9]/g, '').trim();
+  if (zip.length !== 7) {
+    alert('郵便番号は7桁の数字で入力してください');
     return;
   }
-  await doSave(p);
+
+  const gasUrl = config.gasUrl;
+  if (!gasUrl || gasUrl.includes('YOUR_GAS_URL')) {
+    alert('GAS URLが設定されていません');
+    return;
+  }
+
+  // ボタンをローディング状態に
+  const btns = document.querySelectorAll('.zip-btn');
+  btns.forEach(b => { b.textContent = '検索中...'; b.disabled = true; });
+
+  fetch(gasUrl + '?zip=' + zip, { method: 'GET' })
+    .then(r => {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(data => {
+      btns.forEach(b => { b.textContent = '検索'; b.disabled = false; });
+      if (data.results && data.results[0]) {
+        const r = data.results[0];
+        document.getElementById(prefId).value = r.address1 || '';
+        document.getElementById(cityId).value = (r.address2 || '') + (r.address3 || '');
+        document.getElementById(townId).value = '';
+      } else {
+        alert('該当する住所が見つかりませんでした\n郵便番号をご確認ください');
+      }
+    })
+    .catch(err => {
+      btns.forEach(b => { b.textContent = '検索'; b.disabled = false; });
+      console.error('ZIP search error:', err);
+      alert('住所検索に失敗しました。\n手動でご入力ください。');
+    });
 }
-function hideDup(){document.getElementById('dup-toast').classList.remove('show')}
-async function forceSubmit(){hideDup();await doSave(window._pp)}
-let SPLIT_MODE = false;
-function toggleSplit(){
-  SPLIT_MODE = !SPLIT_MODE;
-  const card = document.getElementById('split-card');
-  const btn = document.getElementById('split-toggle-btn');
-  if(SPLIT_MODE){
-    card.style.display='block';
-    btn.textContent='✕ 取消拆分';
-    btn.style.color='#ff3b30';
-    if(document.getElementById('split-list').children.length===0) addSplit();
-  } else {
-    card.style.display='none';
-    btn.textContent='＋ 需要拆分科目';
-    btn.style.color='#8e8e93';
+
+// ─── Copy address ───
+function copyAddress() {
+  // 郵便番号・都道府県・市区町村・番地建物名をすべてコピー
+  document.getElementById('zip2').value        = document.getElementById('zip1').value;
+  document.getElementById('addr2_pref').value  = document.getElementById('addr1_pref').value;
+  document.getElementById('addr2_city').value  = document.getElementById('addr1_city').value;
+  document.getElementById('addr2_town').value  = document.getElementById('addr1_town').value;
+}
+
+// ─── Agree check ───
+function checkAgree() { /* allow free navigation */ }
+
+// ─── Signature ───
+var sigCtx = null;
+var sigLastX = 0, sigLastY = 0;
+
+function initSignature() {
+  setupSignatureCanvas();
+}
+
+function setupSignatureCanvas() {
+  const canvas = document.getElementById('sigCanvas');
+  if (!canvas) return;
+
+  // canvasのwidthをCSSの実際の表示幅に合わせる（重要！）
+  // これをしないとタッチ座標がずれる
+  const displayW = canvas.offsetWidth || canvas.parentElement.offsetWidth || 700;
+  canvas.width  = displayW;
+  canvas.height = 160;
+
+  sigCtx = canvas.getContext('2d');
+  sigCtx.strokeStyle = '#1a1f3a';
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+  sigHasData = false;
+
+  // 既存のイベントリスナーをクリアするためcanvasを複製して置き換え
+  const newCanvas = canvas.cloneNode(true);
+  canvas.parentNode.replaceChild(newCanvas, canvas);
+  const c = document.getElementById('sigCanvas');
+  // 複製後もwidthを同期
+  c.width  = displayW;
+  c.height = 160;
+  sigCtx = c.getContext('2d');
+  sigCtx.strokeStyle = '#1a1f3a';
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.lineJoin = 'round';
+
+  function getXY(e) {
+    const rect = c.getBoundingClientRect();
+    // scaleは常に1になるはず（widthをoffsetWidthに合わせたので）
+    const src = e.touches ? e.touches[0] : e;
+    return {
+      x: src.clientX - rect.left,
+      y: src.clientY - rect.top
+    };
+  }
+
+  c.addEventListener('mousedown', function(e) {
+    sigPainting = true;
+    const p = getXY(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    sigLastX = p.x; sigLastY = p.y;
+  });
+  c.addEventListener('mousemove', function(e) {
+    if (!sigPainting) return;
+    const p = getXY(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+    sigLastX = p.x; sigLastY = p.y;
+    sigHasData = true;
+  });
+  c.addEventListener('mouseup',    function() { sigPainting = false; });
+  c.addEventListener('mouseleave', function() { sigPainting = false; });
+
+  c.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    sigPainting = true;
+    const p = getXY(e);
+    sigCtx.beginPath();
+    sigCtx.moveTo(p.x, p.y);
+    sigLastX = p.x; sigLastY = p.y;
+  }, { passive: false });
+
+  c.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+    if (!sigPainting) return;
+    const p = getXY(e);
+    sigCtx.lineTo(p.x, p.y);
+    sigCtx.stroke();
+    sigLastX = p.x; sigLastY = p.y;
+    sigHasData = true;
+  }, { passive: false });
+
+  c.addEventListener('touchend',   function() { sigPainting = false; });
+  c.addEventListener('touchcancel',function() { sigPainting = false; });
+}
+
+function clearSig() {
+  const canvas = document.getElementById('sigCanvas');
+  if (canvas && sigCtx) {
+    sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  sigHasData = false;
+}
+
+function reinitSignature() {
+  setupSignatureCanvas();
+}
+
+// ═══════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════
+function goPage(n) {
+  document.getElementById('page' + currentPage)?.classList.remove('active');
+  currentPage = n;
+  document.getElementById('page' + n)?.classList.add('active');
+  renderSteps();
+  // 即座にトップへスクロール
+  setTimeout(function() {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, 10);
+  if (n === 5) {
+    renderConfirmSummary();
+    // 署名Canvasをページ表示後に再初期化（hiddenのままだとサイズが0になる問題を修正）
+    setTimeout(function() {
+      reinitSignature();
+    }, 50);
   }
 }
 
-const CAT_OPTIONS = ['仕入高','食材費','飲料費','消耗品費','外注費','広告宣伝費','水道光熱費','通信費','修繕費','交際費','会議費','旅費交通費（交通）','旅費交通費（宿泊）','雑費'];
-
-function addSplit(){
-  const list = document.getElementById('split-list');
-  const row = document.createElement('div');
-  row.className = 'split-row';
-  row.innerHTML = `<select class="split-cat-sel">${CAT_OPTIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>`+
-    `<input class="split-amt-input" type="number" inputmode="decimal" placeholder="金額">` +
-    `<button class="split-del" onclick="this.parentElement.remove()">×</button>`;
-  list.appendChild(row);
+function goNext(from) {
+  // Validate current page
+  if (!validatePage(from)) return;
+  goPage(from + 1);
 }
 
-async function doSave(p){
-  try{await fetch('/api/receipts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}catch(e){console.error(e)}
-  // Save shop→category mapping
-  if(p.shop && p.shop!=='unknown' && p.category) saveShopCat(p.shop, p.category);
-  showSuc(p);
-}
-function startNew(){goTo('screen-home');loadHome()}
+function validatePage(page) {
+  let ok = true;
 
-// Detail
-function showDetail(id){
-  // Ensure REC_MAP has this record - fetch if needed
-  if(!REC_MAP[id]){
-    fetch('/api/receipts').then(r=>r.json()).then(recs=>{
-      recs.forEach(r=>{REC_MAP[r.id]=r;});
-      if(REC_MAP[id]) showDetail(id);
-    }); return;
+  const clearErr = (id) => document.getElementById(id)?.classList.remove('has-error');
+  const setErr   = (id) => { document.getElementById(id)?.classList.add('has-error'); ok = false; };
+  const val      = (id) => document.getElementById(id)?.value.trim();
+
+  if (page === 1) {
+    if (!val('company'))   setErr('fg-company'); else clearErr('fg-company');
+    if (!val('repName'))   setErr('fg-rep');     else clearErr('fg-rep');
+    if (!val('zip1'))      setErr('fg-zip1');    else clearErr('fg-zip1');
+    if (!val('addr1_pref')) setErr('fg-pref1');  else clearErr('fg-pref1');
+    if (!val('tel'))       setErr('fg-tel');     else clearErr('fg-tel');
+    const email = val('email');
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) setErr('fg-email');
+    else clearErr('fg-email');
   }
-  const rec=REC_MAP[id];
-  DETAIL_ID=id;
-  document.getElementById('det-hdr-sub').textContent=rec.date+'  ·  '+(rec.category||'');
-  document.getElementById('det-shop').textContent=rec.shop||'—';
-  document.getElementById('det-date').textContent=rec.date||'—';
-  document.getElementById('det-total').textContent=fmt(rec.total);
-  document.getElementById('det-cat').textContent=catIcon(rec.category)+' '+(rec.category||'—');
-  const ne=document.getElementById('det-note');
-  if(rec.note){ne.textContent=rec.note;ne.style.display='block'}else{ne.style.display='none'}
-  document.getElementById('det-sub').textContent=fmt(rec.subtotal);
-  document.getElementById('det-tax8').textContent=fmt(rec.tax8);
-  document.getElementById('det-tax10').textContent=fmt(rec.tax10);
-  document.getElementById('det-total2').textContent=fmt(rec.total);
-  // Items
-  let items=[];
-  try{items=JSON.parse(rec.items||'[]')}catch(e){}
-  const ic=document.getElementById('det-items-card');
-  if(items.length>0){
-    ic.style.display='block';
-    document.getElementById('det-items-cnt').textContent='('+items.length+'件)';
-    document.getElementById('det-items-list').innerHTML=items.map(it=>
-      '<div class="di-row"><div class="di-name">'+esc(it.name)+'</div>'+
-      (it.qty?'<div class="di-qty">×'+it.qty+'</div>':'')+
-      '<div class="di-price">'+fmt(it.price)+'</div></div>'
-    ).join('');
-  } else { ic.style.display='none'; }
-  goTo('screen-detail');
+
+  if (page === 2) {
+    if (!val('shopName'))   setErr('fg-shop');  else clearErr('fg-shop');
+    if (!val('zip2'))       setErr('fg-zip2');  else clearErr('fg-zip2');
+    if (!val('addr2_pref')) setErr('fg-pref2'); else clearErr('fg-pref2');
+  }
+
+  if (page === 3) {
+    if (!selectedBasic) {
+      document.getElementById('basicError').style.display = 'block';
+      ok = false;
+    }
+  }
+
+  if (page === 4) {
+    if (!document.getElementById('agree1').checked || !document.getElementById('agree2').checked) {
+      alert('すべての確認事項にご同意ください。');
+      ok = false;
+    }
+  }
+
+  if (!ok) { window.scrollTo(0, 0); document.body.scrollTop = 0; }
+  return ok;
 }
 
-function editCurrentDetail(){
-  const rec=REC_MAP[DETAIL_ID]; if(!rec)return;
-  EDIT_ID=rec.id;
-  let items=[];try{items=JSON.parse(rec.items||'[]')}catch(e){}
-  PD={shop:rec.shop,date:rec.date,no:rec.invoice_no||'',
-    subtotal_num:rec.subtotal||0,tax8_num:rec.tax8||0,tax10_num:rec.tax10||0,total_num:rec.total||0,
-    subtotal:fmt(rec.subtotal),tax8:fmt(rec.tax8),tax10:fmt(rec.tax10),total:fmt(rec.total),
-    items:items,items_json:rec.items||'[]',category:0,
-    confidence:{overall:rec.confidence||0,shop:rec.confidence||0,date:rec.confidence||0,total:rec.confidence||0},_url:null};
-  fillResult(PD);
-  document.getElementById('e-cat').value=rec.category||'交際費';
-  document.getElementById('e-note').value=rec.note||'';
-  document.getElementById('edit-banner').classList.add('show');
-  document.getElementById('submit-btn').textContent='✓ 更新记录';
-  document.getElementById('result-title').textContent='编辑记录';
-  goTo('screen-result');
+// ─── Confirm summary ───
+function renderConfirmSummary() {
+  const amounts = calcTotal();
+  const el = document.getElementById('confirmSummary');
+
+  const row = (label, val) => val
+    ? `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;"><span style="color:var(--text-sub)">${label}</span><span style="font-weight:500;color:var(--text);text-align:right;max-width:60%">${val}</span></div>`
+    : '';
+
+  el.innerHTML = `
+    ${row('会社名', document.getElementById('company').value)}
+    ${row('代表者', document.getElementById('repName').value)}
+    ${row('店舗名', document.getElementById('shopName').value)}
+    ${row('サービスプラン', selectedBasic === 'monthly' ? '月額プラン' : '年額プラン')}
+    ${row('QR注文', document.getElementById('qrOption').checked ? 'あり' : 'なし')}
+    <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:14px;font-weight:700;color:var(--navy);">
+      <span>合計金額（税込）</span><span style="font-family:'Noto Serif JP',serif;font-size:18px;">¥${amounts.total.toLocaleString()}</span>
+    </div>
+  `;
 }
 
-async function deleteCurrentDetail(){
-  if(!confirm('删除此记录？'))return;
-  try{await fetch('/api/receipts/'+DETAIL_ID,{method:'DELETE'})}catch(e){console.error(e)}
-  delete REC_MAP[DETAIL_ID];
-  goTo('screen-records'); loadRecords();
+// ═══════════════════════════════════════════
+//  COLLECT DATA
+// ═══════════════════════════════════════════
+function collectData() {
+  const amounts = calcTotal();
+  const today = new Date();
+  const dateStr = `${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+
+  const devices = config.devices.map((dev, i) => ({
+    name: dev.name,
+    price: dev.price,
+    qty: parseInt(document.getElementById(`qty_${i}`)?.textContent || 0),
+    amount: parseInt(document.getElementById(`qty_${i}`)?.textContent || 0) * dev.price
+  })).filter(d => d.qty > 0);
+
+  return {
+    custCode: `${today.getFullYear()}${String(today.getMonth()+1).padStart(2,'0')}${String(today.getDate()).padStart(2,'0')}001`,
+    dateStr,
+    company:      document.getElementById('company').value,
+    companyKana:  document.getElementById('companyKana').value,
+    repName:      document.getElementById('repName').value,
+    zip1:         document.getElementById('zip1').value,
+    addr1:        document.getElementById('addr1_pref').value + document.getElementById('addr1_city').value + document.getElementById('addr1_town').value,
+    tel:          document.getElementById('tel').value,
+    mobile:       document.getElementById('mobile').value,
+    email:        document.getElementById('email').value,
+    contactName:  document.getElementById('contactName').value,
+    shopName:     document.getElementById('shopName').value,
+    shopKana:     document.getElementById('shopKana').value,
+    industry:     document.getElementById('industry').value,
+    zip2:         document.getElementById('zip2').value,
+    addr2:        document.getElementById('addr2_pref').value + document.getElementById('addr2_city').value + document.getElementById('addr2_town').value,
+    shopTel:      document.getElementById('shopTel').value,
+    shopContact:  document.getElementById('shopContact').value,
+    openTime:     `${document.getElementById('openTime').value}～${document.getElementById('closeTime').value}`,
+    closedDay:    document.getElementById('closedDay').value,
+    openDate:     document.getElementById('openDate').value,
+    basicPlan:    selectedBasic === 'monthly' ? '基本月額プラン' : '基本年額プラン',
+    basicPrice:   selectedBasic === 'monthly' ? config.monthly : config.yearly,
+    basicLabel:   selectedBasic === 'monthly' ? '基本月額プラン' : '基本年額プラン',
+    basicPeriod:  selectedBasic === 'monthly' ? '月額' : '年額',
+    qrSelected:   document.getElementById('qrOption').checked,
+    qrPrice:      document.getElementById('qrOption').checked ? (selectedBasic === 'monthly' ? config.qrMonthly : config.qrYearly) : 0,
+    qrLabel:      selectedBasic === 'monthly' ? 'QR注文月額' : 'QR注文年額',
+    devices,
+    amounts,
+    signatureName: document.getElementById('signatureName').value,
+    signatureRole: document.getElementById('signatureRole').value,
+    sigDataURL:   (document.getElementById('sigCanvas') || {}).toDataURL ? document.getElementById('sigCanvas').toDataURL('image/png') : '',
+    toEmail:      config.email,
+    subject:      `【新規申請】${document.getElementById('company').value}`,
+  };
 }
 
-// Records
-async function loadRecords(){
-  const body=document.getElementById('rec-body');
-  body.innerHTML='<div class="empty">加载中…</div>';
-  try{
-    const recs=await fetch('/api/receipts').then(r=>r.json());
-    document.getElementById('rec-sub').textContent='共 '+recs.length+' 条记录';
-    if(!recs.length){body.innerHTML='<div class="empty"><div class="empty-icon">📋</div>暂无记录</div>';return}
-    REC_MAP={}; const groups={};
-    recs.forEach(r=>{REC_MAP[r.id]=r;const m=(r.date||'').slice(0,7);if(!groups[m])groups[m]=[];groups[m].push(r)});
-    body.innerHTML=Object.keys(groups).sort().reverse().map(m=>{
-      const its=groups[m]; const tot=its.reduce((s,r)=>s+(r.total||0),0);
-      return '<div class="month-section">'+
-        '<div class="month-hdr"><div class="month-name">'+m+'</div><div class="month-tot">'+fmt(tot)+'</div></div>'+
-        '<div class="month-recs">'+its.map(r=>
-          '<div class="rec-item" onclick="showDetail('+r.id+')">'+
-          '<div style="width:36px;height:36px;border-radius:9px;background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+catIcon(r.category)+'</div>'+
-          '<div class="rec-info"><div class="rec-shop">'+esc(r.shop)+'</div><div class="rec-meta">'+r.date+(r.note?' · '+esc(r.note):'')+'</div></div>'+
-          '<div class="rec-right"><div class="rec-amt">'+fmt(r.total)+'</div><div class="rec-cat">'+esc(r.category)+'</div></div>'+
-          '</div>'
-        ).join('')+'</div></div>';
-    }).join('');
-  }catch(e){body.innerHTML='<div class="empty">加载失败</div>'}
+// ═══════════════════════════════════════════
+//  SUBMIT
+// ═══════════════════════════════════════════
+function getGasUrl() { return config.gasUrl || ''; }
+
+async function submitForm() {
+  // Validate signature
+  const sigName = document.getElementById('signatureName').value.trim();
+  if (!sigName) {
+    document.getElementById('fg-signame').classList.add('has-error');
+    return;
+  }
+  if (!sigHasData) {
+    document.getElementById('sigError').style.display = 'block';
+    return;
+  }
+  document.getElementById('sigError').style.display = 'none';
+
+  document.getElementById('loading').classList.add('show');
+
+  try {
+    const data = collectData();
+
+    // 署名画像をbase64で送信（GAS側でPDF生成）
+    const payload = {
+      dateStr: data.dateStr, custCode: data.custCode,
+      company: data.company, companyKana: data.companyKana, repName: data.repName,
+      zip1: data.zip1, addr1: data.addr1, tel: data.tel, mobile: data.mobile,
+      email: data.email, contactName: data.contactName,
+      shopName: data.shopName, shopKana: data.shopKana, industry: data.industry,
+      zip2: data.zip2, addr2: data.addr2, shopTel: data.shopTel, shopContact: data.shopContact,
+      openTime: data.openTime, closedDay: data.closedDay, openDate: data.openDate,
+      basicPlan: data.basicLabel, basicPrice: data.basicPrice,
+      qrSelected: data.qrSelected ? 'あり' : 'なし', qrPrice: data.qrPrice,
+      devicesStr: data.devices.map(d => `${d.name}×${d.qty}`).join('、'),
+      devices: data.devices,
+      subtotal: data.amounts.subtotal, tax: data.amounts.tax, total: data.amounts.total,
+      signatureName: data.signatureName, signatureRole: data.signatureRole,
+      sigDataURL: data.sigDataURL,
+      toEmail: config.email,
+      subject: `【新規申請】${data.company}`,
+    };
+
+    const gasUrl = getGasUrl();
+    if (!gasUrl) throw new Error('GAS URLが設定されていません。⚙ボタンから設定してください。');
+
+    const res = await fetch(gasUrl, { method: 'POST', body: JSON.stringify(payload) });
+    const result = await res.json();
+    if (result.status !== 'ok') throw new Error(result.message || '送信失敗');
+
+    document.getElementById('loading').classList.remove('show');
+    showSuccess(data);
+
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    if (!getGasUrl()) {
+      alert('⚠ GAS URLが未設定です。\n右下の⚙ボタンからGAS URLを設定してください。');
+    } else {
+      alert('送信エラー: ' + e.message);
+    }
+  }
 }
 
-// Stats
-async function loadStats(){
-  const body=document.getElementById('stats-body');
-  try{
-    const sum=await fetch('/api/summary').then(r=>r.json());
-    if(!sum.length){body.innerHTML='<div class="empty"><div class="empty-icon">📊</div>暂无数据</div>';return}
-    const maxT=Math.max(...sum.map(s=>s.total||0))||1;
-    const tA=sum.reduce((s,r)=>s+(r.total||0),0);
-    const cA=sum.reduce((s,r)=>s+(r.count||0),0);
-    const xA=sum.reduce((s,r)=>s+(r.tax8||0)+(r.tax10||0),0);
-    body.innerHTML=
-      '<div class="card-pad"><div class="card-ttl">累计汇总</div><div class="stat-grid">'+
-      '<div class="stat-cell"><div class="stat-num">'+fmt(tA)+'</div><div class="stat-lbl">总金额</div></div>'+
-      '<div class="stat-cell"><div class="stat-num">'+cA+'</div><div class="stat-lbl">张票据</div></div>'+
-      '<div class="stat-cell"><div class="stat-num">'+fmt(xA)+'</div><div class="stat-lbl">消費税合計</div></div>'+
-      '<div class="stat-cell"><div class="stat-num">'+sum.length+'</div><div class="stat-lbl">个月</div></div>'+
-      '</div></div>'+
-      '<div class="card-pad"><div class="card-ttl">各月支出</div>'+
-      sum.map(s=>{const p=Math.round(((s.total||0)/maxT)*100);
-        return '<div class="bar-row"><div class="bar-lbl">'+s.month+'</div><div class="bar-wrap"><div class="bar-fill" style="width:'+p+'%"></div></div><div class="bar-val">'+fmt(s.total||0)+'</div></div>';
-      }).join('')+'</div>';
-  }catch(e){body.innerHTML='<div class="empty">加载失败</div>'}
+function showSuccess(data) {
+  // Hide all pages
+  for (let i = 1; i <= TOTAL_PAGES; i++) {
+    document.getElementById(`page${i}`)?.classList.remove('active');
+  }
+  document.querySelector('.step-nav').style.display = 'none';
+
+  const sp = document.getElementById('successPage');
+  sp.classList.add('active');
+  sp.style.display = 'block';
+
+  document.getElementById('successDetail').innerHTML = `
+    <h4>申込内容</h4>
+    <div class="row"><span>会社名</span><span>${data.company}</span></div>
+    <div class="row"><span>店舗名</span><span>${data.shopName}</span></div>
+    <div class="row"><span>プラン</span><span>${data.basicLabel}</span></div>
+    <div class="row"><span>合計金額</span><span style="font-weight:700;color:var(--navy);">¥${data.amounts.total.toLocaleString()}（税込）</span></div>
+    <div class="row"><span>申込日</span><span>${data.dateStr}</span></div>
+  `;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // 1.5秒後にSTORESモーダルを表示
+  setTimeout(function() {
+    openStoresModal();
+  }, 1500);
 }
 
-// Update summary when date changes
-document.getElementById('e-date').addEventListener('change', function(){
-  document.getElementById('r-date').textContent = this.value || '—';
-});
-
-// Enter key support
-try{
-  document.getElementById('login-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
-  document.getElementById('login-user').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
-}catch(e){}
-
-// ── Init: check login ──
-if(CURRENT_USER){
-  document.getElementById('btn-next').disabled=true;
-  afterLogin();
-} else {
-  goTo('screen-login');
+// ═══════════════════════════════════════════
+//  ADMIN
+// ═══════════════════════════════════════════
+function openAdmin() {
+  document.getElementById('adminDrawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('show');
 }
+function closeAdmin() {
+  document.getElementById('adminDrawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('show');
+}
+
+function syncAdminFields() {
+  document.getElementById('adminGasUrl').value  = config.gasUrl || '';
+  document.getElementById('adminEmail').value   = config.email;
+  document.getElementById('adminMonthly').value = config.monthly;
+  document.getElementById('adminYearly').value  = config.yearly;
+  document.getElementById('adminQrMonthly').value = config.qrMonthly;
+  document.getElementById('adminQrYearly').value  = config.qrYearly;
+}
+
+function renderAdminDeviceList() {
+  const list = document.getElementById('adminDeviceList');
+  list.innerHTML = '';
+  config.devices.forEach((dev, i) => {
+    const row = document.createElement('div');
+    row.className = 'admin-device-row';
+    row.innerHTML = `
+      <input type="text" value="${dev.name}" id="adev_name_${i}" placeholder="機器名">
+      <input type="number" value="${dev.price}" id="adev_price_${i}" placeholder="単価">
+      <button class="del-btn" onclick="adminDelDevice(${i})">削除</button>
+    `;
+    list.appendChild(row);
+  });
+}
+
+function adminAddDevice() {
+  config.devices.push({ name: '新しい機器', price: 0 });
+  renderAdminDeviceList();
+}
+
+function adminDelDevice(i) {
+  config.devices.splice(i, 1);
+  renderAdminDeviceList();
+}
+
+function saveAdmin() {
+  config.gasUrl    = document.getElementById('adminGasUrl').value.trim();
+  config.email     = document.getElementById('adminEmail').value;
+  config.monthly   = parseInt(document.getElementById('adminMonthly').value) || 8000;
+  config.yearly    = parseInt(document.getElementById('adminYearly').value) || 80000;
+  config.qrMonthly = parseInt(document.getElementById('adminQrMonthly').value) || 4000;
+  config.qrYearly  = parseInt(document.getElementById('adminQrYearly').value) || 40000;
+  config.devices   = [];
+  document.querySelectorAll('.admin-device-row').forEach((row, i) => {
+    const name  = document.getElementById(`adev_name_${i}`)?.value || '';
+    const price = parseInt(document.getElementById(`adev_price_${i}`)?.value || 0);
+    if (name) config.devices.push({ name, price });
+  });
+  saveConfig();
+  updateServicePriceDisplay();
+  renderDeviceList();
+  closeAdmin();
+  alert('設定を保存しました。');
+}
+
+// ─── STORES モーダル ───
+function openStoresModal() {
+  var m = document.getElementById('storesModal');
+  m.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+function closeStoresModal() {
+  var m = document.getElementById('storesModal');
+  m.style.display = 'none';
+  document.body.style.overflow = '';
+}
+// モーダル背景クリックで閉じる
+var _sm = document.getElementById('storesModal');
+if (_sm) {
+  _sm.addEventListener('click', function(e) {
+    if (e.target === this) closeStoresModal();
+  });
+}
+
+// ─── Admin long-press（3秒長押しで管理パネル表示）───
+(function() {
+  var fab = document.getElementById('adminFab');
+  var pressTimer = null;
+  var pressCount = 0;
+
+  function startPress() {
+    pressTimer = setTimeout(function() {
+      fab.style.opacity = '1';
+      fab.style.background = 'var(--gold)';
+      fab.style.color = 'var(--navy-dark)';
+      fab.onclick = openAdmin;
+      pressCount++;
+      // 5回使ったら再び隠す
+      if (pressCount >= 5) {
+        setTimeout(function() {
+          fab.style.opacity = '0';
+          fab.onclick = null;
+          pressCount = 0;
+        }, 30000);
+      }
+    }, 3000);
+  }
+
+  function cancelPress() {
+    if (pressTimer) {
+      clearTimeout(pressTimer);
+      pressTimer = null;
+    }
+  }
+
+  fab.addEventListener('mousedown', startPress);
+  fab.addEventListener('touchstart', startPress, { passive: true });
+  fab.addEventListener('mouseup', cancelPress);
+  fab.addEventListener('mouseleave', cancelPress);
+  fab.addEventListener('touchend', cancelPress);
+  fab.addEventListener('touchcancel', cancelPress);
+})();
+
+// ─── Boot ───
+init();
 </script>
 
-<!-- BATCH SCREEN -->
-<div class="screen" id="screen-batch">
-  <div style="background:#1c1c1e;color:#fff;padding:52px 16px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50">
-    <div>
-      <div style="font-size:17px;font-weight:700">批量录入</div>
-      <div style="font-size:12px;opacity:0.6;margin-top:2px" id="batch-info">准备中…</div>
+<!-- ════ STORES 決済申込モーダル ════ -->
+<div id="storesModal" style="display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;">
+  <div style="background:white;border-radius:20px 20px 0 0;padding:0;width:100%;max-width:480px;animation:slideUp 0.35s cubic-bezier(0.34,1.1,0.64,1);">
+    <!-- ハンドル -->
+    <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0;"></div>
+    <!-- ヘッダー -->
+    <div style="background:linear-gradient(135deg,#1a1f3a,#2d3561);margin:10px 16px 0;border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:14px;">
+      <div style="background:white;border-radius:10px;padding:7px 12px;font-family:'Arial Black',sans-serif;font-size:18px;font-weight:900;color:#1a1f3a;letter-spacing:-0.5px;flex-shrink:0;">STORES</div>
+      <div>
+        <div style="color:white;font-size:14px;font-weight:700;letter-spacing:0.5px;">キャッシュレス決済を導入しませんか？</div>
+        <div style="color:rgba(255,255,255,0.6);font-size:10px;margin-top:2px;">申込完了のついでにまとめて手続き</div>
+      </div>
     </div>
-    <button id="batch-submit-btn" onclick="batchSubmitAll()" disabled style="padding:9px 18px;background:#34c759;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">等待识别</button>
+    <!-- コンテンツ -->
+    <div style="padding:18px 16px;">
+      <!-- 2カラム stats -->
+      <div style="display:flex;gap:10px;margin-bottom:14px;">
+        <div style="flex:1;background:#f0f4ff;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:#1a1f3a;line-height:1;">1.98%<span style="font-size:12px;font-weight:400;color:#888;">〜</span></div>
+          <div style="font-size:10px;color:#888;margin-top:4px;font-weight:500;">決済手数料</div>
+        </div>
+        <div style="flex:1;background:#f0fff6;border-radius:12px;padding:14px;text-align:center;">
+          <div style="font-size:22px;font-weight:900;color:#1a1f3a;line-height:1;">最短<span style="font-size:16px;">3</span>日</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;font-weight:500;">導入まで</div>
+        </div>
+      </div>
+      <!-- 特徴 -->
+      <div style="background:#fafafa;border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;color:#444;line-height:1.5;">
+          <div>✅　<b>初期費用・月額費用　無料</b></div>
+          <div>✅　クレジットカード・交通系IC・QRコード対応</div>
+          <div>✅　最短3営業日で導入完了</div>
+          <div>✅　売上は最短翌営業日に振込</div>
+        </div>
+      </div>
+      <!-- ボタン -->
+      <a href="https://dashboard.stores.app/referral?ac=njf_st" target="_blank"
+        onclick="closeStoresModal()"
+        style="display:block;background:linear-gradient(135deg,#1a1f3a,#2d3561);color:white;text-align:center;padding:16px;border-radius:12px;font-size:15px;font-weight:700;letter-spacing:1px;text-decoration:none;box-shadow:0 4px 16px rgba(26,31,58,0.3);margin-bottom:10px;">
+        STORES 決済を申し込む　→
+      </a>
+      <button onclick="closeStoresModal()"
+        style="width:100%;padding:13px;background:none;border:1.5px solid #ddd;border-radius:12px;font-size:14px;color:#888;font-weight:500;cursor:pointer;font-family:'Noto Sans JP',sans-serif;">
+        今は申し込まない
+      </button>
+      <div style="text-align:center;font-size:10px;color:#bbb;margin-top:10px;padding-bottom:env(safe-area-inset-bottom);">
+        ※ NJFREGIとは別サービスです。STORESのサイトへ移動します。
+      </div>
+    </div>
   </div>
-  <div id="batch-list" style="padding-bottom:40px"></div>
 </div>
+<style>
+@keyframes slideUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
+</style>
+
 </body>
 </html>
