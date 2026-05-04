@@ -1,1299 +1,1063 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NJF REGI 書類管理システム</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>小票录入</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap');
-:root {
-  --ink:#1a1a2e; --ink-light:#4a4a6a; --paper:#f8f6f0; --paper-warm:#ede9e0;
-  --accent:#c0392b; --accent-light:#e74c3c; --border:#d4cfc5; --shadow:rgba(26,26,46,.12);
-  --success:#27ae60; --blue:#2980b9;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
-header{
-  background:var(--ink);color:white;padding:0 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  height:56px;position:sticky;top:0;z-index:100;
-  box-shadow:0 2px 12px var(--shadow);
-}
-header h1{font-family:'Noto Serif JP',serif;font-size:17px;font-weight:700;letter-spacing:1px}
-header h1 span{color:#e74c3c}
-.header-meta{font-size:11px;opacity:.55}
-.tabs{background:var(--ink);display:flex;padding:0 8px;border-top:1px solid rgba(255,255,255,.08);overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab-btn{
-  background:none;border:none;color:rgba(255,255,255,.5);
-  padding:7px 10px;cursor:pointer;font-size:11px;
-  font-family:'Noto Sans JP',sans-serif;
-  border-bottom:2px solid transparent;transition:all .2s;
-  white-space:nowrap;flex-shrink:0;
-}
-.tab-btn.active{color:white;border-bottom-color:#e74c3c}
-.tab-btn:hover{color:white}
-main{padding:24px;max-width:1100px;margin:0 auto}
-.tab-content{display:none}
-.tab-content.active{display:block}
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
-.section-title{font-family:'Noto Serif JP',serif;font-size:19px;font-weight:700}
-.section-title small{font-family:'Noto Sans JP',sans-serif;font-size:12px;color:var(--ink-light);margin-left:8px;font-weight:400}
-.btn{
-  padding:8px 16px;border:none;border-radius:5px;cursor:pointer;
-  font-size:13px;font-family:'Noto Sans JP',sans-serif;font-weight:500;
-  transition:all .2s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;
-}
-.btn-primary{background:var(--accent);color:white}
-.btn-primary:hover{background:var(--accent-light)}
-.btn-secondary{background:var(--ink);color:white}
-.btn-secondary:hover{background:#2c2c4e}
-.btn-outline{background:white;color:var(--ink);border:1px solid var(--border)}
-.btn-outline:hover{background:var(--paper-warm)}
-.btn-success{background:var(--success);color:white}
-.btn-blue{background:var(--blue);color:white}
-.btn-pdf{background:#8e44ad;color:white}
-.btn-pdf:hover{background:#9b59b6}
-.btn-sm{padding:5px 10px;font-size:12px}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.month-bar{
-  background:white;border:1px solid var(--border);border-radius:8px;
-  padding:14px 18px;margin-bottom:18px;
-  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
-}
-.month-bar label{font-size:13px;font-weight:500}
-.month-bar input[type="month"]{
-  padding:6px 10px;border:1px solid var(--border);border-radius:4px;
-  font-family:'Noto Sans JP',sans-serif;font-size:14px;background:var(--paper);
-}
-.month-bar .stat{margin-left:auto;font-size:13px;color:var(--ink-light)}
-.month-bar .stat strong{color:var(--accent);font-size:17px}
-.inv-table-wrap{background:white;border:1px solid var(--border);border-radius:8px;overflow:hidden}
-.inv-table{width:100%;border-collapse:collapse;font-size:13px}
-.inv-table th{background:var(--ink);color:white;padding:10px 12px;text-align:left;font-weight:500}
-.inv-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.inv-table tr:last-child td{border-bottom:none}
-.inv-table tr:hover td{background:var(--paper)}
-.inv-table .amount{font-weight:700;color:var(--accent)}
-.inv-table .actions{display:flex;gap:5px;flex-wrap:wrap}
-.status-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:500}
-.status-pending{background:#fef3cd;color:#856404}
-.status-paid{background:#d1f2e1;color:#1a7a41}
-.total-row{
-  background:var(--paper-warm);display:flex;justify-content:flex-end;
-  padding:12px 18px;border-top:2px solid var(--border);gap:28px;flex-wrap:wrap;
-}
-.total-item{text-align:right}
-.total-item label{color:var(--ink-light);display:block;font-size:11px}
-.total-item strong{font-size:16px}
-.total-item.grand strong{color:var(--accent);font-size:20px}
-.store-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-.store-card{background:white;border:1px solid var(--border);border-radius:8px;padding:16px}
-.store-card:hover{box-shadow:0 4px 14px var(--shadow)}
-.store-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
-.store-name{font-weight:700;font-size:14px}
-.store-meta{font-size:12px;color:var(--ink-light);line-height:1.8}
-.store-actions{display:flex;gap:6px;margin-top:10px}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:white;border-radius:10px;padding:26px;width:540px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.modal h2{font-family:'Noto Serif JP',serif;font-size:17px;margin-bottom:18px;padding-bottom:10px;border-bottom:1px solid var(--border)}
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:12px;font-weight:500;color:var(--ink-light);margin-bottom:5px}
-.form-group input,.form-group select{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:14px;background:var(--paper)}
-.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--accent)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.modal-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;padding-top:14px;border-top:1px solid var(--border)}
-.line-items{border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.mit-line-item-row{padding:8px;border-top:1px solid var(--border);background:var(--paper);margin:6px;border-radius:6px}
-.mit-line-item-row .mit-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.mit-line-item-row .mit-fields .field label{display:block;font-size:11px;color:var(--ink-light);margin-bottom:4px}
-.mit-line-item-row .mit-fields .field input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px}
-.mit-line-item-row .mit-name-wrap{margin-bottom:8px}
-.mit-line-item-row .mit-name-wrap label{display:block;font-size:11px;color:var(--ink-light);margin-bottom:4px}
-.mit-line-item-row .mit-name-wrap input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px}
-.mit-line-footer{display:flex;justify-content:space-between;align-items:center}
-.mit-line-total{font-size:13px;font-weight:600;color:var(--accent)}
-.line-item-row{padding:8px;border-top:1px solid var(--border);background:var(--paper);margin:6px;border-radius:6px}
-.line-item-name-wrap{margin-bottom:8px}
-.line-item-name-wrap label{display:block;font-size:11px;color:var(--ink-light);margin-bottom:4px}
-.line-item-name-wrap input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px}
-.line-item-nums{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.line-item-nums .field label{display:block;font-size:11px;color:var(--ink-light);margin-bottom:4px}
-.line-item-nums .field input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:4px;font-size:13px}
-.line-item-footer{display:flex;justify-content:space-between;align-items:center}
-.line-item-total{font-size:13px;font-weight:600;color:var(--accent)}
-.btn-icon{width:26px;height:26px;border:none;background:#fee2e2;color:#991b1b;border-radius:4px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center}
-.add-line-btn{width:100%;padding:7px;background:white;border:none;border-top:1px solid var(--border);cursor:pointer;color:var(--blue);font-size:13px;font-family:'Noto Sans JP',sans-serif;margin-top:4px}
-.template-items{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--paper);border:1px solid var(--border);border-radius:6px;padding:10px}
-.tpl-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:white;border-radius:6px;border:1px solid var(--border);cursor:pointer;transition:all .15s;user-select:none}
-.tpl-item:hover{border-color:var(--blue);background:#f0f7ff}
-.tpl-item input[type="checkbox"]{width:16px;height:16px;accent-color:var(--blue);cursor:pointer;flex-shrink:0;margin:0}
-.tpl-item:has(input:checked){border-color:var(--blue);background:#e8f4fd}
-.tpl-name{font-size:12px;flex:1;line-height:1.3}
-.tpl-price{font-size:11px;color:var(--accent);font-weight:600;white-space:nowrap}
-.auto-notice{background:#e8f4fd;border:1px solid #b3d4f0;border-radius:8px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#1a5276;display:flex;align-items:center;gap:10px}
-.empty-state{text-align:center;padding:60px 20px;color:var(--ink-light)}
-.empty-state .icon{font-size:46px;margin-bottom:14px}
-/* Mobile cards */
-.inv-card-list{display:none}
-.inv-card{background:white;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px var(--shadow)}
-.inv-card-header{background:var(--ink);color:white;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
-.inv-card-name{font-weight:700;font-size:15px;flex:1}
-.inv-card-body{padding:14px 16px}
-.inv-card-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px}
-.inv-card-row:last-child{border-bottom:none}
-.inv-card-row label{color:var(--ink-light);font-size:12px}
-.inv-card-row .val{font-weight:500}
-.inv-card-total{background:#fdf0ef;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--accent)}
-.inv-card-total label{color:var(--ink-light);font-size:12px}
-.inv-card-total .amount{color:var(--accent);font-size:20px;font-weight:700}
-.inv-card-actions{padding:10px 16px;display:flex;gap:8px;background:var(--paper);border-top:1px solid var(--border)}
-.inv-card-actions .btn{flex:1;justify-content:center;font-size:13px}
-/* 契約書 tab cards */
-.keiyaku-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px}
-.keiyaku-card{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:8px;padding:28px 12px;background:white;border:1px solid var(--border);
-  border-radius:10px;text-decoration:none;color:var(--ink);cursor:pointer;
-  transition:all .2s;box-shadow:0 2px 8px var(--shadow);
-}
-.keiyaku-card:hover{box-shadow:0 6px 20px var(--shadow);transform:translateY(-2px);border-color:#b3d4f0}
-.keiyaku-card-icon{font-size:36px}
-.keiyaku-card-title{font-size:15px;font-weight:700}
-.keiyaku-card-sub{font-size:12px;color:var(--ink-light)}
-/* PDF loading */
-.pdf-loading{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-.pdf-loading.show{display:flex}
-.pdf-loading p{color:white;font-size:15px}
-.spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-#pdfRenderArea{position:fixed;left:-9999px;top:0;width:794px;background:white;font-family:'Noto Sans JP',sans-serif}
-/* Invoice page style */
-.inv-page{width:794px;min-height:1123px;background:white;padding:44px 52px 40px;font-size:13px;line-height:1.75;font-family:'Noto Sans JP',sans-serif;color:#111;box-sizing:border-box;overflow:hidden}
-.inv-page .p-title{text-align:center;font-size:20px;font-weight:700;letter-spacing:4px;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:24px}
-.inv-page .p-top{display:flex;gap:6px;margin-bottom:20px;align-items:flex-start;width:100%;overflow:hidden}
-.inv-page .p-top-left{flex:1}
-.inv-page .p-top-right{width:250px;flex-shrink:0}
-.inv-page .p-to{font-size:17px;font-weight:700;border-bottom:1.5px solid #111;padding-bottom:4px;margin-bottom:8px;display:inline-block;min-width:240px}
-.inv-page .p-ochu{font-size:13px;font-weight:400;margin-left:4px}
-.inv-page .p-greeting{font-size:12px;color:#444;margin-bottom:18px}
-.inv-page .p-amount-box{border:2px solid #111;padding:10px 16px;margin-bottom:14px;display:inline-block;min-width:260px}
-.inv-page .p-amount-label{font-size:11px;color:#555;margin-bottom:3px}
-.inv-page .p-amount-value{font-size:26px;font-weight:700;letter-spacing:1px}
-.inv-page .p-kiri{font-size:18px;font-weight:400}
-.inv-page .p-issuer-name{font-size:14px;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #ccc}
-.inv-page .p-issuer-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:8px}
-.inv-page .p-issuer-info{font-size:11px;color:#444;line-height:1.85;flex:1;white-space:normal;word-break:break-all}
-.inv-page .p-stamp-wrap{flex-shrink:0;width:60px}
-.inv-page .p-dates-right{margin-top:6px;padding-top:6px;border-top:1px solid #ddd;font-size:11.5px;display:block;width:100%;clear:both}
-.inv-page .p-dates-right .p-date-row{color:#333;line-height:1.9}
-.inv-page .p-date-label{color:#666}
-.inv-page table.p-items{width:100%;max-width:100%;border-collapse:collapse;margin-bottom:0;font-size:12.5px;border:1px solid #999;table-layout:fixed}
-.inv-page table.p-items th{background:#2c2c3e;color:white;padding:8px 10px;font-weight:500;font-size:12px;border:1px solid #999}
-.inv-page table.p-items td{padding:7px 10px;border:1px solid #ccc}
-.inv-page table.p-items tr.empty td{color:transparent;height:26px}
-.inv-page .p-subtotal-block{border:1px solid #999;border-top:none;margin-bottom:22px}
-.inv-page .p-subtotal-row{display:flex;justify-content:space-between;padding:7px 16px;font-size:13px;border-top:1px solid #ddd}
-.inv-page .p-subtotal-row.grand{background:#2c2c3e;color:white;font-weight:700;font-size:15px;border-top:2px solid #999}
-.inv-page .p-bank{border:1px solid #bbb;padding:10px 16px;font-size:12px;margin-bottom:16px;background:#fafafa;line-height:1.8}
-.inv-page .p-bank-title{font-weight:700;margin-bottom:4px}
-.inv-page .p-note{border:1px solid #bbb;min-height:60px;font-size:12px;background:#fafafa}
-.inv-page .p-note-title{background:#eee;padding:4px 12px;font-weight:700;font-size:12px;border-bottom:1px solid #bbb}
-.inv-page .p-note-body{padding:8px 12px}
-/* Mobile responsive */
-@media(max-width:700px){
-  header{padding:0 14px;height:52px}
-  header h1{font-size:13px;letter-spacing:0}
-  .header-meta{display:none}
-  .tabs{padding:0 8px}
-  .tab-btn{padding:7px 9px;font-size:11px}
-  main{padding:14px}
-  .auto-notice{font-size:12px;padding:10px 12px}
-  .month-bar{padding:12px;gap:8px;display:grid;grid-template-columns:auto 1fr;align-items:center}
-  .month-bar label{grid-column:1}
-  .month-bar input[type="month"]{grid-column:2;width:100%}
-  .month-bar .btn-success{grid-column:1/-1;width:100%;justify-content:center}
-  .month-bar .btn-primary{grid-column:1}
-  .month-bar .btn-pdf{grid-column:2}
-  .month-bar .stat{grid-column:1/-1;text-align:center;margin:0}
-  .month-bar>div{grid-column:1/-1}
-  .inv-table-wrap table{display:none}
-  .inv-card-list{display:block}
-  .inv-table-wrap{background:transparent;border:none}
-  .total-row{border-radius:10px;border:1px solid var(--border);background:white;margin-top:4px;justify-content:space-around}
-  .section-header{flex-direction:column;align-items:flex-start}
-  .section-title small{display:block;margin-left:0;margin-top:4px}
-  .store-grid{grid-template-columns:1fr}
-  .modal{padding:18px;border-radius:16px 16px 0 0;width:100%;max-width:100vw;max-height:100vh}
-  .form-row{grid-template-columns:1fr}
-  .modal-footer{flex-direction:column}
-  .modal-footer .btn{width:100%;justify-content:center;padding:12px;font-size:15px}
-  .line-item-row{display:flex;flex-direction:column;padding:12px;gap:10px;background:var(--paper);margin:8px;border-radius:8px;border:1px solid var(--border);border-top:none}
-  .line-item-row input{font-size:16px;padding:10px 12px;border-radius:6px}
-  .line-item-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .line-item-footer{display:flex;justify-content:space-between;align-items:center;margin-top:4px}
-  .line-item-total{font-size:16px}
-  .btn-icon{width:36px;height:36px;font-size:18px}
-  .add-line-btn{padding:14px;font-size:15px}
-  .keiyaku-grid{grid-template-columns:1fr 1fr}
-  .template-items{grid-template-columns:1fr}
-  .tpl-item{padding:11px 12px}
-  .tpl-item input[type="checkbox"]{width:18px;height:18px}
-  .tpl-name{font-size:14px}
-  .tpl-price{font-size:13px}
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(0,0,0,0.06)}
+body{font-family:-apple-system,'Noto Sans JP',sans-serif;background:#f2f2f7;color:#1c1c1e;min-height:100vh}
+.screen{display:none}.screen.active{display:block}
+.nav-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,0.97);border-top:1px solid #e5e5ea;display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:8px 0 6px;cursor:pointer;gap:3px;border:none;background:transparent;font-family:inherit}
+.nav-tab:active{background:#f2f2f7}
+.nav-icon{font-size:22px}
+.nav-lbl{font-size:10px;color:#8e8e93;font-weight:500}
+.nav-tab.active .nav-lbl{color:#007AFF}
+.page-header{background:#fff;padding:52px 20px 16px;border-bottom:1px solid #e5e5ea}
+.page-title{font-size:22px;font-weight:700}
+.page-sub{font-size:13px;color:#8e8e93;margin-top:2px}
+.page-body{padding:16px;padding-bottom:90px}
+.month-card{background:#1c1c1e;color:#fff;border-radius:20px;padding:16px 20px 20px;margin-bottom:16px}
+.month-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.month-arrow{background:rgba(255,255,255,0.12);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:inherit}
+.month-arrow:active{background:rgba(255,255,255,0.25)}
+.month-arrow:disabled{opacity:0.3;cursor:default}
+.mc-lbl{font-size:12px;opacity:0.6;letter-spacing:0.04em;text-align:center;flex:1}
+.mc-amt{font-size:36px;font-weight:700;letter-spacing:-1px;margin-bottom:12px;font-variant-numeric:tabular-nums;text-align:center}
+.mc-row{display:flex;justify-content:center;gap:32px}
+.mc-stat{text-align:center}
+.mc-stat-num{font-size:17px;font-weight:600}
+.mc-stat-lbl{font-size:10px;opacity:0.45;margin-top:2px}
+.upload-card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.btn-cam{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:26px 20px;background:#007AFF;color:#fff;border:none;font-size:18px;font-weight:600;font-family:inherit;cursor:pointer;text-align:center;-webkit-appearance:none}
+.btn-cam:active{background:#0062cc}
+.cam-icon{font-size:34px;margin-bottom:8px}
+.cam-sub{font-size:13px;opacity:0.85;margin-top:4px}
+.btn-gal{display:flex;align-items:center;justify-content:center;width:100%;padding:17px;background:#fff;color:#007AFF;border:none;border-top:1px solid #e5e5ea;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;-webkit-appearance:none}
+.btn-gal:active{background:#f2f2f7}
+input[type=file]{display:none}
+.sec-title{font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px}
+.rlist{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.ritem{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid #f2f2f7;gap:12px;cursor:pointer}
+.ritem:last-child{border-bottom:none}
+.ritem:active{background:#f7f7f7}
+.ricon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.rinfo{flex:1;min-width:0}
+.rname{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rmeta{font-size:11px;color:#8e8e93;margin-top:2px}
+.ramt{font-size:15px;font-weight:600;flex-shrink:0;font-variant-numeric:tabular-nums}
+.empty{text-align:center;padding:36px 20px;color:#8e8e93;font-size:14px}
+.empty-icon{font-size:36px;margin-bottom:10px}
+/* Processing */
+#screen-proc{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#fff}
+#screen-proc.active{display:flex}
+.proc-img{width:140px;height:180px;border-radius:12px;overflow:hidden;margin-bottom:28px;box-shadow:0 4px 24px rgba(0,0,0,0.15);background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:48px;flex-shrink:0}
+.proc-img img{width:100%;height:100%;object-fit:cover}
+.proc-img{position:relative;overflow:hidden}
+.scan-line{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,#00ff88,#007AFF,#00ff88,transparent);border-radius:2px;box-shadow:0 0 12px #007AFF,0 0 24px #00ff88;animation:scan 2s ease-in-out infinite;z-index:10}
+@keyframes scan{0%{top:0%;opacity:0}5%{opacity:1}50%{top:calc(100% - 3px)}95%{opacity:1}100%{top:0%;opacity:0}}
+.scan-corner{position:absolute;width:20px;height:20px;z-index:11}
+.scan-corner.tl{top:6px;left:6px;border-top:3px solid #00ff88;border-left:3px solid #00ff88;border-radius:2px 0 0 0}
+.scan-corner.tr{top:6px;right:6px;border-top:3px solid #00ff88;border-right:3px solid #00ff88;border-radius:0 2px 0 0}
+.scan-corner.bl{bottom:6px;left:6px;border-bottom:3px solid #00ff88;border-left:3px solid #00ff88;border-radius:0 0 0 2px}
+.scan-corner.br{bottom:6px;right:6px;border-bottom:3px solid #00ff88;border-right:3px solid #00ff88;border-radius:0 0 2px 0}
+.proc-title{font-size:20px;font-weight:700;margin-bottom:4px}
+.proc-sub{font-size:14px;color:#8e8e93;margin-bottom:28px}
+.proc-steps{width:100%;max-width:300px}
+.step{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f2f2f7;opacity:0.3;transition:opacity 0.3s}
+.step:last-child{border-bottom:none}
+.step.active,.step.done{opacity:1}
+.step-dot{width:26px;height:26px;border-radius:50%;background:#f2f2f7;border:1.5px solid #c7c7cc;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;transition:all 0.3s}
+.step.done .step-dot{background:#34c759;border-color:#34c759;color:#fff}
+.step.active .step-dot{border-color:#007AFF;color:#007AFF;animation:pulse 1s ease infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,122,255,0.3)}50%{box-shadow:0 0 0 5px rgba(0,122,255,0)}}
+.step-label{font-size:14px;color:#3a3a3c}
+.step.done .step-label{font-weight:500}
+/* Result */
+#screen-result{background:#f2f2f7;min-height:100vh;padding-bottom:80px}
+.top-hdr{background:#fff;padding:52px 20px 16px;border-bottom:1px solid #e5e5ea;display:flex;align-items:center;gap:12px}
+.back-btn{background:#f2f2f7;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;flex-shrink:0}
+.back-btn:active{background:#e5e5ea}
+.hdr-title{font-size:17px;font-weight:700}
+.hdr-sub{font-size:12px;color:#34c759;margin-top:1px}
+.result-body{padding:16px}
+.edit-banner{background:#fff7ed;color:#92400e;border:1px solid #fde68a;padding:10px 16px;border-radius:12px;font-size:13px;margin-bottom:12px;display:none}
+.edit-banner.show{display:block}
+.err-banner{background:#fee2e2;color:#991b1b;padding:12px 16px;border-radius:12px;font-size:13px;line-height:1.5;margin-bottom:12px;display:none}
+.err-banner.show{display:block}
+.card{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.card-pad{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.card-ttl{font-size:11px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px}
+.sum-inner{display:flex;align-items:center;gap:14px;padding:16px}
+.sum-thumb{width:56px;height:72px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:28px}
+.sum-thumb img{width:100%;height:100%;object-fit:cover}
+.sum-shop{font-size:15px;font-weight:600;line-height:1.3}
+.sum-date{font-size:12px;color:#8e8e93;margin-top:3px}
+.sum-total{font-size:26px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums}
+.conf-row{display:flex;align-items:center;gap:6px;margin-top:6px}
+.conf-bar{flex:1;height:3px;background:#e5e5ea;border-radius:2px;overflow:hidden}
+.conf-fill{height:100%;border-radius:2px;background:#34c759;transition:width 0.6s}
+.conf-lbl{font-size:11px;color:#8e8e93;white-space:nowrap}
+.frow{display:flex;align-items:center;border-bottom:1px solid #f2f2f7}
+.frow:last-child{border-bottom:none}
+.fkey{font-size:12px;color:#8e8e93;padding:12px 0 12px 16px;width:80px;flex-shrink:0}
+.fval-input{flex:1;border:none;outline:none;font-family:inherit;font-size:14px;font-weight:500;color:#1c1c1e;background:transparent;padding:12px 8px;min-width:0}
+.fval-input:focus{background:#f0f7ff;color:#007AFF}
+input[type=date].fval-input{color:#1c1c1e;-webkit-appearance:none;appearance:none}
+input[type=date].fval-input::-webkit-calendar-picker-indicator{opacity:0.5;cursor:pointer}
+.fbadge{font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;flex-shrink:0;margin-right:12px}
+.bg{background:#d1fae5;color:#065f46}.ba{background:#fef3c7;color:#92400e}.br{background:#fee2e2;color:#991b1b}
+.tax-row{display:flex;align-items:center;border-bottom:1px solid #f2f2f7}
+.tax-row:last-child{border-bottom:none}
+.tax-lbl{font-size:13px;color:#3a3a3c;display:flex;align-items:center;gap:6px;padding:10px 0 10px 16px;flex:1}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tax-val-input{border:none;outline:none;font-family:inherit;font-size:13px;font-weight:500;color:#1c1c1e;background:transparent;text-align:right;padding:10px 16px 10px 8px;width:110px;font-variant-numeric:tabular-nums}
+.tax-val-input:focus{background:#f0f7ff;color:#007AFF;border-radius:8px}
+.tax-row.total-row .tax-lbl{font-weight:700;font-size:15px}
+.tax-row.total-row .tax-val-input{font-weight:700;font-size:16px}
+.item-row{display:flex;align-items:center;border-bottom:1px solid #f2f2f7;gap:4px}
+.item-row:last-child{border-bottom:none}
+.item-name-input{flex:1;border:none;outline:none;font-family:inherit;font-size:13px;color:#1c1c1e;background:transparent;padding:10px 8px 10px 16px;min-width:0}
+.item-name-input:focus{background:#f0f7ff;color:#007AFF}
+.item-qty{font-size:12px;color:#8e8e93;flex-shrink:0;white-space:nowrap;padding:0 4px}
+.item-price-input{border:none;outline:none;font-family:inherit;font-size:13px;font-weight:500;color:#1c1c1e;background:transparent;text-align:right;padding:10px 16px 10px 4px;width:90px;font-variant-numeric:tabular-nums}
+.item-price-input:focus{background:#f0f7ff;color:#007AFF;border-radius:8px}
+.items-footer{display:flex;align-items:center;border-top:1.5px solid #e5e5ea;padding:10px 16px}
+.items-footer-lbl{flex:1;font-size:14px;font-weight:700}
+.items-footer-val{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:#007AFF}
+/* Category - accounting style */
+.cat-select{width:100%;border:none;outline:none;font-family:inherit;font-size:14px;font-weight:500;color:#1c1c1e;background:transparent;padding:12px 16px;-webkit-appearance:none;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238e8e93' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;padding-right:36px}
+.cat-select:focus{background-color:#f0f7ff;color:#007AFF}
+.note-input{width:100%;border:none;outline:none;font-family:inherit;font-size:14px;color:#1c1c1e;background:transparent;resize:none;min-height:36px;padding:4px 0}
+.note-input::placeholder{color:#c7c7cc}
+.submit-wrap{padding:12px 16px 16px}
+.submit-btn{display:block;width:100%;padding:16px;background:#007AFF;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;-webkit-appearance:none;text-align:center}
+.submit-btn:active{background:#0062cc}
+/* Detail */
+#screen-detail{background:#f2f2f7;min-height:100vh;padding-bottom:90px}
+.detail-body{padding:16px}
+.detail-actions{display:flex;gap:8px;margin-bottom:12px}
+.btn-edit2{flex:1;padding:12px;background:#fff;border:1px solid #e5e5ea;border-radius:12px;font-size:14px;font-weight:500;color:#007AFF;cursor:pointer;font-family:inherit;-webkit-appearance:none;text-align:center}
+.btn-edit2:active{background:#f2f2f7}
+.btn-del2{padding:12px 16px;background:#fff;border:1px solid #e5e5ea;border-radius:12px;font-size:14px;font-weight:500;color:#ff3b30;cursor:pointer;font-family:inherit;-webkit-appearance:none}
+.btn-del2:active{background:#fff0f0}
+.detail-info{background:#fff;border-radius:16px;padding:18px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.det-shop{font-size:20px;font-weight:700;margin-bottom:4px;line-height:1.3}
+.det-date{font-size:13px;color:#8e8e93;margin-bottom:10px}
+.det-total{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;margin-bottom:10px}
+.det-cat-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:500;background:#f2f2f7;color:#3a3a3c}
+.det-note{font-size:13px;color:#8e8e93;margin-top:10px;padding-top:10px;border-top:1px solid #f2f2f7;font-style:italic}
+.tax-card-d{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.tline{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f7;font-size:13px}
+.tline:last-child{border-bottom:none;font-weight:700;font-size:15px;padding-top:10px}
+.tline-lbl{color:#8e8e93}
+.tline.total .tline-lbl{color:#1c1c1e}
+.tline-val{font-variant-numeric:tabular-nums;font-weight:500}
+.items-card-d{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
+.di-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #f2f2f7;gap:8px}
+.di-row:last-child{border-bottom:none}
+.di-name{font-size:13px;color:#1c1c1e;flex:1}
+.di-qty{font-size:12px;color:#8e8e93;flex-shrink:0}
+.di-price{font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;flex-shrink:0}
+/* Records */
+.month-section{margin-bottom:20px}
+.month-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.month-name{font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.04em}
+.month-tot{font-size:13px;font-weight:600;color:#1c1c1e;font-variant-numeric:tabular-nums}
+.month-recs{background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.rec-item{display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid #f2f2f7;gap:12px;cursor:pointer}
+.rec-item:last-child{border-bottom:none}
+.rec-item:active{background:#f7f7f7}
+.rec-info{flex:1;min-width:0}
+.rec-shop{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-meta{font-size:11px;color:#8e8e93;margin-top:2px}
+.rec-right{text-align:right;flex-shrink:0}
+.rec-amt{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums}
+.rec-cat{font-size:11px;color:#8e8e93;margin-top:2px}
+/* Stats */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat-cell{background:#f2f2f7;border-radius:12px;padding:12px}
+.stat-num{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat-lbl{font-size:11px;color:#8e8e93;margin-top:2px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.bar-lbl{font-size:11px;color:#3a3a3c;width:56px;flex-shrink:0}
+.bar-wrap{flex:1;height:8px;background:#f2f2f7;border-radius:4px;overflow:hidden}
+.bar-fill{height:100%;border-radius:4px;background:#007AFF;transition:width 0.6s}
+.bar-val{font-size:11px;font-weight:500;width:70px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+/* Success */
+#screen-suc{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#fff;text-align:center}
+#screen-suc.active{display:flex}
+.suc-icon{width:80px;height:80px;border-radius:50%;background:#d1fae5;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 20px;animation:pop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(0.3);opacity:0}to{transform:scale(1);opacity:1}}
+.suc-title{font-size:24px;font-weight:700;margin-bottom:6px}
+.suc-sub{font-size:15px;color:#8e8e93;margin-bottom:28px;line-height:1.5}
+.suc-card{background:#f2f2f7;border-radius:16px;padding:18px 20px;width:100%;max-width:320px;text-align:left;margin-bottom:28px}
+.suc-shop{font-size:14px;font-weight:600;margin-bottom:4px}
+.suc-amt{font-size:30px;font-weight:700;margin-bottom:4px;font-variant-numeric:tabular-nums}
+.suc-date{font-size:13px;color:#8e8e93}
+.btn-again{display:block;width:100%;max-width:320px;padding:15px;background:#1c1c1e;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-bottom:10px;-webkit-appearance:none}
+.btn-again:active{opacity:0.85}
+.btn-link{font-size:15px;color:#007AFF;cursor:pointer;padding:10px;display:block}
+.dup-toast{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:calc(100% - 32px);max-width:360px;background:#1c1c1e;color:#fff;padding:20px 18px;border-radius:16px;font-size:14px;z-index:1000;display:none;line-height:1.5;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.dup-toast.show{display:block}
+.dup-btns{display:flex;gap:8px;margin-top:10px}
+.dup-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.dup-cancel{background:rgba(255,255,255,0.15);color:#fff}
+.dup-ok{background:#fff;color:#1c1c1e}
+
+/* Login */
+#screen-login{min-height:100vh;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#f2f2f7}
+#screen-login.active{display:flex}
+.login-logo{font-size:48px;margin-bottom:12px}
+.login-title{font-size:24px;font-weight:700;margin-bottom:4px}
+.login-sub{font-size:14px;color:#8e8e93;margin-bottom:32px}
+.login-card{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:340px;box-shadow:0 2px 12px rgba(0,0,0,0.08)}
+.login-field{margin-bottom:14px}
+.login-label{font-size:12px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
+.login-input{width:100%;padding:12px 14px;border:1.5px solid #e5e5ea;border-radius:10px;font-size:16px;font-family:inherit;outline:none;background:#fff;color:#1c1c1e;-webkit-appearance:none}
+.login-input:focus{border-color:#007AFF}
+.login-btn{display:block;width:100%;padding:14px;background:#007AFF;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;margin-top:8px;-webkit-appearance:none}
+.login-btn:active{background:#0062cc}
+.login-err{color:#ff3b30;font-size:13px;text-align:center;margin-top:10px;min-height:18px}
+.user-bar{display:flex;align-items:center;justify-content:space-between;background:#fff;padding:8px 16px;border-bottom:1px solid #e5e5ea;font-size:13px;color:#3a3a3c}
+.user-name{font-weight:500}
+.logout-btn{color:#ff3b30;cursor:pointer;font-size:13px;border:none;background:none;font-family:inherit}
+
+/* Split */
+.split-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f2f2f7}
+.split-row:last-child{border-bottom:none}
+.split-cat-sel{flex:1;border:1px solid #e5e5ea;border-radius:8px;padding:7px 8px;font-size:12px;font-family:inherit;outline:none;background:#fff}
+.split-amt-input{width:90px;border:1px solid #e5e5ea;border-radius:8px;padding:7px 8px;font-size:13px;font-family:inherit;outline:none;text-align:right}
+.split-del{background:none;border:none;color:#ff3b30;font-size:18px;cursor:pointer;padding:0 4px}
 </style>
 </head>
 <body>
-<div class="pdf-loading" id="pdfLoading">
-  <div class="spinner"></div>
-  <p id="pdfLoadingMsg">正在生成PDF...</p>
-</div>
-<div id="pdfRenderArea"></div>
 
-<header>
-  <h1>新日本富士アシスト　<span>書類管理</span>システム</h1>
-  <div class="header-meta" id="headerDate"></div>
-</header>
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab('invoices',this)">📋 請求書</button>
-  <button class="tab-btn" onclick="switchTab('mitsumori',this)">📝 見積書</button>
-  <button class="tab-btn" onclick="switchTab('keiyaku',this)">📄 契約書</button>
-  <button class="tab-btn" onclick="switchTab('rollpaper',this)">🧾 ロール紙</button>
-</div>
-
-<main>
-
-<!-- TAB: INVOICES -->
-<div id="tab-invoices" class="tab-content active">
-  <div class="auto-notice">
-    <span style="font-size:20px">🤖</span>
-    <div><strong>自动生成：</strong>每月1日打开工具时自动生成本月所有请求书。也可手动选月份后点击生成。</div>
-  </div>
-  <div class="month-bar">
-    <label>月份：</label>
-    <input type="month" id="currentMonth" onchange="loadInvoices()">
-    <button class="btn btn-success" onclick="generateMonth()">⚡ 生成本月请求书</button>
-    <button class="btn btn-primary" onclick="openNewInvoice()">＋ 新增</button>
-    <button class="btn btn-pdf" onclick="openBatchDownload()">📥 批量下载PDF</button>
-    <div style="display:flex;gap:8px;flex-wrap:nowrap">
-      <button class="btn btn-outline" onclick="syncStoreAmounts()" title="将已生成请求书的金额同步为最新店铺设置">🔄 同步金额</button>
-      <button class="btn btn-outline" onclick="switchTab('stores',null);document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));">🏪 店舗設定</button>
+<!-- LOGIN -->
+<div class="screen active" id="screen-login">
+  <div class="login-logo">🧾</div>
+  <div class="login-title">小票录入</div>
+  <div class="login-sub">请先登录</div>
+  <div class="login-card">
+    <div class="login-field">
+      <div class="login-label">用户名</div>
+      <input class="login-input" id="login-user" type="text" placeholder="输入用户名" autocomplete="username" autocapitalize="none">
     </div>
-    <div class="stat" id="monthStat"></div>
-  </div>
-  <div class="inv-table-wrap">
-    <table class="inv-table">
-      <thead>
-        <tr>
-          <th>请求对象</th><th>对象期间</th><th>支援人数</th>
-          <th>小计</th><th>消费税</th><th>请求金额(含税)</th><th>状态</th><th>操作</th>
-        </tr>
-      </thead>
-      <tbody id="invoiceTableBody"></tbody>
-    </table>
-    <div class="inv-card-list" id="invoiceCardList"></div>
-    <div class="total-row" id="totalRow" style="display:none">
-      <div class="total-item"><label>小计</label><strong id="totalSubtotal">¥0</strong></div>
-      <div class="total-item"><label>消费税</label><strong id="totalTax">¥0</strong></div>
-      <div class="total-item grand"><label>合计(含税)</label><strong id="totalGrand">¥0</strong></div>
+    <div class="login-field">
+      <div class="login-label">密码</div>
+      <input class="login-input" id="login-pass" type="password" placeholder="输入密码" autocomplete="current-password">
     </div>
+    <button class="login-btn" onclick="doLogin()">登录</button>
+    <div class="login-err" id="login-err"></div>
   </div>
 </div>
 
-<!-- TAB: 見積書 -->
-<div id="tab-mitsumori" class="tab-content">
-  <div class="section-header">
-    <div class="section-title">見積書 <small>新規作成・管理</small></div>
-    <button class="btn btn-primary" onclick="openNewMitsumori()">＋ 新規見積書</button>
+<!-- HOME -->
+<div class="screen" id="screen-home">
+  <div class="user-bar"><div class="user-name">👤 <span id="user-display">—</span></div><button class="logout-btn" onclick="doLogout()">ログアウト</button></div>
+  <div class="page-header"><div class="page-title">小票录入</div><div class="page-sub">拍照即可自动识别</div></div>
+  <div class="page-body">
+    <div class="month-card">
+      <div class="month-nav">
+        <button class="month-arrow" onclick="changeMonth(-1)">‹</button>
+        <div class="mc-lbl" id="mc-lbl">2026-03 合计</div>
+        <button class="month-arrow" id="btn-next" onclick="changeMonth(1)" disabled>›</button>
+      </div>
+      <div class="mc-amt" id="mc-amt">¥0</div>
+      <div class="mc-row">
+        <div class="mc-stat"><div class="mc-stat-num" id="mc-cnt">0</div><div class="mc-stat-lbl">已录入</div></div>
+        <div class="mc-stat"><div class="mc-stat-num" id="mc-tax">¥0</div><div class="mc-stat-lbl">消費税合計</div></div>
+      </div>
+    </div>
+    <div class="upload-card">
+      <label for="inp-cam" class="btn-cam"><span class="cam-icon">📷</span>拍照扫描小票<div class="cam-sub">自动识别金额与消費税</div></label>
+      <label for="inp-gal" class="btn-gal">🖼&nbsp; 从相册选择（支持多张）</label>
+    </div>
+    <input type="file" id="inp-cam" accept="image/*" capture="environment">
+    <input type="file" id="inp-gal" accept="image/*" multiple>
+    <div class="sec-title">最近录入</div>
+    <div class="rlist" id="home-list"><div class="empty"><div class="empty-icon">🧾</div>暂无记录</div></div>
   </div>
-  <div class="inv-table-wrap">
-    <table class="inv-table">
-      <thead>
-        <tr><th>見積番号</th><th>宛先</th><th>見積日</th><th>合計金額(税込)</th><th>操作</th></tr>
-      </thead>
-      <tbody id="mitsumoriTableBody"></tbody>
-    </table>
-    <div class="inv-card-list" id="mitsumoriCardList"></div>
+  <div class="nav-bar">
+    <button class="nav-tab active" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
+    <button class="nav-tab" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
+    <button class="nav-tab" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
   </div>
 </div>
 
-<!-- TAB: 契約書 -->
-<div id="tab-keiyaku" class="tab-content">
-  <div class="section-header">
-    <div class="section-title">契約書 <small>NJF REGI サービス利用契約申込フォーム</small></div>
-  </div>
-  <div class="auto-notice">
-    <span style="font-size:20px">📄</span>
-    <div><strong>契約申込フォーム：</strong>顧客情報と設備内容を入力して申込リンクを発行できます。顧客はリンクから契約申込書PDFを作成・送信します。後台管理も同画面で行えます。</div>
-  </div>
-  <div class="keiyaku-grid">
-    <a href="./njf-admin.html#new" target="_blank" class="keiyaku-card">
-      <span class="keiyaku-card-icon">✚</span>
-      <span class="keiyaku-card-title">新規作成</span>
-      <span class="keiyaku-card-sub">申込リンクを発行</span>
-    </a>
-    <a href="./njf-admin.html#sub" target="_blank" class="keiyaku-card">
-      <span class="keiyaku-card-icon">📋</span>
-      <span class="keiyaku-card-title">申込一覧</span>
-      <span class="keiyaku-card-sub">PDF閲覧・DL</span>
-    </a>
-    <a href="./njf-admin.html#card" target="_blank" class="keiyaku-card">
-      <span class="keiyaku-card-icon">🪪</span>
-      <span class="keiyaku-card-title">アカウントカード</span>
-      <span class="keiyaku-card-sub">账号卡片生成</span>
-    </a>
-    <a href="./njf-admin.html#dash" target="_blank" class="keiyaku-card">
-      <span class="keiyaku-card-icon">📊</span>
-      <span class="keiyaku-card-title">ダッシュボード</span>
-      <span class="keiyaku-card-sub">申込状況確認</span>
-    </a>
-  </div>
-  <div style="margin-top:16px">
-    <a href="./njf-admin.html" target="_blank"
-       class="btn btn-secondary"
-       style="width:100%;justify-content:center;padding:14px;font-size:15px;text-decoration:none">
-      🔗 管理後台を全画面で開く
-    </a>
+<!-- PROCESSING -->
+<div class="screen" id="screen-proc">
+  <div class="proc-img" id="proc-thumb">🧾</div>
+  <div class="proc-title">识别中…</div>
+  <div class="proc-sub">正在分析小票内容</div>
+  <div class="proc-steps">
+    <div class="step" id="s0"><div class="step-dot">1</div><div class="step-label">图像预处理</div></div>
+    <div class="step" id="s1"><div class="step-dot">2</div><div class="step-label">OCR 文字识别</div></div>
+    <div class="step" id="s2"><div class="step-dot">3</div><div class="step-label">AI 结构化解析</div></div>
+    <div class="step" id="s3"><div class="step-dot">4</div><div class="step-label">税额分类提取</div></div>
   </div>
 </div>
 
-<!-- TAB: ROLL PAPER -->
-<div id="tab-rollpaper" class="tab-content">
-  <div class="section-header">
-    <div class="section-title">ロール紙 <small>感熱ロール紙 注文書</small></div>
+<!-- RESULT -->
+<div class="screen" id="screen-result">
+  <div class="top-hdr">
+    <button class="back-btn" onclick="resultBack()">←</button>
+    <div><div class="hdr-title" id="result-title">确认信息</div><div class="hdr-sub" id="conf-indicator">✓ 所有字段均可点击修改</div></div>
   </div>
-  <div style="background:white;border:1px solid var(--border);border-radius:8px;padding:18px 16px 20px;max-width:700px">
-    <div style="text-align:center;color:#6b7280;font-size:13px;line-height:1.7;margin-bottom:18px">
-      必要事項を入力後、「転送メール作成」を押してください。発注日は本日の日付で自動入力されます。
-    </div>
-
-    <div style="margin-bottom:14px">
-      <div style="font-size:14px;font-weight:700;margin-bottom:8px">発注日</div>
-      <input id="rp-orderDate" type="text" readonly style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:#f9fafb;font-size:14px">
-    </div>
-
-    <div style="margin-bottom:14px">
-      <div style="font-size:14px;font-weight:700;margin-bottom:8px">ロール紙情報</div>
-      <!-- 固定規格：75-88（48巻）のみ、数量だけ入力 -->
-      <div style="background:#f8f8f8;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:10px">
-        <div style="font-size:13px;font-weight:600;color:#374151;margin-bottom:4px">📦 75-88（80mm×80Φ×12mm / 75μ / 48巻）</div>
-        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
-          <label style="font-size:13px;color:#374151;font-weight:600;white-space:nowrap">数量（箱）</label>
-          <input id="rp-qty1" type="number" min="0" placeholder="0" oninput="rpUpdate()"
-            style="flex:1;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:16px;text-align:center;max-width:120px">
+  <div class="result-body">
+    <div class="edit-banner" id="edit-banner">✏ 编辑模式 — 修改后点击「更新记录」保存</div>
+    <div class="err-banner" id="err-banner"></div>
+    <div class="card" style="margin-bottom:12px">
+      <div class="sum-inner">
+        <div class="sum-thumb" id="r-thumb">🧾</div>
+        <div style="flex:1;min-width:0">
+          <div class="sum-shop" id="r-shop">—</div>
+          <div class="sum-date" id="r-date">—</div>
+          <div class="sum-total" id="r-total">—</div>
+          <div class="conf-row"><div class="conf-bar"><div class="conf-fill" id="r-cbar" style="width:0%"></div></div><div class="conf-lbl" id="r-clbl">—</div></div>
         </div>
       </div>
-      <div style="font-size:12px;color:#6b7280">数量0または未入力の場合はメールに表示されません。</div>
     </div>
-
-    <div style="margin-bottom:14px">
-      <div style="font-size:14px;font-weight:700;margin-bottom:8px">お届け先</div>
-      <div style="margin-bottom:8px">
-        <label style="font-size:13px;color:#374151;font-weight:600;display:block;margin-bottom:4px">お届け先御会社名</label>
-        <input id="rp-toName" type="text" placeholder="例：〇〇株式会社"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px"
-          oninput="rpUpdate()">
-      </div>
-      <div style="margin-bottom:8px">
-        <label style="font-size:13px;color:#374151;font-weight:600;display:block;margin-bottom:4px">ご住所</label>
-        <textarea id="rp-address" placeholder="例：東京都〇〇区〇〇 1-2-3"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-height:72px;resize:vertical;font-family:inherit"
-          oninput="rpUpdate()"></textarea>
-      </div>
-      <div>
-        <label style="font-size:13px;color:#374151;font-weight:600;display:block;margin-bottom:4px">TEL</label>
-        <input id="rp-tel" type="text" placeholder="例：03-1234-5678"
-          style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px"
-          oninput="rpUpdate()">
+    <div class="card">
+      <div class="frow"><div class="fkey">店舗名</div><input class="fval-input" id="e-shop" type="text"><span class="fbadge bg" id="fb-shop">—</span></div>
+      <div class="frow"><div class="fkey">日付</div><input class="fval-input" id="e-date" type="date"><span class="fbadge bg" id="fb-date">—</span></div>
+      <div class="frow"><div class="fkey">レシートNo</div><input class="fval-input" id="e-no" type="text"><span class="fbadge ba">60%</span></div>
+    </div>
+    <div class="card-pad">
+      <div class="card-ttl">消費税内訳</div>
+      <div class="card" style="margin-bottom:0;box-shadow:none;border:1px solid #f2f2f7">
+        <div class="tax-row"><div class="tax-lbl"><div class="tdot" style="background:#3b82f6"></div>小計（税抜）</div><input class="tax-val-input" id="e-sub" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
+        <div class="tax-row"><div class="tax-lbl"><div class="tdot" style="background:#3b82f6"></div>8% 軽減税率</div><input class="tax-val-input" id="e-tax8" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
+        <div class="tax-row"><div class="tax-lbl"><div class="tdot" style="background:#34c759"></div>10% 標準税率</div><input class="tax-val-input" id="e-tax10" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
+        <div class="tax-row total-row"><div class="tax-lbl">合計（税込）</div><input class="tax-val-input" id="e-total" type="number" inputmode="decimal" placeholder="0" oninput="syncTotal()"></div>
       </div>
     </div>
-
-    <div style="margin-bottom:18px">
-      <label style="font-size:13px;color:#374151;font-weight:600;display:block;margin-bottom:4px">備考（任意）</label>
-      <textarea id="rp-note" placeholder="例：平日午前中着希望"
-        style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;min-height:72px;resize:vertical;font-family:inherit"
-        oninput="rpUpdate()"></textarea>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
-      <a id="rp-mailBtn" href="javascript:void(0)"
-        style="display:block;width:100%;padding:14px;background:#111827;color:white;border-radius:10px;text-align:center;font-size:15px;font-weight:800;text-decoration:none">
-        ✉️ 転送メール作成
-      </a>
-      <button onclick="window.print()"
-        style="width:100%;padding:14px;background:#e5e7eb;color:#111827;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit">
-        🖨 印刷
-      </button>
-    </div>
-
-    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:14px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">📋 メール内容プレビュー</div>
-      <pre id="rp-preview" style="margin:0;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.8;color:#374151;font-family:inherit"></pre>
-    </div>
-  </div>
-</div>
-
-<!-- TAB: STORES -->
-<div id="tab-stores" class="tab-content">
-  <div class="section-header">
-    <div class="section-title">店铺管理 <small>设置每家店铺的默认月额和人数</small></div>
-    <button class="btn btn-primary" onclick="openNewStore()">＋ 新增店铺</button>
-  </div>
-  <div class="store-grid" id="storeGrid"></div>
-</div>
-
-</main>
-
-<!-- MODAL: 批量下载 -->
-<div class="modal-overlay" id="batchModal">
-  <div class="modal">
-    <h2>批量下载PDF</h2>
-    <div style="margin-bottom:12px;font-size:13px;color:var(--ink-light)">选择要下载的店铺（默认全选）</div>
-    <div style="display:flex;gap:8px;margin-bottom:12px">
-      <button class="btn btn-outline btn-sm" onclick="batchSelectAll()">全选</button>
-      <button class="btn btn-outline btn-sm" onclick="batchSelectNone()">取消全选</button>
-      <button class="btn btn-outline btn-sm" onclick="batchSelectMonthly()">月払いのみ</button>
-      <button class="btn btn-outline btn-sm" onclick="batchSelectYearly()">年払いのみ</button>
-    </div>
-    <div id="batchStoreList" style="max-height:320px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--paper)"></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('batchModal')">取消</button>
-      <button class="btn btn-pdf" onclick="executeBatchDownload()">📥 选中店铺下载PDF</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: INVOICE -->
-<div class="modal-overlay" id="invoiceModal">
-  <div class="modal">
-    <h2 id="invoiceModalTitle">新增请求书</h2>
-    <div class="form-row">
-      <div class="form-group">
-        <label>选择店铺</label>
-        <select id="inv-store" onchange="onStoreSelect()">
-          <option value="">-- 选择 --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>请求对象名称</label>
-        <input type="text" id="inv-name" placeholder="マルヤス酒場 北千住店">
+    <div class="card-pad" id="items-card" style="display:none">
+      <div class="card-ttl">商品明細 <span id="items-cnt" style="font-weight:400;color:#8e8e93"></span></div>
+      <div class="card" style="margin-bottom:0;box-shadow:none;border:1px solid #f2f2f7">
+        <div id="items-list"></div>
+        <div class="items-footer"><div class="items-footer-lbl">明細合計</div><div class="items-footer-val" id="items-sum">¥0</div></div>
       </div>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>期间开始</label><input type="date" id="inv-period-start"></div>
-      <div class="form-group"><label>期间结束</label><input type="date" id="inv-period-end"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>支払期日</label><input type="date" id="inv-due"></div>
-      <div class="form-group">
-        <label>状态</label>
-        <select id="inv-status">
-          <option value="pending">未支払</option>
-          <option value="paid">支払済</option>
+    <!-- 会计科目选择 -->
+    <div class="card-pad">
+      <div class="card-ttl">会計科目</div>
+      <div class="card" style="margin-bottom:0;box-shadow:none;border:1px solid #f2f2f7">
+        <select class="cat-select" id="e-cat">
+          <optgroup label="── 仕入・原材料 ──">
+            <option value="仕入高">仕入高（食材・飲料）</option>
+            <option value="食材費">食材費</option>
+            <option value="飲料費">飲料費</option>
+            <option value="消耗品費">消耗品費（包材・容器・備品）</option>
+          </optgroup>
+          <optgroup label="── 経費 ──">
+            <option value="外注費">外注費（デリバリー・配達）</option>
+            <option value="広告宣伝費">広告宣伝費（チラシ・SNS）</option>
+            <option value="水道光熱費">水道光熱費</option>
+            <option value="通信費">通信費（ネット・電話）</option>
+            <option value="修繕費">修繕費（設備修理）</option>
+          </optgroup>
+          <optgroup label="── 交際・会議 ──">
+            <option value="交際費">交際費（接待・手土産）</option>
+            <option value="会議費">会議費（ミーティング飲食）</option>
+          </optgroup>
+          <optgroup label="── 旅費交通費 ──">
+            <option value="旅費交通費（交通）">旅費交通費・交通</option>
+            <option value="旅費交通費（宿泊）">旅費交通費・宿泊</option>
+          </optgroup>
+          <optgroup label="── その他 ──">
+            <option value="雑費">雑費</option>
+          </optgroup>
         </select>
       </div>
     </div>
-    <div class="form-group">
-      <label>快速添加项目</label>
-      <div class="template-items">
-        <label class="tpl-item"><input type="checkbox" value="レジスター" data-price="80000"><span class="tpl-name">レジスター</span><span class="tpl-price">¥80,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="計量レジスター" data-price="90000"><span class="tpl-name">計量レジスター</span><span class="tpl-price">¥90,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="タブレット" data-price="35000"><span class="tpl-name">タブレット</span><span class="tpl-price">¥35,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="キャッシュドロア" data-price="8000"><span class="tpl-name">キャッシュドロア</span><span class="tpl-price">¥8,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="プリンター" data-price="29000"><span class="tpl-name">プリンター</span><span class="tpl-price">¥29,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="月額料金" data-price="9000"><span class="tpl-name">月額料金</span><span class="tpl-price">¥9,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="特定技能支援費" data-price="10000"><span class="tpl-name">特定技能支援費</span><span class="tpl-price">¥10,000/人</span></label>
-        <label class="tpl-item"><input type="checkbox" value="年額料金" data-price="80000"><span class="tpl-name">年額料金</span><span class="tpl-price">¥80,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="感熱ロール紙80mm（48巻入）" data-price="8000"><span class="tpl-name">感熱ロール紙80mm</span><span class="tpl-price">¥8,000</span></label>
-      </div>
-      <button class="btn btn-blue btn-sm" style="margin-top:8px;width:100%;justify-content:center" onclick="addTemplateItems()">＋ 添加选中项目</button>
+    <div class="card-pad">
+      <div class="card-ttl">备注</div>
+      <textarea class="note-input" id="e-note" placeholder="如：与○○公司接待、出差地点等" rows="2"></textarea>
     </div>
-    <div class="form-group">
-      <label>请求明细</label>
-      <div class="line-items">
-        <div id="lineItemsBody"></div>
-        <button class="add-line-btn" onclick="addLineItem()">＋ 手动添加项目</button>
-      </div>
+    <!-- 拆分金额 -->
+    <div class="card-pad" id="split-card" style="display:none">
+      <div class="card-ttl">拆分录入 <span style="font-weight:400;color:#8e8e93;font-size:11px">— 同一小票按科目分开录入</span></div>
+      <div id="split-list"></div>
+      <button onclick="addSplit()" style="width:100%;padding:10px;background:#f2f2f7;border:1px dashed #c7c7cc;border-radius:10px;font-size:13px;color:#007AFF;cursor:pointer;font-family:inherit;margin-top:8px">+ 添加拆分项</button>
     </div>
-    <div style="background:var(--paper);border-radius:6px;padding:10px 14px;font-size:13px;display:flex;justify-content:flex-end;gap:20px">
-      <span>小计: <strong id="modalSubtotal">¥0</strong></span>
-      <span>消费税: <strong id="modalTax">¥0</strong></span>
-      <span>合计: <strong id="modalTotal" style="color:var(--accent);font-size:15px">¥0</strong></span>
+    <div style="padding:0 16px 8px;display:flex;gap:8px">
+      <button onclick="toggleSplit()" id="split-toggle-btn" style="flex:1;padding:12px;background:#fff;border:1px solid #e5e5ea;border-radius:12px;font-size:13px;font-weight:500;color:#8e8e93;cursor:pointer;font-family:inherit">＋ 需要拆分科目</button>
     </div>
-    <div class="form-group" style="margin-top:14px">
-      <label>備考</label>
-      <textarea id="inv-note" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:13px;resize:vertical;background:var(--paper)"></textarea>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('invoiceModal')">取消</button>
-      <button class="btn btn-primary" onclick="saveInvoice()">保存</button>
+    <div class="submit-wrap">
+      <button class="submit-btn" id="submit-btn" onclick="submitEntry()">✓ 提交至财务审核</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: 見積書 -->
-<div class="modal-overlay" id="mitsumoriModal">
-  <div class="modal">
-    <h2 id="mitsumoriModalTitle">新規見積書</h2>
-    <div class="form-row">
-      <div class="form-group"><label>宛先（会社名）</label><input type="text" id="mit-name" placeholder="例：浜の牡蠣小屋"></div>
-      <div class="form-group"><label>見積日</label><input type="date" id="mit-date"></div>
+<!-- DETAIL -->
+<div class="screen" id="screen-detail">
+  <div class="top-hdr">
+    <button class="back-btn" id="det-back" onclick="goTo('screen-records');loadRecords()">←</button>
+    <div><div class="hdr-title">小票详情</div><div class="hdr-sub" id="det-hdr-sub">—</div></div>
+  </div>
+  <div class="detail-body">
+    <div class="detail-actions">
+      <button class="btn-edit2" id="btn-edit2" onclick="editCurrentDetail()">✏ 编辑修改</button>
+      <button class="btn-del2" onclick="deleteCurrentDetail()">删除</button>
     </div>
-    <div class="form-group">
-      <label>快速添加项目</label>
-      <div class="template-items">
-        <label class="tpl-item"><input type="checkbox" value="レジスター" data-price="80000"><span class="tpl-name">レジスター</span><span class="tpl-price">¥80,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="計量レジスター" data-price="90000"><span class="tpl-name">計量レジスター</span><span class="tpl-price">¥90,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="タブレット" data-price="35000"><span class="tpl-name">タブレット</span><span class="tpl-price">¥35,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="キャッシュドロア" data-price="8000"><span class="tpl-name">キャッシュドロア</span><span class="tpl-price">¥8,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="クラウドプリンター" data-price="29000"><span class="tpl-name">クラウドプリンター</span><span class="tpl-price">¥29,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="設置費" data-price="20000" data-unit="式"><span class="tpl-name">設置費</span><span class="tpl-price">¥20,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="商品リスト導入費" data-price="20000" data-unit="式"><span class="tpl-name">商品リスト導入費</span><span class="tpl-price">¥20,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="サービス年月額料金" data-price="8000"><span class="tpl-name">サービス年月額料金</span><span class="tpl-price">¥8,000</span></label>
-        <label class="tpl-item"><input type="checkbox" value="年額料金" data-price="80000"><span class="tpl-name">年額料金</span><span class="tpl-price">¥80,000</span></label>
-      </div>
-      <button class="btn btn-blue btn-sm" style="margin-top:8px;width:100%;justify-content:center" onclick="addMitTemplateItems()">＋ 添加选中项目</button>
+    <div class="detail-info">
+      <div class="det-shop" id="det-shop">—</div>
+      <div class="det-date" id="det-date">—</div>
+      <div class="det-total" id="det-total">—</div>
+      <div class="det-cat-badge" id="det-cat">—</div>
+      <div class="det-note" id="det-note" style="display:none"></div>
     </div>
-    <div class="form-group">
-      <label>見積明細</label>
-      <div class="line-items">
-        <div id="mitLineItemsBody"></div>
-        <button class="add-line-btn" onclick="addMitLineItem()">＋ 手動追加</button>
-      </div>
+    <div id="det-img-wrap" style="display:none;background:#fff;border-radius:16px;padding:12px;margin-bottom:12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);text-align:center">
+      <div style="font-size:10px;font-weight:600;color:#8e8e93;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px">小票原图</div>
+      <img id="det-receipt-img" src="" style="max-width:100%;border-radius:8px;display:none" onclick="this.style.transform=this.style.transform?'':'scale(2)';this.style.transition='transform 0.2s'">
     </div>
-    <div style="background:var(--paper);border-radius:6px;padding:10px 14px;font-size:13px;display:flex;justify-content:flex-end;gap:20px">
-      <span>小計: <strong id="mitModalSubtotal">¥0</strong></span>
-      <span>消費税(10%): <strong id="mitModalTax">¥0</strong></span>
-      <span>合計: <strong id="mitModalTotal" style="color:var(--accent);font-size:15px">¥0</strong></span>
+    <div class="tax-card-d">
+      <div class="card-ttl">消費税内訳</div>
+      <div class="tline"><span class="tline-lbl">小計（税抜）</span><span class="tline-val" id="det-sub">—</span></div>
+      <div class="tline"><span class="tline-lbl">8% 軽減税率</span><span class="tline-val" id="det-tax8">¥0</span></div>
+      <div class="tline"><span class="tline-lbl">10% 標準税率</span><span class="tline-val" id="det-tax10">¥0</span></div>
+      <div class="tline total"><span class="tline-lbl">合計（税込）</span><span class="tline-val" id="det-total2">—</span></div>
     </div>
-    <div class="form-group" style="margin-top:14px">
-      <label>備考</label>
-      <textarea id="mit-note" rows="3" style="width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:4px;font-family:'Noto Sans JP',sans-serif;font-size:13px;resize:vertical;background:var(--paper)"></textarea>
+    <div class="items-card-d" id="det-items-card" style="display:none">
+      <div class="card-ttl">商品明細 <span id="det-items-cnt" style="font-weight:400;color:#8e8e93"></span></div>
+      <div id="det-items-list"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('mitsumoriModal')">取消</button>
-      <button class="btn btn-primary" onclick="saveMitsumori()">保存</button>
-    </div>
+  </div>
+  <div class="nav-bar">
+    <button class="nav-tab" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
+    <button class="nav-tab active" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
+    <button class="nav-tab" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
   </div>
 </div>
 
-<!-- MODAL: STORE -->
-<div class="modal-overlay" id="storeModal">
-  <div class="modal">
-    <h2 id="storeModalTitle">新増店铺</h2>
-    <div class="form-group"><label>店铺名称</label><input type="text" id="st-name" placeholder="マルヤス酒場 北千住店"></div>
-    <div class="form-row">
-      <div class="form-group"><label id="st-monthly-label">サービス料金（円）</label><input type="number" id="st-monthly" value="9000"></div>
-      <div class="form-group"><label>默认技能支援人数</label><input type="number" id="st-persons" value="1" min="0"></div>
-    </div>
-    <div class="form-group">
-      <label>請求サイクル</label>
-      <select id="st-feetype" onchange="onFeeTypeChange()">
-        <option value="monthly">毎月請求</option>
-        <option value="quarterly">3ヶ月ごと請求</option>
-        <option value="yearly">年1回請求</option>
-      </select>
-    </div>
-    <div id="st-cycle-extra" style="display:none">
-      <div class="form-group"><label id="st-next-label">次回請求月</label><input type="month" id="st-next-month" placeholder="2026-05"></div>
-    </div>
-    <div class="form-group"><label>备注</label><input type="text" id="st-note" placeholder="可选"></div>
-    <div class="modal-footer">
-      <button class="btn btn-outline" onclick="closeModal('storeModal')">取消</button>
-      <button class="btn btn-primary" onclick="saveStore()">保存</button>
-    </div>
+<!-- RECORDS -->
+<div class="screen" id="screen-records">
+  <div class="page-header"><div class="page-title">录入记录</div><div class="page-sub" id="rec-sub">加载中…</div></div>
+  <div class="page-body" id="rec-body"><div class="empty">加载中…</div></div>
+  <div class="nav-bar">
+    <button class="nav-tab" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
+    <button class="nav-tab active" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
+    <button class="nav-tab" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="screen" id="screen-stats">
+  <div class="page-header"><div class="page-title">统计报表</div><div class="page-sub">按月汇总</div></div>
+  <div class="page-body" id="stats-body"><div class="empty">加载中…</div></div>
+  <div class="nav-bar">
+    <button class="nav-tab" onclick="tab('home')"><span class="nav-icon">🏠</span><span class="nav-lbl">首页</span></button>
+    <button class="nav-tab" onclick="tab('records')"><span class="nav-icon">📋</span><span class="nav-lbl">记录</span></button>
+    <button class="nav-tab active" onclick="tab('stats')"><span class="nav-icon">📊</span><span class="nav-lbl">统计</span></button>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="screen" id="screen-suc">
+  <div class="suc-icon">✓</div>
+  <div class="suc-title">提交成功！</div>
+  <div class="suc-sub">小票已保存，财务端可查看</div>
+  <div class="suc-card">
+    <div class="suc-shop" id="suc-shop">—</div>
+    <div class="suc-amt" id="suc-amt">—</div>
+    <div class="suc-date" id="suc-date">—</div>
+  </div>
+  <button class="btn-again" onclick="startNew()">继续扫描下一张</button>
+  <div class="btn-link" onclick="tab('records')">查看所有记录</div>
+</div>
+
+<div id="dup-overlay" onclick="hideDup()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999"></div>
+<div class="dup-toast" id="dup-toast">
+  <div id="dup-msg">⚠ 发现可能重复的小票</div>
+  <div class="dup-btns">
+    <button class="dup-btn dup-cancel" onclick="hideDup()">取消</button>
+    <button class="dup-btn dup-ok" onclick="forceSubmit()">仍然提交</button>
   </div>
 </div>
 
 <script>
-const STORAGE_KEY='seikyusho_v3';
-let data={stores:[],invoices:[],lastAutoGenMonth:''};
-function loadData(){try{const r=localStorage.getItem(STORAGE_KEY);if(r)data=JSON.parse(r);if(data.stores.length===0)seedDefaultData();}catch(e){seedDefaultData();}}
-function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
-function seedDefaultData(){
-  data.stores=[
-    {id:'s1',name:'マルヤス酒場 北千住店',monthly:9000,persons:2,feeType:'monthly'},
-    {id:'s2',name:'マルヤス酒場 船橋店',monthly:9000,persons:2,feeType:'monthly'},
-    {id:'s3',name:'マルヤス酒場 柏店',monthly:9000,persons:4,feeType:'monthly'},
-    {id:'s4',name:'マルヤス酒場 蒲田店',monthly:9000,persons:1,feeType:'monthly'},
-    {id:'s5',name:'マルヤス酒場 新橋店',monthly:9000,persons:1,feeType:'monthly'},
-    {id:'s6',name:'マルヤス酒場 西葛西店',monthly:9000,persons:1,feeType:'monthly'},
-    {id:'s7',name:'羊炭長',monthly:9000,persons:5,feeType:'monthly'},
-    {id:'s8',name:'マルヤス酒場 浦安店',monthly:9000,persons:1,feeType:'monthly'},
-    {id:'s9',name:'マルヤス酒場 神田店',monthly:9000,persons:1,feeType:'monthly'},
-    {id:'s10',name:'マルヤス酒場 日暮里店',monthly:9000,persons:1,feeType:'monthly'},
-    {id:'s11',name:'マルヤス酒場 本八幡店',monthly:9000,persons:2,feeType:'monthly'},
-    {id:'s12',name:'マルヤス酒場 御徒町店',monthly:9000,persons:2,feeType:'monthly'},
-    {id:'s13',name:'マルヤス酒場プラス 関内店',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s14',name:'一山',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s15',name:'株式会社AMT',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s16',name:'浜の牡蠣小屋',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s17',name:'圓満楼',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s18',name:'尚尚酒場',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s19',name:'立ち酔い 超人',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s20',name:'株式会社 五洲貿易',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s21',name:'京小町',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s22',name:'株式会社ビックW・X',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s23',name:'王記厨房',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s24',name:'とりノ蔵 四谷店',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s25',name:'栞 四谷店',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s26',name:'あかね屋 南越谷店',monthly:9000,persons:0,feeType:'monthly'},
-    {id:'s27',name:'株式会社宅民商事',monthly:9000,persons:0,feeType:'monthly'},
-  ];
-  data.invoices=[];saveData();
-}
-function uid(){return 'i'+Date.now()+Math.random().toString(36).slice(2,8);}
-function yen(n){return '¥'+Number(n).toLocaleString();}
-function fmtDate(s){if(!s)return'';const[y,m,d]=s.split('-');return y+'年'+parseInt(m)+'月'+parseInt(d)+'日';}
-function getMonthStr(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
-function calcInv(inv){let sub=0;(inv.lines||[]).forEach(l=>sub+=(l.qty||0)*(l.price||0));const tax=Math.floor(sub*.1);return{sub,tax,total:sub+tax};}
-function lastDayOf(y,m){return new Date(y,m,0).getDate();}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 
-function switchTab(name,btn){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  if(btn)btn.classList.add('active');
-  if(name==='stores')renderStores();
-  if(name==='mitsumori')renderMitsumori();
-  if(name==='rollpaper')rpInit();
+// ── Auth ──
+let CURRENT_USER = null;
+
+async function doLogin(){
+  const username = document.getElementById('login-user').value.trim();
+  const password = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-err');
+  errEl.textContent = '';
+  if(!username || !password){ errEl.textContent = 'ユーザー名とパスワードを入力してください'; return; }
+  try{
+    const res = await fetch('/api/login', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({username, password})
+    });
+    if(!res.ok){ const e = await res.json(); errEl.textContent = e.detail || 'ログイン失敗'; return; }
+    CURRENT_USER = await res.json();
+    localStorage.setItem('receipt_user', JSON.stringify(CURRENT_USER));
+    afterLogin();
+  }catch(e){ errEl.textContent = '接続エラー: ' + e.message; }
 }
 
-function loadInvoices(){
-  const month=document.getElementById('currentMonth').value;
-  const invs=data.invoices.filter(i=>i.month===month);
-  const tbody=document.getElementById('invoiceTableBody');
-  if(!invs.length){
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--ink-light)">本月暂无请求书，点击「⚡ 生成本月请求书」</td></tr>';
-    document.getElementById('invoiceCardList').innerHTML='<div class="empty-state"><div class="icon">📋</div><p>本月暂无请求书</p></div>';
-    document.getElementById('totalRow').style.display='none';
-    document.getElementById('monthStat').innerHTML='';
+function afterLogin(){
+  const el = document.getElementById('user-display');
+  if(el) el.textContent = CURRENT_USER.display_name || CURRENT_USER.username;
+  goTo('screen-home');
+  loadHome();
+}
+
+function doLogout(){
+  CURRENT_USER = null;
+  localStorage.removeItem('receipt_user');
+  goTo('screen-login');
+}
+
+// Check saved login
+try{
+  const saved = localStorage.getItem('receipt_user');
+  if(saved){ CURRENT_USER = JSON.parse(saved); }
+}catch(e){ localStorage.removeItem('receipt_user'); }
+function fmt(n){return '¥'+(n||0).toLocaleString()}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function catIcon(cat){
+  if(!cat)return'📦';
+  if(cat.includes('交際')||cat.includes('会議'))return'🍱';
+  if(cat.includes('交通'))return'🚃';
+  if(cat.includes('宿泊'))return'🏨';
+  if(cat.includes('消耗'))return'🖨';
+  if(cat.includes('旅費'))return'✈️';
+  return'📦';
+}
+
+function goTo(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+function tab(t){if(t==='home'){goTo('screen-home');loadHome()}else if(t==='records'){goTo('screen-records');loadRecords()}else if(t==='stats'){goTo('screen-stats');loadStats()}}
+
+// Month switcher
+const now=new Date();
+let cY=now.getFullYear(), cM=now.getMonth()+1;
+function curMS(){return cY+'-'+String(cM).padStart(2,'0')}
+function changeMonth(d){
+  cM+=d; if(cM>12){cM=1;cY++} if(cM<1){cM=12;cY--}
+  const t=new Date(); document.getElementById('btn-next').disabled=(cY===t.getFullYear()&&cM===t.getMonth()+1);
+  loadHomeStats();
+}
+// ── Batch mode ──
+let BATCH_ITEMS=[];
+
+function startBatch(files){
+  BATCH_ITEMS=files.map(f=>({file:f,url:URL.createObjectURL(f),status:'pending',data:null,date:new Date().toISOString().slice(0,10),cat:localStorage.getItem('last_cat')||'仕入高'}));
+  goTo('screen-batch'); renderBatch(); processBatchQueue();
+}
+
+async function processBatchQueue(){
+  const pending=BATCH_ITEMS.filter(i=>i.status==='pending');
+  if(!pending.length){updateBatchBtn();return;}
+  await Promise.all(pending.slice(0,2).map(item=>processBatchItem(item)));
+  const stillPending=BATCH_ITEMS.filter(i=>i.status==='pending');
+  if(stillPending.length>0) await processBatchQueue();
+  else updateBatchBtn();
+}
+
+async function processBatchItem(item){
+  item.status='processing'; renderBatch();
+  try{
+    const fd=new FormData(); fd.append('file',item.file);
+    const res=await fetch('/api/ocr',{method:'POST',body:fd});
+    if(!res.ok) throw new Error(res.status);
+    item.data=await res.json();
+    item.date=item.data.date||item.date;
+    const shopKey='cat_'+((item.data.shop||'').trim().slice(0,20));
+    item.cat=localStorage.getItem(shopKey)||item.cat;
+    item.status='ok';
+  }catch(e){item.status='error';}
+  renderBatch();
+}
+
+function renderBatch(){
+  const ok=BATCH_ITEMS.filter(i=>i.status==='ok').length;
+  const proc=BATCH_ITEMS.filter(i=>i.status==='processing').length;
+  const total=BATCH_ITEMS.length;
+  const bi=document.getElementById('batch-info');
+  if(bi) bi.textContent=proc>0?'识别中… '+ok+'/'+total:' 共'+total+'张，'+ok+'张待确认';
+  const cats=['仕入高','食材費','飲料費','消耗品費','外注費','広告宣伝費','水道光熱費','通信費','修繕費','交際費','会議費','旅費交通費（交通）','旅費交通費（宿泊）','雑費'];
+  const bl=document.getElementById('batch-list');
+  if(!bl) return;
+  bl.innerHTML=BATCH_ITEMS.map((item,idx)=>{
+    const d=item.data;
+    const conf=d?(d.confidence||{}).overall||0:0;
+    const confC=conf>=85?'#34c759':conf>=60?'#f59e0b':'#ef4444';
+    const isDone=item.status==='submitted'||item.status==='skip';
+    const stText={pending:'⏳',processing:'⏳ 识别中',ok:'✓ 完成',error:'✗ 失败',submitted:'✓ 已提交',skip:'— 跳过'}[item.status]||'';
+    return '<div style="background:#fff;border-radius:16px;margin:10px 14px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.08);opacity:'+(isDone?'0.55':'1')+'">'+
+      '<div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #f2f2f7">'+
+      '<div style="width:44px;height:56px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f2f2f7">'+(item.url?'<img src="'+item.url+'" style="width:100%;height:100%;object-fit:cover">':'🧾')+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+      '<div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+(d?esc(d.shop):'识别中…')+'</div>'+
+      '<div style="font-size:20px;font-weight:700;font-variant-numeric:tabular-nums">'+(d?d.total:'—')+'</div>'+
+      (d?'<div style="font-size:11px;color:'+confC+'">准确度 '+conf+'%</div>':'<div style="font-size:11px;color:#8e8e93">'+stText+'</div>')+
+      '</div></div>'+
+      (!isDone&&item.status!=='processing'&&item.status!=='pending'?
+      '<div style="display:flex;gap:8px;padding:10px 14px;align-items:center">'+
+      '<input type="date" value="'+item.date+'" onchange="BATCH_ITEMS['+idx+'].date=this.value" style="border:1px solid #e5e5ea;border-radius:8px;padding:6px 8px;font-size:13px;font-family:inherit;outline:none">'+
+      '<select onchange="BATCH_ITEMS['+idx+'].cat=this.value" style="flex:1;border:1px solid #e5e5ea;border-radius:8px;padding:6px 8px;font-size:13px;font-family:inherit;outline:none;background:#fff;-webkit-appearance:none">'+
+      cats.map(c=>'<option value="'+c+'"'+(item.cat===c?' selected':'')+'>'+c+'</option>').join('')+
+      '</select>'+
+      '<button onclick="(function(){BATCH_ITEMS['+idx+'].status=\'skip\';renderBatch();updateBatchBtn()})()" style="border:1px solid #e5e5ea;border-radius:8px;padding:6px 10px;font-size:12px;color:#8e8e93;background:none;cursor:pointer;font-family:inherit;white-space:nowrap">跳过</button>'+
+      '</div>':'')+'</div>';
+  }).join('');
+}
+
+function updateBatchBtn(){
+  const n=BATCH_ITEMS.filter(i=>i.status==='ok').length;
+  const btn=document.getElementById('batch-submit-btn');
+  if(btn){btn.disabled=n===0;btn.textContent=n>0?'提交 '+n+' 张':'等待识别';}
+}
+
+async function batchSubmitAll(){
+  const toSubmit=BATCH_ITEMS.filter(i=>i.status==='ok');
+  if(!toSubmit.length) return;
+  const btn=document.getElementById('batch-submit-btn');
+  if(btn){btn.disabled=true;btn.textContent='提交中…';}
+  for(const item of toSubmit){
+    const d=item.data; if(!d) continue;
+    const cat=item.cat||'仕入高';
+    if(d.shop) localStorage.setItem('cat_'+d.shop.trim().slice(0,20),cat);
+    localStorage.setItem('last_cat',cat);
+    try{await fetch('/api/receipts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      shop:d.shop||'unknown',date:item.date,subtotal:d.subtotal_num||0,tax8:d.tax8_num||0,tax10:d.tax10_num||0,total:d.total_num||0,
+      category:cat,note:'',confidence:(d.confidence||{}).overall||0,
+      items:JSON.stringify(d.items||[]),image_data:'',
+      submitted_by:CURRENT_USER?(CURRENT_USER.display_name||CURRENT_USER.username):''
+    })});}catch(e){console.error(e);}
+    item.status='submitted'; renderBatch();
+  }
+  if(btn) btn.textContent='✓ 完成';
+  setTimeout(()=>{goTo('screen-home');loadHome();},1500);
+}
+
+async function loadHomeStats(){
+  const m=curMS(); document.getElementById('mc-lbl').textContent=m+' 合计';
+  try{
+    const [recs,sum]=await Promise.all([fetch('/api/receipts?month='+m).then(r=>r.json()),fetch('/api/summary').then(r=>r.json())]);
+    const cur=sum.find(s=>s.month===m)||{total:0,count:0,tax8:0,tax10:0};
+    document.getElementById('mc-amt').textContent=fmt(cur.total||0);
+    document.getElementById('mc-cnt').textContent=cur.count||0;
+    document.getElementById('mc-tax').textContent=fmt((cur.tax8||0)+(cur.tax10||0));
+    REC_MAP={}; recs.forEach(r=>{REC_MAP[r.id]=r});
+    const el=document.getElementById('home-list');
+    if(!recs||!recs.length){el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>暂无记录<br>拍照上传第一张小票吧</div>';return}
+    el.innerHTML=recs.slice(0,6).map(r=>
+      '<div class="ritem" onclick="showDetail('+r.id+')"><div class="ricon" style="background:#f2f2f7;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+catIcon(r.category)+'</div><div class="rinfo"><div class="rname">'+esc(r.shop)+'</div><div class="rmeta">'+r.date+'  ·  '+esc(r.category)+'</div></div><div class="ramt">'+fmt(r.total)+'</div></div>'
+    ).join('');
+  }catch(e){console.error(e)}
+}
+function loadHome(){loadHomeStats()}
+
+// File inputs
+document.getElementById('inp-cam').addEventListener('change',function(){handleFile(this)});
+document.getElementById('inp-gal').addEventListener('change',function(){
+  if(this.files && this.files.length > 1){
+    startBatch(Array.from(this.files));
+    this.value='';
+  } else {
+    handleFile(this);
+  }
+});
+function handleFile(inp){
+  const f=inp.files&&inp.files[0]; if(!f)return;
+  const url=URL.createObjectURL(f); inp.value='';
+  EDIT_ID=null;
+  document.getElementById('edit-banner').classList.remove('show');
+  document.getElementById('submit-btn').textContent='✓ 提交至财务审核';
+  document.getElementById('result-title').textContent='确认信息';
+  startOCR(f,url);
+}
+
+// Steps
+function resetSteps(){[0,1,2,3].forEach(i=>{const s=document.getElementById('s'+i);s.classList.remove('active','done');s.querySelector('.step-dot').textContent=i+1})}
+function setStep(i,st){const s=document.getElementById('s'+i);s.classList.remove('active','done');s.classList.add(st);if(st==='done')s.querySelector('.step-dot').textContent='✓'}
+
+let PD=null, EDIT_ID=null, REC_MAP={}, DETAIL_ID=null;
+
+async function startOCR(file,url){
+  goTo('screen-proc'); resetSteps();
+  document.getElementById('proc-thumb').innerHTML='<img src="'+url+'"><div class="scan-line"></div><div class="scan-corner tl"></div><div class="scan-corner tr"></div><div class="scan-corner bl"></div><div class="scan-corner br"></div>';
+  try{
+    setStep(0,'active'); await sleep(400); setStep(0,'done');
+    setStep(1,'active');
+    const fd=new FormData(); fd.append('file',file);
+    const res=await fetch('/api/ocr',{method:'POST',body:fd});
+    if(!res.ok){const t=await res.text();throw new Error('('+res.status+') '+t.slice(0,200))}
+    const d=await res.json();
+    setStep(1,'done'); setStep(2,'active'); await sleep(400); setStep(2,'done');
+    setStep(3,'active'); await sleep(300); setStep(3,'done'); const sl=document.querySelector('.scan-line'); if(sl){sl.style.animation='none';sl.style.opacity='0';} await sleep(250);
+    // Upload image to cloud storage
+    let imageData = '';
+    try {
+      const fd2 = new FormData(); fd2.append('file', file);
+      const ir = await fetch('/api/upload-image', {method:'POST', body:fd2});
+      if(ir.ok){ const ij = await ir.json(); imageData = ij.image_data||''; }
+    } catch(e){ console.error('Image upload:', e); }
+    PD=Object.assign({},d,{_url:url, _imageData:imageData});
+    fillResult(PD); goTo('screen-result');
+  }catch(err){
+    console.error(err); [0,1,2,3].forEach(i=>setStep(i,'done')); await sleep(500);
+    PD={shop:'',date:new Date().toISOString().slice(0,10),no:'-',subtotal_num:0,tax8_num:0,tax10_num:0,total_num:0,
+        subtotal:'¥0',tax8:'¥0',tax10:'¥0',total:'¥0',items:[],items_json:'[]',category:0,
+        confidence:{overall:0,shop:0,date:0,total:0},_url:url};
+    fillResult(PD);
+    const eb=document.getElementById('err-banner'); eb.textContent='⚠ 识别出错：'+err.message+'。请手动填写。'; eb.classList.add('show');
+    goTo('screen-result');
+  }
+}
+
+function badge(id,conf){const e=document.getElementById(id);if(!e)return;e.textContent=conf+'%';e.className='fbadge '+(conf>=85?'bg':conf>=65?'ba':'br')}
+
+function fillResult(d){
+  document.getElementById('err-banner').classList.remove('show');
+  const th=document.getElementById('r-thumb');
+  th.innerHTML=d._url?'<img src="'+d._url+'" style="width:100%;height:100%;object-fit:cover">':'🧾';
+  document.getElementById('r-shop').textContent=d.shop||'—';
+  document.getElementById('r-date').textContent=d.date||'—';
+  document.getElementById('r-total').textContent=d.total||'¥0';
+  const conf=(d.confidence||{}).overall||0;
+  const cbar=document.getElementById('r-cbar');
+  cbar.style.width=conf+'%';
+  cbar.style.background=conf>=85?'#34c759':conf>=65?'#ff9500':'#ff3b30';
+  const clbl=document.getElementById('r-clbl');
+  clbl.textContent=(conf>=85?'✓ ':conf>=65?'⚠ ':'⚠ 请仔细核对 ')+'识别准确度 '+conf+'%';
+  clbl.style.color=conf>=85?'#34c759':conf>=65?'#ff9500':'#ff3b30';
+  // Show warning banner for low confidence
+  const eb=document.getElementById('err-banner');
+  if(conf>0 && conf<65){
+    eb.textContent='⚠ 识别准确度较低（'+conf+'%），请仔细核对所有字段后再提交。';
+    eb.classList.add('show');
+    eb.style.background='#fff7ed';eb.style.color='#92400e';
+  }
+  document.getElementById('e-shop').value=d.shop||'';
+  const rawDate = d.date || '';
+  // Normalize date to YYYY-MM-DD for date input
+  let normDate = rawDate;
+  const m1 = rawDate.match(/(\d{4})[年\-\/](\d{1,2})[月\-\/](\d{1,2})/);
+  if(m1) normDate = m1[1]+'-'+String(m1[2]).padStart(2,'0')+'-'+String(m1[3]).padStart(2,'0');
+  document.getElementById('e-date').value = normDate;
+  document.getElementById('e-no').value=d.no||'';
+  badge('fb-shop',(d.confidence||{}).shop||0);
+  badge('fb-date',(d.confidence||{}).date||0);
+  document.getElementById('e-sub').value=d.subtotal_num||0;
+  document.getElementById('e-tax8').value=d.tax8_num||0;
+  document.getElementById('e-tax10').value=d.tax10_num||0;
+  document.getElementById('e-total').value=d.total_num||0;
+  // Items
+  const items=d.items||[];
+  const icard=document.getElementById('items-card');
+  if(items.length>0){
+    icard.style.display='block';
+    document.getElementById('items-cnt').textContent='('+items.length+'件)';
+    document.getElementById('items-list').innerHTML=items.map((it,idx)=>
+      '<div class="item-row">'+
+      '<input class="item-name-input" type="text" value="'+esc(it.name)+'" placeholder="商品名">'+
+      (it.qty!=null?'<span class="item-qty">×'+it.qty+'</span>':'')+
+      '<input class="item-price-input" type="number" value="'+((it.qty&&it.qty>1)?(it.qty*(it.price||0)):(it.price||0))+'" oninput="recalcItems()">'+
+      '</div>'
+    ).join('');
+    recalcItems();
+  } else { icard.style.display='none'; }
+  // Auto-suggest: check shop history first, then fallback to keyword match
+  autoSelectCat(d);
+}
+
+function autoSelectCat(d){
+  const sel=document.getElementById('e-cat');
+  // Check shop memory first
+  const shopKey = 'cat_'+((d.shop||'').trim().slice(0,20));
+  const remembered = localStorage.getItem(shopKey);
+  if(remembered){ sel.value=remembered; return; }
+  // Auto-detect from content
+  const text=((d.shop||'')+' '+(d.items||[]).map(i=>i.name).join(' ')).toLowerCase();
+  if(/jr|metro|電車|バス|タクシー|taxi|suica|新幹線|飛行機/.test(text))
+    sel.value='旅費交通費（交通）';
+  else if(/ホテル|hotel|宿|旅館/.test(text))
+    sel.value='旅費交通費（宿泊）';
+  else if(/業務|スーパー|市場|魚|肉|野菜|食材|米|酒|飲料|ビール|仕入/.test(text))
+    sel.value='仕入高';
+  else if(/包材|容器|ラップ|袋|ナプキン|割箸|文具|事務|備品/.test(text))
+    sel.value='消耗品費';
+  else if(/デリバリー|uber|出前|配達/.test(text))
+    sel.value='外注費';
+  else if(/電気|ガス|水道|光熱/.test(text))
+    sel.value='水道光熱費';
+  else
+    sel.value='仕入高';
+}
+
+function rememberShopCat(){
+  // Save selected category for this shop
+  if(!PD) return;
+  const shopKey = 'cat_'+((PD.shop||'').trim().slice(0,20));
+  const cat = document.getElementById('e-cat').value;
+  if(cat) localStorage.setItem(shopKey, cat);
+}
+
+function syncTotal(){
+  const t=parseInt(document.getElementById('e-total').value)||0;
+  document.getElementById('r-total').textContent=fmt(t);
+}
+function recalcItems(){
+  let s=0; document.querySelectorAll('.item-price-input').forEach(i=>s+=parseInt(i.value)||0);
+  document.getElementById('items-sum').textContent=fmt(s);
+}
+
+function resultBack(){
+  if(EDIT_ID){goTo('screen-detail')}
+  else{goTo('screen-home');loadHome()}
+}
+
+// Build payload with items JSON
+function buildPayload(){
+  const items=[];
+  const names=document.querySelectorAll('.item-name-input');
+  const prices=document.querySelectorAll('.item-price-input');
+  names.forEach((n,i)=>{if(n.value.trim())items.push({name:n.value.trim(),price:parseInt(prices[i]?.value)||0})});
+  return{
+    shop:document.getElementById('e-shop').value||'unknown',
+    date:(document.getElementById('e-date').value||new Date().toISOString().slice(0,10)).slice(0,10),
+    subtotal:parseInt(document.getElementById('e-sub').value)||0,
+    tax8:parseInt(document.getElementById('e-tax8').value)||0,
+    tax10:parseInt(document.getElementById('e-tax10').value)||0,
+    total:parseInt(document.getElementById('e-total').value)||0,
+    category:document.getElementById('e-cat').value||'交際費',
+    note:document.getElementById('e-note').value.trim(),
+    confidence:PD?(PD.confidence||{}).overall||0:0,
+    items:JSON.stringify(items),
+    image_data: PD ? (PD._imageData||'') : '',
+    submitted_by: CURRENT_USER ? (CURRENT_USER.display_name||CURRENT_USER.username) : ''
+  }
+}
+
+function showSuc(p,tag){
+  document.getElementById('suc-shop').textContent=p.shop;
+  document.getElementById('suc-amt').textContent=fmt(p.total);
+  document.getElementById('suc-date').textContent=p.date+'  ·  '+p.category+(tag?' · '+tag:'');
+  goTo('screen-suc');
+}
+
+async function submitEntry(){
+  rememberShopCat(); // Remember category for this shop
+  const p=buildPayload();
+  if(EDIT_ID){
+    try{await fetch('/api/receipts/'+EDIT_ID,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}catch(e){console.error(e)}
+    EDIT_ID=null; showSuc(p,'已更新'); return;
+  }
+  try{
+    const chk=await fetch('/api/check-duplicate?date='+encodeURIComponent(p.date)+'&total='+p.total+'&shop='+encodeURIComponent(p.shop)).then(r=>r.json());
+    if(chk.duplicate){
+      document.getElementById('dup-msg').textContent='⚠ 已有同日期同金额记录（'+chk.shop+'），是否仍然提交？';
+      document.getElementById('dup-toast').classList.add('show');const ov=document.getElementById('dup-overlay');if(ov)ov.style.display='block';
+      window._pp=p; return;
+    }
+  }catch(e){}
+  if(SPLIT_MODE){
+    // Submit multiple entries
+    const rows = document.querySelectorAll('.split-row');
+    if(rows.length === 0){ await doSave(p); return; }
+    for(const row of rows){
+      const cat = row.querySelector('.split-cat-sel').value;
+      const amt = parseInt(row.querySelector('.split-amt-input').value)||0;
+      if(amt > 0){
+        await doSave(Object.assign({}, p, {category: cat, total: amt, subtotal: amt, tax8:0, tax10:0}));
+      }
+    }
+    SPLIT_MODE=false;
     return;
   }
-  let tSub=0,tTax=0,tTotal=0;
-  const rows=invs.map(inv=>{const{sub,tax,total}=calcInv(inv);tSub+=sub;tTax+=tax;tTotal+=total;const pl=(inv.lines||[]).find(l=>l.name.includes('技能'));const period=inv.periodStart?fmtDate(inv.periodStart)+'〜'+fmtDate(inv.periodEnd):'-';const sc=inv.status==='paid'?'status-paid':'status-pending';const sl=inv.status==='paid'?'支払済':'未支払';return{inv,sub,tax,total,pl,period,sc,sl};});
-  tbody.innerHTML=rows.map(({inv,sub,tax,total,pl,period,sc,sl})=>`<tr>
-    <td><strong>${inv.name}</strong></td>
-    <td style="font-size:11px;color:var(--ink-light)">${period}</td>
-    <td>${pl&&pl.qty>0?pl.qty+'人':'-'}</td>
-    <td>${yen(sub)}</td><td>${yen(tax)}</td>
-    <td class="amount">${yen(total)}</td>
-    <td><span class="status-badge ${sc}">${sl}</span></td>
-    <td class="actions">
-      <button class="btn btn-outline btn-sm" onclick="editInvoice('${inv.id}')">編集</button>
-      <button class="btn btn-pdf btn-sm" onclick="downloadOnePDF('${inv.id}')">📥PDF</button>
-      <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="deleteInvoice('${inv.id}')">削除</button>
-    </td></tr>`).join('');
-  document.getElementById('invoiceCardList').innerHTML=rows.map(({inv,sub,tax,total,pl,period,sc,sl})=>`
-    <div class="inv-card">
-      <div class="inv-card-header"><div class="inv-card-name">${inv.name}</div><span class="status-badge ${sc}">${sl}</span></div>
-      <div class="inv-card-body">
-        <div class="inv-card-row"><label>対象期間</label><span class="val" style="font-size:12px">${period}</span></div>
-        ${pl&&pl.qty>0?`<div class="inv-card-row"><label>支援人数</label><span class="val">${pl.qty}人</span></div>`:''}
-        <div class="inv-card-row"><label>小計</label><span class="val">${yen(sub)}</span></div>
-        <div class="inv-card-row"><label>消費税(10%)</label><span class="val">${yen(tax)}</span></div>
-      </div>
-      <div class="inv-card-total"><label>請求金額(税込)</label><span class="amount">${yen(total)}</span></div>
-      <div class="inv-card-actions">
-        <button class="btn btn-outline btn-sm" onclick="editInvoice('${inv.id}')">✏️ 編集</button>
-        <button class="btn btn-pdf btn-sm" onclick="downloadOnePDF('${inv.id}')">📥 PDF</button>
-        <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="deleteInvoice('${inv.id}')">🗑 削除</button>
-      </div>
-    </div>`).join('');
-  document.getElementById('totalRow').style.display='flex';
-  document.getElementById('totalSubtotal').textContent=yen(tSub);
-  document.getElementById('totalTax').textContent=yen(tTax);
-  document.getElementById('totalGrand').textContent=yen(tTotal);
-  document.getElementById('monthStat').innerHTML=`共 <strong>${invs.length}</strong> 件　合計 <strong>${yen(tTotal)}</strong>`;
+  await doSave(p);
 }
-
-function generateMonth(){
-  const month=document.getElementById('currentMonth').value;
-  if(!month){alert('请先选择月份');return;}
-  const existing=data.invoices.filter(i=>i.month===month);
-  // Get storeIds that already have invoices this month — skip them
-  const existingStoreIds=new Set(existing.map(i=>i.storeId).filter(Boolean));
-  // If there are existing invoices, ask whether to supplement or full overwrite
-  let mode='supplement'; // default: only add missing stores
-  if(existing.length){
-    const choice=confirm(
-      `本月已有 ${existing.length} 件请求书。\n\n` +
-      `点击「确定」→ 只补充生成尚未生成的店铺\n` +
-      `点击「取消」→ 全部重新生成（会覆盖已有记录）`
-    );
-    if(choice===true) mode='supplement';
-    else {
-      // Full regenerate — remove existing auto-generated ones only
-      if(!confirm('确认要覆盖全部重新生成吗？手动新增的记录也会被删除。')) return;
-      mode='overwrite';
-      data.invoices=data.invoices.filter(i=>i.month!==month);
-      existingStoreIds.clear();
-    }
-  }
-  const[y,m]=month.split('-').map(Number);
-  const ld=lastDayOf(y,m);
-  const ps=`${y}-${String(m).padStart(2,'0')}-01`;
-  const pe=`${y}-${String(m).padStart(2,'0')}-${ld}`;
-  const today=new Date();
-  const issueDate=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-  const due=`${y}-${String(m).padStart(2,'0')}-${ld}`;
-  let generated=0,skipped=0;
-  data.stores.forEach(s=>{
-    const feeType=s.feeType||'monthly';
-    if(feeType!=='monthly'){const nextM=s.nextMonth;if(!nextM){skipped++;return;}if(nextM!==month){skipped++;return;}}
-    // Skip if already has invoice this month (supplement mode)
-    if(mode==='supplement' && existingStoreIds.has(s.id)){skipped++;return;}
-    let periodStart=ps,periodEnd=pe,lineName='';
-    function fmtD(yy,mm,dd){return yy+'.'+String(mm).padStart(2,'0')+'.'+String(dd).padStart(2,'0');}
-    if(feeType==='monthly'){lineName=fmtD(y,m,1)+'-'+fmtD(y,m,ld)+' サービス料金';}
-    else if(feeType==='quarterly'){let startM=m-2,startY=y;if(startM<=0){startM+=12;startY-=1;}periodStart=`${startY}-${String(startM).padStart(2,'0')}-01`;lineName=fmtD(startY,startM,1)+'-'+fmtD(y,m,ld)+' サービス料金';}
-    else if(feeType==='yearly'){let startM=m+1,startY=y-1;if(startM>12){startM-=12;startY+=1;}periodStart=`${startY}-${String(startM).padStart(2,'0')}-01`;lineName=fmtD(startY,startM,1)+'-'+fmtD(y,m,ld)+' サービス料金';}
-    const lines=[{name:lineName,qty:1,price:s.monthly}];
-    if(s.persons>0)lines.push({name:'特定技能支援費',qty:s.persons,price:10000});
-    data.invoices.push({id:uid(),month,name:s.name,storeId:s.id,periodStart,periodEnd:pe,due,issueDate,lines,status:'pending'});
-    generated++;
-    if(feeType==='quarterly'){const nm=m+3>12?m-9:m+3;const ny=m+3>12?y+1:y;s.nextMonth=`${ny}-${String(nm).padStart(2,'0')}`;}
-    else if(feeType==='yearly'){s.nextMonth=`${y+1}-${String(m).padStart(2,'0')}`;}
-  });
-  saveData();loadInvoices();
-  let msg=`✅ ${generated}件の請求書を生成しました。`;
-  if(skipped>0)msg+=`\n（${skipped}件は請求サイクル外のためスキップ）`;
-  alert(msg);
-}
-
-const STAMP_SRC='data:image/jpeg;base64,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'
-
-function buildInvHTML(inv){
-  const c=calcInv(inv);const sub=c.sub,tax=c.tax,total=c.total;
-  const parts=inv.month.split('-').map(Number);const y=parts[0],m=parts[1];const ld=lastDayOf(y,m);
-  const emptyRows=Math.max(0,8-(inv.lines||[]).length);
-  let linesHTML='';
-  (inv.lines||[]).forEach(function(l){linesHTML+='<tr><td style="word-break:break-all;padding:7px 10px;border:1px solid #ccc;">'+l.name+'</td><td style="text-align:center;padding:7px 10px;border:1px solid #ccc;">'+l.qty+'</td><td style="text-align:right;padding:7px 10px;border:1px solid #ccc;">'+l.price.toLocaleString()+'</td><td style="text-align:right;padding:7px 10px;border:1px solid #ccc;">'+(l.qty*l.price).toLocaleString()+'</td></tr>';});
-  for(var i=0;i<emptyRows;i++){linesHTML+='<tr class="empty"><td style="padding:7px 10px;border:1px solid #ccc;height:28px">&nbsp;</td><td style="padding:7px 10px;border:1px solid #ccc;"></td><td style="padding:7px 10px;border:1px solid #ccc;"></td><td style="padding:7px 10px;border:1px solid #ccc;"></td></tr>';}
-  const noteHTML=inv.note?inv.note.replace(/\n/g,'<br>'):'&nbsp;';
-  const today=new Date().toISOString().slice(0,10);
-  return `
-<div style="width:690px;margin:0 auto;font-family:'Noto Sans JP',sans-serif;font-size:13px;line-height:1.75;color:#111;background:white;padding:44px 0 40px;box-sizing:border-box;">
-
-  <div style="text-align:center;font-size:20px;font-weight:700;letter-spacing:4px;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:20px;">請求書</div>
-
-  <table style="width:690px;border-collapse:collapse;margin-bottom:20px;table-layout:fixed;">
-    <tr>
-      <td style="width:358px;vertical-align:top;padding-right:12px;">
-        <div style="font-size:17px;font-weight:700;padding-bottom:4px;margin-bottom:8px;display:inline-block;border-bottom:1.5px solid #111;min-width:180px;">${inv.name} <span style="font-size:13px;font-weight:400;">御中</span></div>
-        <div style="font-size:12px;color:#444;margin-bottom:16px;">下記の通りご請求申し上げます。</div>
-        <div style="border:2px solid #111;padding:10px 14px;display:inline-block;min-width:220px;">
-          <div style="font-size:11px;color:#555;margin-bottom:3px;">ご請求金額（税込）</div>
-          <div style="font-size:24px;font-weight:700;">¥${total.toLocaleString()}<span style="font-size:16px;font-weight:400;">-</span></div>
-        </div>
-      </td>
-      <td style="width:332px;vertical-align:top;">
-        <div style="position:relative;display:inline-block;width:100%;">
-          <div style="font-size:14px;font-weight:700;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid #ccc;">新日本富士アシスト株式会社</div>
-          <div style="font-size:11px;color:#444;line-height:1.8;margin-bottom:8px;">
-            〒110-0016　東京都台東区台東4-31-7-203<br>
-            TEL 03-6806-0988　FAX 03-6806-0128<br>
-            登録番号：T3010801026751
-          </div>
-          <img src="${STAMP_SRC}" width="70" height="70" style="position:absolute;top:15px;right:0;width:70px;height:70px;object-fit:contain;opacity:0.82;mix-blend-mode:multiply;" crossorigin="anonymous">
-        </div>
-        <div style="padding-top:6px;border-top:1px solid #ddd;font-size:11.5px;">
-          <div style="color:#333;line-height:1.9;"><span style="color:#666;">発行日：</span>${fmtDate(today)}</div>
-          <div style="color:#333;line-height:1.9;"><span style="color:#666;">支払期日：</span>${fmtDate(inv.due)}</div>
-          <div style="color:#333;line-height:1.9;"><span style="color:#666;">対象期間：</span>${fmtDate(inv.periodStart)}〜${fmtDate(inv.periodEnd)}</div>
-        </div>
-      </td>
-    </tr>
-  </table>
-
-  <table style="width:690px;border-collapse:collapse;font-size:12.5px;border:1px solid #999;table-layout:fixed;">
-    <thead>
-      <tr>
-        <th style="background:#2c2c3e;color:white;padding:8px 10px;font-weight:500;font-size:12px;border:1px solid #999;text-align:left;width:55%">品目・内容</th>
-        <th style="background:#2c2c3e;color:white;padding:8px 10px;font-weight:500;font-size:12px;border:1px solid #999;text-align:center;width:10%">数量</th>
-        <th style="background:#2c2c3e;color:white;padding:8px 10px;font-weight:500;font-size:12px;border:1px solid #999;text-align:right;width:17%">単価（税抜）</th>
-        <th style="background:#2c2c3e;color:white;padding:8px 10px;font-weight:500;font-size:12px;border:1px solid #999;text-align:right;width:18%">金額（税抜）</th>
-      </tr>
-    </thead>
-    <tbody>${linesHTML}</tbody>
-  </table>
-
-  <div style="border:1px solid #999;border-top:none;margin-bottom:20px;">
-    <div style="display:flex;justify-content:space-between;padding:7px 16px;font-size:13px;border-top:1px solid #ddd;"><span>小計</span><span>¥${sub.toLocaleString()}</span></div>
-    <div style="display:flex;justify-content:space-between;padding:7px 16px;font-size:13px;border-top:1px solid #ddd;"><span>消費税（10%）</span><span>¥${tax.toLocaleString()}</span></div>
-    <div style="display:flex;justify-content:space-between;padding:8px 16px;font-size:15px;font-weight:700;background:#2c2c3e;color:white;border-top:2px solid #999;"><span>合計（税込）</span><span>¥${total.toLocaleString()}</span></div>
-  </div>
-
-  <div style="border:1px solid #bbb;padding:10px 16px;font-size:12px;margin-bottom:16px;background:#fafafa;line-height:1.8;">
-    <div style="font-weight:700;margin-bottom:4px;">【お振込先】</div>
-    三井住友銀行　上野支店　普通　8690693　シンニホンフジアシスト(カ<br>
-    <span style="font-size:11px;">＊振込手数料はご負担にてお願い申し上げます。</span>
-  </div>
-
-  <div style="border:1px solid #bbb;min-height:60px;font-size:12px;background:#fafafa;">
-    <div style="background:#eee;padding:4px 12px;font-weight:700;font-size:12px;border-bottom:1px solid #bbb;">備考</div>
-    <div style="padding:8px 12px;">${noteHTML}</div>
-  </div>
-
-</div>`;
-}
-
-function showLoading(msg){const el=document.getElementById('pdfLoadingMsg');if(el)el.textContent=msg||'PDF生成中...';const ov=document.getElementById('pdfLoading');if(ov)ov.classList.add('show');}
-function hideLoading(){const ov=document.getElementById('pdfLoading');if(ov)ov.classList.remove('show');}
-
-async function renderToPDF(invList){
-  const{jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const pdfW=doc.internal.pageSize.getWidth();
-  const pdfH=doc.internal.pageSize.getHeight();
-
-  for(let pi=0;pi<invList.length;pi++){
-    if(pi>0) doc.addPage();
-
-    // コンテナを body 直下に追加
-    const container=document.createElement('div');
-    container.style.cssText='position:fixed;top:0;left:-9999px;width:794px;height:1123px;overflow:hidden;z-index:-1;background:white;';
-    document.body.appendChild(container);
-    container.innerHTML = buildInvHTML(invList[pi]);
-    const pg = container.firstElementChild;
-    if(!pg){ document.body.removeChild(container); continue; }
-
-    // .inv-page のスタイルを完全に固定
-    pg.style.cssText=[
-      'width:794px',
-      'min-height:1123px',
-      'max-width:794px',
-      'padding:44px 52px 40px',
-      'font-size:13px',
-      'line-height:1.75',
-      'font-family:Noto Sans JP,sans-serif',
-      'color:#111',
-      'background:#fff',
-      'box-sizing:border-box',
-      'overflow:visible',
-      'margin:0',
-      'position:relative'
-    ].join(';');
-
-    // テーブルも幅を固定
-    container.querySelectorAll('table').forEach(t=>{
-      t.style.width='690px';
-      t.style.maxWidth='690px';
-      t.style.tableLayout='fixed';
-    });
-
-    // 画像の読み込みを待つ
-    await new Promise(r=>setTimeout(r,300));
-    // すべての img タグが完全に読み込まれるまで待つ
-    const imgs = [...container.querySelectorAll('img')];
-    await Promise.all(imgs.map(img => {
-      if(img.complete) return Promise.resolve();
-      return new Promise(resolve => {
-        img.onload = resolve;
-        img.onerror = resolve;
-        setTimeout(resolve, 3000); // 3秒タイムアウト
-      });
-    }));
-    await new Promise(r=>setTimeout(r,300));
-
-    const canvas=await html2canvas(container,{
-      scale:2,
-      useCORS:true,
-      allowTaint:true,
-      backgroundColor:'#ffffff',
-      width:794,
-      height:1123,
-      windowWidth:794,
-      windowHeight:1123,
-      x:0,
-      y:0,
-      scrollX:0,
-      scrollY:0,
-      logging:false,
-      imageTimeout:10000,
-      onclone:function(doc){
-        // No additional style needed - inline styles are authoritative
-      }
-    });
-
-    document.body.removeChild(container);
-    doc.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,pdfW,pdfH);
-  }
-
-  return doc;
-}
-
-
-async function downloadOnePDF(id){
-  const inv=data.invoices.find(i=>i.id===id);if(!inv)return;
-  const[y,m]=inv.month.split('-');const monthLabel=y+'年'+parseInt(m)+'月';
-  showLoading(inv.name+' を生成中...');
-  try{const doc=await renderToPDF([inv]);doc.save('請求書_'+inv.name+'_'+monthLabel+'.pdf');}
-  catch(e){alert('PDF生成エラー: '+e.message);}
-  finally{hideLoading();}
-}
-
-async function executeBatchDownload(){
-  const checked=[...document.querySelectorAll('.batch-cb:checked')];
-  if(!checked.length){alert('店铺を選択してください');return;}
-  const month=document.getElementById('currentMonth').value;
-  const[y,m]=month.split('-');const monthLabel=y+'年'+parseInt(m)+'月';
-  const ids=checked.map(cb=>cb.dataset.id);
-  const invs=data.invoices.filter(i=>ids.includes(i.id));
-  closeModal('batchModal');
-  showLoading('PDF生成中...');
-  try{const doc=await renderToPDF(invs);doc.save('請求書_'+monthLabel+'_'+checked.length+'件.pdf');}
-  catch(e){alert('PDF生成エラー: '+e.message);}
-  finally{hideLoading();}
-}
-
-// Invoice modal
-let editingInvoiceId=null;
-function openNewInvoice(){
-  editingInvoiceId=null;
-  document.getElementById('invoiceModalTitle').textContent='新增请求书';
-  const sel=document.getElementById('inv-store');
-  sel.innerHTML='<option value="">-- 选择 --</option>'+data.stores.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  sel.value='';document.getElementById('inv-name').value='';document.getElementById('inv-status').value='pending';
-  const month=document.getElementById('currentMonth').value;
-  if(month){const[y,m]=month.split('-').map(Number);const ld=lastDayOf(y,m);document.getElementById('inv-period-start').value=`${y}-${String(m).padStart(2,'0')}-01`;document.getElementById('inv-period-end').value=`${y}-${String(m).padStart(2,'0')}-${ld}`;document.getElementById('inv-due').value=`${y}-${String(m).padStart(2,'0')}-${ld}`;}
-  setLineItems([{name:'月額料金',qty:1,price:9000},{name:'特定技能支援費',qty:1,price:10000}]);
-  document.getElementById('inv-note').value='';openModal('invoiceModal');
-}
-function editInvoice(id){
-  const inv=data.invoices.find(i=>i.id===id);if(!inv)return;
-  editingInvoiceId=id;document.getElementById('invoiceModalTitle').textContent='编辑请求书';
-  const sel=document.getElementById('inv-store');
-  sel.innerHTML='<option value="">-- 选择 --</option>'+data.stores.map(s=>`<option value="${s.id}">${s.name}</option>`).join('');
-  sel.value=inv.storeId||'';document.getElementById('inv-name').value=inv.name;
-  document.getElementById('inv-period-start').value=inv.periodStart||'';document.getElementById('inv-period-end').value=inv.periodEnd||'';document.getElementById('inv-due').value=inv.due||'';document.getElementById('inv-status').value=inv.status||'pending';
-  setLineItems(inv.lines||[]);document.getElementById('inv-note').value=inv.note||'';openModal('invoiceModal');
-}
-function onStoreSelect(){
-  const sid=document.getElementById('inv-store').value;if(!sid)return;
-  const s=data.stores.find(x=>x.id===sid);if(!s)return;
-  document.getElementById('inv-name').value=s.name;
-  const month=document.getElementById('currentMonth').value;
-  if(month){const[y,m]=month.split('-').map(Number);const ld=lastDayOf(y,m);const lines=[{name:`${y}.${m}.1-${y}.${m}.${ld} 月額料金`,qty:1,price:s.monthly}];if(s.persons>0)lines.push({name:'特定技能支援費',qty:s.persons,price:10000});setLineItems(lines);}
-}
-function setLineItems(lines){document.getElementById('lineItemsBody').innerHTML='';lines.forEach(l=>addLineItem(l));updateModalCalc();}
-function addTemplateItems(){
-  const checked=document.querySelectorAll('.template-items input[type="checkbox"]:checked');
-  if(!checked.length){alert('请先勾选要添加的项目');return;}
-  checked.forEach(cb=>{addLineItem({name:cb.value,qty:1,price:parseInt(cb.dataset.price)});cb.checked=false;});
-}
-function addLineItem(line){
-  const body=document.getElementById('lineItemsBody');const row=document.createElement('div');row.className='line-item-row';
-  row.innerHTML=`<div class="line-item-name-wrap"><label>項目名</label><input type="text" placeholder="例：月額料金" value="${(line&&line.name)||''}" oninput="updateModalCalc()"></div><div class="line-item-nums"><div class="field"><label>数量</label><input type="number" placeholder="1" value="${(line&&line.qty)||1}" min="0" oninput="updateModalCalc()"></div><div class="field"><label>単価(税前)</label><input type="number" placeholder="0" value="${(line&&line.price)||0}" min="0" oninput="updateModalCalc()"></div></div><div class="line-item-footer"><span class="line-item-total">¥0</span><button class="btn-icon" onclick="this.closest('.line-item-row').remove();updateModalCalc()">×</button></div>`;
-  body.appendChild(row);updateModalCalc();
-}
-function updateModalCalc(){
-  let sub=0;
-  document.querySelectorAll('.line-item-row').forEach(row=>{const inp=row.querySelectorAll('input');const amt=(parseFloat(inp[1].value)||0)*(parseFloat(inp[2].value)||0);sub+=amt;row.querySelector('.line-item-total').textContent=yen(amt);});
-  const tax=Math.floor(sub*.1);document.getElementById('modalSubtotal').textContent=yen(sub);document.getElementById('modalTax').textContent=yen(tax);document.getElementById('modalTotal').textContent=yen(sub+tax);
-}
-function saveInvoice(){
-  const name=document.getElementById('inv-name').value.trim();if(!name){alert('请输入请求对象名称');return;}
-  const lines=[];document.querySelectorAll('.line-item-row').forEach(row=>{const inp=row.querySelectorAll('input');lines.push({name:inp[0].value,qty:parseFloat(inp[1].value)||0,price:parseFloat(inp[2].value)||0});});
-  const inv={id:editingInvoiceId||uid(),month:document.getElementById('currentMonth').value,name,storeId:document.getElementById('inv-store').value,periodStart:document.getElementById('inv-period-start').value,periodEnd:document.getElementById('inv-period-end').value,due:document.getElementById('inv-due').value,lines,status:document.getElementById('inv-status').value,note:document.getElementById('inv-note').value.trim()};
-  if(editingInvoiceId){const idx=data.invoices.findIndex(i=>i.id===editingInvoiceId);data.invoices[idx]=inv;}else{data.invoices.push(inv);}
-  saveData();closeModal('invoiceModal');loadInvoices();
-}
-function deleteInvoice(id){if(!confirm('确认删除？'))return;data.invoices=data.invoices.filter(i=>i.id!==id);saveData();loadInvoices();}
-
-// Batch download
-function openBatchDownload(){
-  const month=document.getElementById('currentMonth').value;const invs=data.invoices.filter(i=>i.month===month);if(!invs.length){alert('本月暂无请求书');return;}
-  const list=document.getElementById('batchStoreList');
-  list.innerHTML=invs.map(inv=>{const store=(data.stores||[]).find(s=>s.id===inv.storeId);const feeType=store?store.feeType:'monthly';const badge=feeType==='yearly'?'<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:#e8f4fd;color:#1565c0;margin-left:6px">年払い</span>':'<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:#e8f5e9;color:#2e7d32;margin-left:6px">月払い</span>';const{sub,tax,total}=calcInv(inv);return`<label style="display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid var(--border);cursor:pointer;"><input type="checkbox" class="batch-cb" data-id="${inv.id}" data-feetype="${feeType}" checked style="width:16px;height:16px;accent-color:var(--blue);flex-shrink:0"><span style="flex:1;font-size:13px">${inv.name}${badge}</span><span style="font-size:12px;color:var(--accent);font-weight:600">${yen(total)}</span></label>`;}).join('');
-  openModal('batchModal');
-}
-function batchSelectAll(){document.querySelectorAll('.batch-cb').forEach(cb=>cb.checked=true);}
-function batchSelectNone(){document.querySelectorAll('.batch-cb').forEach(cb=>cb.checked=false);}
-function batchSelectMonthly(){document.querySelectorAll('.batch-cb').forEach(cb=>{cb.checked=cb.dataset.feetype==='monthly';});}
-function batchSelectYearly(){document.querySelectorAll('.batch-cb').forEach(cb=>{cb.checked=cb.dataset.feetype==='yearly';});}
-
-// Store
-let editingStoreId=null;
-function renderStores(){
-  const grid=document.getElementById('storeGrid');
-  grid.innerHTML=data.stores.map(s=>`<div class="store-card"><div class="store-card-header"><div class="store-name">${s.name}</div><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${s.feeType==='yearly'?'#e8f4fd':s.feeType==='quarterly'?'#fff3e0':'#e8f5e9'};color:${s.feeType==='yearly'?'#1565c0':s.feeType==='quarterly'?'#e65100':'#2e7d32'}">${s.feeType==='yearly'?'年1回':s.feeType==='quarterly'?'3ヶ月':'毎月'}</span></div><div class="store-meta">月額料金: <strong>¥${s.monthly.toLocaleString()}</strong><br>技能支援: <strong>${s.persons}人</strong>${s.note?'<br>'+s.note:''}</div><div class="store-actions"><button class="btn btn-outline btn-sm" onclick="editStore('${s.id}')">编辑</button><button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="deleteStore('${s.id}')">删除</button></div></div>`).join('')||'<div class="empty-state"><div class="icon">🏪</div><p>暂无店铺</p></div>';
-}
-function openNewStore(){editingStoreId=null;document.getElementById('storeModalTitle').textContent='新增店铺';['st-name','st-note'].forEach(id=>document.getElementById(id).value='');document.getElementById('st-monthly').value=9000;document.getElementById('st-persons').value=1;document.getElementById('st-feetype').value='monthly';onFeeTypeChange();document.getElementById('st-next-month').value='';openModal('storeModal');}
-function editStore(id){const s=data.stores.find(x=>x.id===id);if(!s)return;editingStoreId=id;document.getElementById('storeModalTitle').textContent='编辑店铺';document.getElementById('st-name').value=s.name;document.getElementById('st-monthly').value=s.monthly;document.getElementById('st-persons').value=s.persons;document.getElementById('st-feetype').value=s.feeType||'monthly';document.getElementById('st-note').value=s.note||'';onFeeTypeChange();if(s.nextMonth)document.getElementById('st-next-month').value=s.nextMonth;openModal('storeModal');}
-function saveStore(){
-  const name=document.getElementById('st-name').value.trim();if(!name){alert('请输入店铺名称');return;}
-  const feeType=document.getElementById('st-feetype').value||'monthly';const nextMonth=feeType!=='monthly'?document.getElementById('st-next-month').value:'';
-  const store={id:editingStoreId||uid(),name,monthly:parseFloat(document.getElementById('st-monthly').value)||9000,persons:parseInt(document.getElementById('st-persons').value)||0,feeType,nextMonth,note:document.getElementById('st-note').value.trim()};
-  if(editingStoreId){const idx=data.stores.findIndex(s=>s.id===editingStoreId);data.stores[idx]=store;}else data.stores.push(store);
-  saveData();closeModal('storeModal');renderStores();
-}
-function deleteStore(id){if(!confirm('确认删除？'))return;data.stores=data.stores.filter(s=>s.id!==id);saveData();renderStores();}
-function onFeeTypeChange(){const ft=document.getElementById('st-feetype').value;document.getElementById('st-cycle-extra').style.display=ft==='monthly'?'none':'block';const nextLabel=document.getElementById('st-next-label');if(nextLabel){nextLabel.textContent=ft==='quarterly'?'次回請求月（3ヶ月ごと）':'次回請求月（年1回）';}}
-function syncStoreAmounts(){
-  const month=document.getElementById('currentMonth').value;const invs=data.invoices.filter(i=>i.month===month);if(!invs.length){alert('本月暂无请求书');return;}
-  let updated=0;invs.forEach(inv=>{const store=data.stores.find(s=>s.id===inv.storeId);if(!store)return;let changed=false;inv.lines=inv.lines.map(line=>{if(line.name.includes('月額料金')&&line.price!==store.monthly){changed=true;return{...line,price:store.monthly};}return line;});const techIdx=inv.lines.findIndex(l=>l.name.includes('技能'));if(store.persons>0){if(techIdx>=0){if(inv.lines[techIdx].qty!==store.persons){inv.lines[techIdx]={...inv.lines[techIdx],qty:store.persons};changed=true;}}else{inv.lines.push({name:'特定技能支援費',qty:store.persons,price:10000});changed=true;}}else{if(techIdx>=0){inv.lines.splice(techIdx,1);changed=true;}}if(changed)updated++;});
-  saveData();loadInvoices();alert('✅ '+updated+'件の請求書を最新の店舗情報に同期しました。');
-}
-
-// 見積書
-let editingMitsumoriId=null;
-function renderMitsumori(){
-  if(!data.mitsumori)data.mitsumori=[];
-  const list=data.mitsumori;const tbody=document.getElementById('mitsumoriTableBody');const cardList=document.getElementById('mitsumoriCardList');
-  if(!list.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--ink-light)">見積書がありません。「＋ 新規見積書」から作成してください。</td></tr>';cardList.innerHTML='<div class="empty-state"><div class="icon">📝</div><p>見積書がありません</p></div>';return;}
-  tbody.innerHTML=list.map(m=>{const{sub,tax,total}=calcMit(m);return`<tr><td><strong>No.${m.seq}</strong></td><td>${m.name}</td><td>${m.date||''}</td><td style="color:var(--accent);font-weight:700">${yen(total)}</td><td class="actions"><button class="btn btn-outline btn-sm" onclick="editMitsumori('${m.id}')">編集</button><button class="btn btn-pdf btn-sm" onclick="downloadMitsumoriPDF('${m.id}')">📥PDF</button><button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="deleteMitsumori('${m.id}')">削除</button></td></tr>`;}).join('');
-  cardList.innerHTML=list.map(m=>{const{sub,tax,total}=calcMit(m);return`<div class="inv-card"><div class="inv-card-header"><div class="inv-card-name">No.${m.seq}　${m.name}</div></div><div class="inv-card-body"><div class="inv-card-row"><label>見積日</label><span class="val">${m.date||'-'}</span></div><div class="inv-card-row"><label>小計</label><span class="val">${yen(sub)}</span></div><div class="inv-card-row"><label>消費税</label><span class="val">${yen(tax)}</span></div></div><div class="inv-card-total"><label>合計（税込）</label><span class="amount">${yen(total)}</span></div><div class="inv-card-actions"><button class="btn btn-outline btn-sm" onclick="editMitsumori('${m.id}')">✏️ 編集</button><button class="btn btn-pdf btn-sm" onclick="downloadMitsumoriPDF('${m.id}')">📥 PDF</button><button class="btn btn-sm" style="background:#fee2e2;color:#991b1b" onclick="deleteMitsumori('${m.id}')">🗑 削除</button></div></div>`;}).join('');
-}
-function calcMit(m){let sub=0;(m.lines||[]).forEach(l=>{sub+=Math.max(0,(l.qty||0)*(l.price||0)-(l.discount||0));});const tax=Math.floor(sub*.1);return{sub,tax,total:sub+tax};}
-function nextMitSeq(){const list=data.mitsumori||[];if(!list.length)return 1;return Math.max(...list.map(m=>m.seq||0))+1;}
-function openNewMitsumori(){editingMitsumoriId=null;document.getElementById('mitsumoriModalTitle').textContent='新規見積書';document.getElementById('mit-name').value='';document.getElementById('mit-date').value=new Date().toISOString().slice(0,10);setMitLineItems([]);document.getElementById('mit-note').value='';openModal('mitsumoriModal');}
-function editMitsumori(id){const m=(data.mitsumori||[]).find(x=>x.id===id);if(!m)return;editingMitsumoriId=id;document.getElementById('mitsumoriModalTitle').textContent='見積書 No.'+m.seq+' 編集';document.getElementById('mit-name').value=m.name;document.getElementById('mit-date').value=m.date||'';setMitLineItems(m.lines||[]);document.getElementById('mit-note').value=m.note||'';openModal('mitsumoriModal');}
-function deleteMitsumori(id){if(!confirm('この見積書を削除しますか？'))return;data.mitsumori=(data.mitsumori||[]).filter(m=>m.id!==id);saveData();renderMitsumori();}
-function addMitTemplateItems(){const checked=document.querySelectorAll('#mitsumoriModal .template-items input[type="checkbox"]:checked');if(!checked.length){alert('項目を選択してください');return;}checked.forEach(cb=>{addMitLineItem({name:cb.value,qty:1,price:parseInt(cb.dataset.price),discount:0});cb.checked=false;});}
-function setMitLineItems(lines){document.getElementById('mitLineItemsBody').innerHTML='';if(lines.length)lines.forEach(l=>addMitLineItem(l));updateMitCalc();}
-function addMitLineItem(line){
-  const body=document.getElementById('mitLineItemsBody');const row=document.createElement('div');row.className='mit-line-item-row';
-  const isService = line && (line.name||'').match(/月額|年額|サービス|支援費|料金/);
-  const costVal = line&&line.cost!=null ? line.cost : (line&&line.price ? Math.round(line.price*0.3) : 0);
-  row.innerHTML=`<div class="mit-name-wrap"><label>品目名</label><input type="text" placeholder="例：レジスター" value="${(line&&line.name)||''}" oninput="updateMitCalc();mitAutoFillCost(this)"></div><div class="mit-fields"><div class="field"><label>数量</label><input type="number" value="${(line&&line.qty)||1}" min="0" oninput="updateMitCalc()"></div><div class="field"><label>単価(税抜)</label><input type="number" value="${(line&&line.price)||0}" min="0" oninput="updateMitCalc();mitCalcServiceCost(this)"></div><div class="field"><label style="color:#e67e22">原価(¥)</label><input type="number" value="${costVal}" min="0" placeholder="0" oninput="updateMitCalc()" style="border-color:#f0a500;background:#fffdf5"></div><div class="field"><label>割引</label><input type="number" value="${(line&&line.discount)||0}" min="0" oninput="updateMitCalc()"></div><div class="field"><label>単位</label><input type="text" value="${(line&&line.unit)||(line&&(line.name||'').match(/費|料金/)?'式':'台')}" oninput="updateMitCalc()"></div></div><div class="mit-line-footer"><span class="mit-line-total">¥0</span><button class="btn-icon" onclick="this.closest('.mit-line-item-row').remove();updateMitCalc()">×</button></div>`;
-  body.appendChild(row);updateMitCalc();
-}
-
-function mitAutoFillCost(nameInput) {
-  // Auto-fill cost from master when name matches
-  const name = nameInput.value.trim();
-  const row = nameInput.closest('.mit-line-item-row');
-  const costInput = row.querySelectorAll('input[type="number"]')[2]; // 3rd number = cost
-  if (!name || costInput.value > 0) return;
-  const master = getCostMaster();
-  if (master[name] && master[name].length > 0) {
-    costInput.value = master[name][master[name].length-1].cost;
+function hideDup(){document.getElementById('dup-toast').classList.remove('show');const ov=document.getElementById('dup-overlay');if(ov)ov.style.display='none';}
+async function forceSubmit(){hideDup();await doSave(window._pp)}
+let SPLIT_MODE = false;
+function toggleSplit(){
+  SPLIT_MODE = !SPLIT_MODE;
+  const card = document.getElementById('split-card');
+  const btn = document.getElementById('split-toggle-btn');
+  if(SPLIT_MODE){
+    card.style.display='block';
+    btn.textContent='✕ 取消拆分';
+    btn.style.color='#ff3b30';
+    if(document.getElementById('split-list').children.length===0) addSplit();
+  } else {
+    card.style.display='none';
+    btn.textContent='＋ 需要拆分科目';
+    btn.style.color='#8e8e93';
   }
 }
 
-function mitCalcServiceCost(priceInput) {
-  // For service fees, auto-set cost = price * 30%
-  const row = priceInput.closest('.mit-line-item-row');
-  const nameInput = row.querySelector('input[type="text"]');
-  const costInput = row.querySelectorAll('input[type="number"]')[2];
-  const name = nameInput ? nameInput.value : '';
-  if (name.match(/月額|年額|サービス|支援費|料金/)) {
-    costInput.value = Math.round((parseFloat(priceInput.value)||0) * 0.3);
+const CAT_OPTIONS = ['仕入高','食材費','飲料費','消耗品費','外注費','広告宣伝費','水道光熱費','通信費','修繕費','交際費','会議費','旅費交通費（交通）','旅費交通費（宿泊）','雑費'];
+
+function addSplit(){
+  const list = document.getElementById('split-list');
+  const row = document.createElement('div');
+  row.className = 'split-row';
+  row.innerHTML = `<select class="split-cat-sel">${CAT_OPTIONS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select>`+
+    `<input class="split-amt-input" type="number" inputmode="decimal" placeholder="金額">` +
+    `<button class="split-del" onclick="this.parentElement.remove()">×</button>`;
+  list.appendChild(row);
+}
+
+async function doSave(p){
+  try{await fetch('/api/receipts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p)})}catch(e){console.error(e)}
+  // Save shop→category mapping
+  if(p.shop && p.shop!=='unknown' && p.category) saveShopCat(p.shop, p.category);
+  showSuc(p);
+}
+function startNew(){goTo('screen-home');loadHome()}
+
+// Detail
+function showDetail(id){
+  // Ensure REC_MAP has this record - fetch if needed
+  if(!REC_MAP[id]){
+    fetch('/api/receipts').then(r=>r.json()).then(recs=>{
+      recs.forEach(r=>{REC_MAP[r.id]=r;});
+      if(REC_MAP[id]) showDetail(id);
+    }); return;
   }
-}
-function updateMitCalc(){
-  let sub=0;document.querySelectorAll('.mit-line-item-row').forEach(row=>{
-    const inputs=row.querySelectorAll('input[type="number"]');
-    // inputs: [0]=qty [1]=price [2]=cost [3]=discount
-    const qty=parseFloat(inputs[0].value)||0,price=parseFloat(inputs[1].value)||0,discount=parseFloat(inputs[3]?inputs[3].value:0)||0;
-    const amt=Math.max(0,qty*price-discount);sub+=amt;row.querySelector('.mit-line-total').textContent=yen(amt);
-  });
-  const tax=Math.floor(sub*.1);document.getElementById('mitModalSubtotal').textContent=yen(sub);document.getElementById('mitModalTax').textContent=yen(tax);document.getElementById('mitModalTotal').textContent=yen(sub+tax);
-}
-function saveMitsumori(){
-  const name=document.getElementById('mit-name').value.trim();if(!name){alert('宛先を入力してください');return;}
-  const lines=[];document.querySelectorAll('.mit-line-item-row').forEach(row=>{
-    const textInputs=row.querySelectorAll('input[type="text"]');
-    const numInputs=row.querySelectorAll('input[type="number"]');
-    // numInputs: [0]=qty [1]=price [2]=cost [3]=discount
-    lines.push({
-      name:textInputs[0].value,
-      qty:parseFloat(numInputs[0].value)||0,
-      price:parseFloat(numInputs[1].value)||0,
-      cost:parseFloat(numInputs[2]?numInputs[2].value:0)||0,
-      discount:parseFloat(numInputs[3]?numInputs[3].value:0)||0,
-      unit:textInputs[1]?textInputs[1].value||'台':'台'
-    });
-  });
-  if(!data.mitsumori)data.mitsumori=[];
-  const m={id:editingMitsumoriId||uid(),seq:editingMitsumoriId?(data.mitsumori.find(x=>x.id===editingMitsumoriId)||{}).seq:nextMitSeq(),name,date:document.getElementById('mit-date').value,lines,note:document.getElementById('mit-note').value.trim()};
-  if(editingMitsumoriId){const idx=data.mitsumori.findIndex(x=>x.id===editingMitsumoriId);data.mitsumori[idx]=m;}else data.mitsumori.push(m);
-  // Update cost master from saved lines
-  updateCostMasterFromLines(lines);
-  saveData();closeModal('mitsumoriModal');renderMitsumori();
+  const rec=REC_MAP[id];
+  DETAIL_ID=id;
+  document.getElementById('det-hdr-sub').textContent=rec.date+'  ·  '+(rec.category||'');
+  document.getElementById('det-shop').textContent=rec.shop||'—';
+  document.getElementById('det-date').textContent=rec.date||'—';
+  document.getElementById('det-total').textContent=fmt(rec.total);
+  document.getElementById('det-cat').textContent=catIcon(rec.category)+' '+(rec.category||'—');
+  const ne=document.getElementById('det-note');
+  if(rec.note){ne.textContent=rec.note;ne.style.display='block'}else{ne.style.display='none'}
+  document.getElementById('det-sub').textContent=fmt(rec.subtotal);
+  document.getElementById('det-tax8').textContent=fmt(rec.tax8);
+  document.getElementById('det-tax10').textContent=fmt(rec.tax10);
+  document.getElementById('det-total2').textContent=fmt(rec.total);
+  // Items
+  let items=[];
+  try{items=JSON.parse(rec.items||'[]')}catch(e){}
+  const ic=document.getElementById('det-items-card');
+  if(items.length>0){
+    ic.style.display='block';
+    document.getElementById('det-items-cnt').textContent='('+items.length+'件)';
+    document.getElementById('det-items-list').innerHTML=items.map(it=>
+      '<div class="di-row"><div class="di-name">'+esc(it.name)+'</div>'+
+      (it.qty?'<div class="di-qty">×'+it.qty+'</div>':'')+
+      '<div class="di-price">'+fmt(it.price)+'</div></div>'
+    ).join('');
+  } else { ic.style.display='none'; }
+  goTo('screen-detail');
 }
 
-function buildMitsumoriHTML(m){
-  const{sub,tax,total}=calcMit(m);let dateStr='';if(m.date){try{const parts=m.date.split('-');dateStr=parts[0]+'年'+parseInt(parts[1])+'月'+parseInt(parts[2])+'日';}catch(e){dateStr=m.date||'';} }
-  const emptyRows=Math.max(0,8-(m.lines||[]).length);
-  let linesHTML='';(m.lines||[]).forEach(function(l){const amt=Math.max(0,(l.qty||0)*(l.price||0)-(l.discount||0));linesHTML+='<tr><td>'+l.name+'</td><td style="text-align:center">'+l.qty+'</td><td style="text-align:center">'+(l.unit||'台')+'</td><td style="text-align:right">'+(l.price||0).toLocaleString()+'</td><td style="text-align:right">'+(l.discount?'-'+l.discount.toLocaleString():'-')+'</td><td style="text-align:right">'+amt.toLocaleString()+'</td></tr>';});
-  for(var i=0;i<emptyRows;i++){linesHTML+='<tr class="empty"><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';}
-  const noteHTML=m.note?m.note.replace(/\n/g,'<br>'):'&nbsp;';
-  return '<div class="inv-page"><div class="p-title">見　積　書</div><div class="p-top"><div class="p-top-left"><div class="p-to">'+m.name+' <span class="p-ochu">御中</span></div><div class="p-greeting">下記の通り御見積もり申し上げます。</div><div class="p-amount-box"><div class="p-amount-label">合計金額（税込）</div><div class="p-amount-value">¥'+total.toLocaleString()+'<span class="p-kiri">-</span></div></div></div><div class="p-top-right"><div class="p-issuer-name">新日本富士アシスト株式会社</div><div class="p-issuer-row"><div class="p-issuer-info">〒110-0016　東京都台東区台東4-31-7-203<br>TEL 03-6806-0988　FAX 03-6806-0128<br>携帯TEL：090-3319-1688<br>登録番号：T3010801026751</div></div><div class="p-dates-right"><div class="p-date-row"><span class="p-date-label">見積日：</span>'+dateStr+'</div><div class="p-date-row"><span class="p-date-label">見積番号：</span>No.'+m.seq+'</div><div class="p-date-row" style="font-size:10.5px;color:#888;margin-top:4px">本見積書の有効期限は発行日より30日間です。</div></div></div></div><table class="p-items"><thead><tr><th style="text-align:left;width:40%">品目・内容</th><th style="text-align:center;width:8%">数量</th><th style="text-align:center;width:7%">単位</th><th style="text-align:right;width:15%">単価（税抜）</th><th style="text-align:right;width:12%">割引</th><th style="text-align:right;width:18%">小計（税抜）</th></tr></thead><tbody>'+linesHTML+'</tbody></table><div class="p-subtotal-block"><div class="p-subtotal-row"><span>小計</span><span>¥'+sub.toLocaleString()+'</span></div><div class="p-subtotal-row"><span>消費税（10%）</span><span>¥'+tax.toLocaleString()+'</span></div><div class="p-subtotal-row grand"><span>合計（税込）</span><span>¥'+total.toLocaleString()+'</span></div></div><div class="p-note" style="min-height:80px"><div class="p-note-title">備考</div><div class="p-note-body">'+noteHTML+'</div></div></div>';
+function editCurrentDetail(){
+  const rec=REC_MAP[DETAIL_ID]; if(!rec)return;
+  EDIT_ID=rec.id;
+  let items=[];try{items=JSON.parse(rec.items||'[]')}catch(e){}
+  PD={shop:rec.shop,date:rec.date,no:'-',
+    subtotal_num:rec.subtotal||0,tax8_num:rec.tax8||0,tax10_num:rec.tax10||0,total_num:rec.total||0,
+    subtotal:fmt(rec.subtotal),tax8:fmt(rec.tax8),tax10:fmt(rec.tax10),total:fmt(rec.total),
+    items:items,items_json:rec.items||'[]',category:0,
+    confidence:{overall:rec.confidence||0,shop:rec.confidence||0,date:rec.confidence||0,total:rec.confidence||0},_url:null};
+  fillResult(PD);
+  document.getElementById('e-cat').value=rec.category||'交際費';
+  document.getElementById('e-note').value=rec.note||'';
+  document.getElementById('edit-banner').classList.add('show');
+  document.getElementById('submit-btn').textContent='✓ 更新记录';
+  document.getElementById('result-title').textContent='编辑记录';
+  goTo('screen-result');
 }
 
-async function downloadMitsumoriPDF(id){
-  const m=(data.mitsumori||[]).find(x=>x.id===id);if(!m)return;
-  showLoading('見積書 No.'+m.seq+' を生成中...');
+async function deleteCurrentDetail(){
+  if(!confirm('删除此记录？'))return;
+  try{await fetch('/api/receipts/'+DETAIL_ID,{method:'DELETE'})}catch(e){console.error(e)}
+  delete REC_MAP[DETAIL_ID];
+  goTo('screen-records'); loadRecords();
+}
+
+// Records
+async function loadRecords(){
+  const body=document.getElementById('rec-body');
+  body.innerHTML='<div class="empty">加载中…</div>';
   try{
-    const{jsPDF}=window.jspdf;
-    const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-    const pdfW=doc.internal.pageSize.getWidth();
-    const pdfH=doc.internal.pageSize.getHeight();
-
-    const container=document.createElement('div');
-    container.style.cssText='position:fixed;top:0;left:-9999px;width:794px;height:1123px;overflow:hidden;z-index:-1;background:white;';
-    document.body.appendChild(container);
-    container.innerHTML=buildMitsumoriHTML(m);
-
-    const imgs=[...container.querySelectorAll('img')];
-    await Promise.all(imgs.map(img=>{
-      if(img.complete)return Promise.resolve();
-      return new Promise(r=>{img.onload=r;img.onerror=r;setTimeout(r,3000);});
-    }));
-    await new Promise(r=>setTimeout(r,400));
-
-    const pg=container.querySelector('.inv-page')||container.firstElementChild;
-    const canvas=await html2canvas(pg||container,{
-      scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',
-      width:794,height:1123,windowWidth:794,windowHeight:1123,
-      scrollX:0,scrollY:0,logging:false
-    });
-    document.body.removeChild(container);
-    doc.addImage(canvas.toDataURL('image/jpeg',0.92),'JPEG',0,0,pdfW,pdfH);
-    doc.save('見積書_No'+m.seq+'_'+m.name+'.pdf');
-  }
-  catch(e){alert('PDF生成エラー: '+e.message);}
-  finally{hideLoading();}
+    const recs=await fetch('/api/receipts').then(r=>r.json());
+    document.getElementById('rec-sub').textContent='共 '+recs.length+' 条记录';
+    if(!recs.length){body.innerHTML='<div class="empty"><div class="empty-icon">📋</div>暂无记录</div>';return}
+    REC_MAP={}; const groups={};
+    recs.forEach(r=>{REC_MAP[r.id]=r;const m=(r.date||'').slice(0,7);if(!groups[m])groups[m]=[];groups[m].push(r)});
+    body.innerHTML=Object.keys(groups).sort().reverse().map(m=>{
+      const its=groups[m]; const tot=its.reduce((s,r)=>s+(r.total||0),0);
+      return '<div class="month-section">'+
+        '<div class="month-hdr"><div class="month-name">'+m+'</div><div class="month-tot">'+fmt(tot)+'</div></div>'+
+        '<div class="month-recs">'+its.map(r=>
+          '<div class="rec-item" onclick="showDetail('+r.id+')">'+
+          '<div style="width:36px;height:36px;border-radius:9px;background:#f2f2f7;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">'+catIcon(r.category)+'</div>'+
+          '<div class="rec-info"><div class="rec-shop">'+esc(r.shop)+'</div><div class="rec-meta">'+r.date+(r.note?' · '+esc(r.note):'')+'</div></div>'+
+          '<div class="rec-right"><div class="rec-amt">'+fmt(r.total)+'</div><div class="rec-cat">'+esc(r.category)+'</div></div>'+
+          '</div>'
+        ).join('')+'</div></div>';
+    }).join('');
+  }catch(e){body.innerHTML='<div class="empty">加载失败</div>'}
 }
 
-// Modal helpers
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
-
-// Auto generate
-function checkAutoGen(){
-  const today=new Date();if(today.getDate()!==1)return;
-  const thisMonth=getMonthStr(today);if(data.lastAutoGenMonth===thisMonth)return;
-  if(data.invoices.filter(i=>i.month===thisMonth).length){data.lastAutoGenMonth=thisMonth;saveData();return;}
-  document.getElementById('currentMonth').value=thisMonth;generateMonth();data.lastAutoGenMonth=thisMonth;saveData();
+// Stats
+async function loadStats(){
+  const body=document.getElementById('stats-body');
+  try{
+    const sum=await fetch('/api/summary').then(r=>r.json());
+    if(!sum.length){body.innerHTML='<div class="empty"><div class="empty-icon">📊</div>暂无数据</div>';return}
+    const maxT=Math.max(...sum.map(s=>s.total||0))||1;
+    const tA=sum.reduce((s,r)=>s+(r.total||0),0);
+    const cA=sum.reduce((s,r)=>s+(r.count||0),0);
+    const xA=sum.reduce((s,r)=>s+(r.tax8||0)+(r.tax10||0),0);
+    body.innerHTML=
+      '<div class="card-pad"><div class="card-ttl">累计汇总</div><div class="stat-grid">'+
+      '<div class="stat-cell"><div class="stat-num">'+fmt(tA)+'</div><div class="stat-lbl">总金额</div></div>'+
+      '<div class="stat-cell"><div class="stat-num">'+cA+'</div><div class="stat-lbl">张票据</div></div>'+
+      '<div class="stat-cell"><div class="stat-num">'+fmt(xA)+'</div><div class="stat-lbl">消費税合計</div></div>'+
+      '<div class="stat-cell"><div class="stat-num">'+sum.length+'</div><div class="stat-lbl">个月</div></div>'+
+      '</div></div>'+
+      '<div class="card-pad"><div class="card-ttl">各月支出</div>'+
+      sum.map(s=>{const p=Math.round(((s.total||0)/maxT)*100);
+        return '<div class="bar-row"><div class="bar-lbl">'+s.month+'</div><div class="bar-wrap"><div class="bar-fill" style="width:'+p+'%"></div></div><div class="bar-val">'+fmt(s.total||0)+'</div></div>';
+      }).join('')+'</div>';
+  }catch(e){body.innerHTML='<div class="empty">加载失败</div>'}
 }
 
-// Init
-function init(){
-  loadData();if(!data.mitsumori){data.mitsumori=[];saveData();}
-  const now=new Date();
-  document.getElementById('currentMonth').value=getMonthStr(now);
-  document.getElementById('headerDate').textContent=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日';
-  loadInvoices();checkAutoGen();
+// Update summary when date changes
+document.getElementById('e-date').addEventListener('change', function(){
+  document.getElementById('r-date').textContent = this.value || '—';
+});
+
+// Enter key support
+try{
+  document.getElementById('login-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') doLogin(); });
+  document.getElementById('login-user').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('login-pass').focus(); });
+}catch(e){}
+
+// ── Init: check login ──
+if(CURRENT_USER){
+  document.getElementById('btn-next').disabled=true;
+  afterLogin();
+} else {
+  goTo('screen-login');
 }
-init();
-
-/* ══ 原価マスタ ══════════════════════════════════════════════ */
-const COST_MASTER_KEY = 'njf_cost_master_v1';
-// Service fee keywords — cost = price * 30%
-const SERVICE_KEYWORDS = /月額|年額|サービス|支援費|料金|fee/i;
-
-function getCostMaster() {
-  try { return JSON.parse(localStorage.getItem(COST_MASTER_KEY)||'{}'); } catch(_){ return {}; }
-}
-
-function saveCostMaster(master) {
-  localStorage.setItem(COST_MASTER_KEY, JSON.stringify(master));
-}
-
-function updateCostMasterFromLines(lines) {
-  const master = getCostMaster();
-  const today = new Date().toISOString().slice(0,10);
-  lines.forEach(l => {
-    if (!l.name || !l.cost) return;
-    if (!master[l.name]) master[l.name] = [];
-    const last = master[l.name][master[l.name].length-1];
-    // Only add new entry if cost changed
-    if (!last || last.cost !== l.cost) {
-      master[l.name].push({ cost: l.cost, from: today });
-    }
-  });
-  saveCostMaster(master);
-}
-
-function getCostAtDate(itemName, dateStr) {
-  // Get cost for an item on a specific date (using timestamped history)
-  const master = getCostMaster();
-  const history = master[itemName];
-  if (!history || history.length === 0) return null;
-  // Find the most recent entry that is <= dateStr
-  let bestCost = history[0].cost;
-  for (const entry of history) {
-    if (entry.from <= dateStr) bestCost = entry.cost;
-    else break;
-  }
-  return bestCost;
-}
-
-function isServiceItem(name) {
-  return SERVICE_KEYWORDS.test(name||'');
-}
-
-/* ══ ROLL PAPER ══════════════════════════════════════════════ */
-const RP_ORDER_FROM = {
-  merchantName: "金澤企画国際株式会社【コード　6831】",
-  emailTo: "info@gm-life.co.jp"
-};
-
-function rpTodayText() {
-  const d = new Date();
-  return d.getFullYear() + "年 " + (d.getMonth()+1) + "月 " + d.getDate() + "日";
-}
-
-function rpGetVal(id) {
-  const el = document.getElementById(id);
-  return el ? el.value.trim() : "";
-}
-
-function rpBuildItems() {
-  const qty1 = Number(rpGetVal("rp-qty1")||0);
-  const items = [];
-  if (qty1 > 0) items.push("75-88（80mm×80Φ×12mm / 75μ / 48巻）　" + qty1 + "箱");
-  return items;
-}
-
-function rpBuildMail() {
-  const orderDate = rpGetVal("rp-orderDate");
-  const toName    = rpGetVal("rp-toName");
-  const address   = rpGetVal("rp-address");
-  const tel       = rpGetVal("rp-tel");
-  const note      = rpGetVal("rp-note");
-  const items     = rpBuildItems();
-  const lines = ["ロール紙注文依頼","","発注日："+orderDate,"","【注文内容】"];
-  if (items.length > 0) items.forEach(i => lines.push(i));
-  else lines.push("※注文内容未入力");
-  lines.push("","【お届け先】","御会社名："+toName,"ご住所："+address,"TEL："+tel);
-  if (note) lines.push("","【備考】",note);
-  lines.push("","お手数をおかけしますが、何卒よろしくお願い申し上げます。");
-  return lines.join("\n");
-}
-
-function rpUpdate() {
-  const subject = RP_ORDER_FROM.merchantName + "【ロール紙注文】";
-  const body = rpBuildMail();
-  const href = "mailto:" + RP_ORDER_FROM.emailTo +
-    "?subject=" + encodeURIComponent(subject) +
-    "&body=" + encodeURIComponent(body);
-  const btn = document.getElementById("rp-mailBtn");
-  if (btn) btn.href = href;
-  const pre = document.getElementById("rp-preview");
-  if (pre) pre.textContent = body;
-}
-
-function rpInit() {
-  const el = document.getElementById("rp-orderDate");
-  if (el) el.value = rpTodayText();
-  ["rp-qty1","rp-toName","rp-address","rp-tel","rp-note"].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.addEventListener("input", rpUpdate); el.addEventListener("change", rpUpdate); }
-  });
-  rpUpdate();
-}
-
 </script>
+
+<!-- BATCH SCREEN -->
+<div class="screen" id="screen-batch">
+  <div style="background:#1c1c1e;color:#fff;padding:52px 16px 14px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50">
+    <div>
+      <div style="font-size:17px;font-weight:700">批量录入</div>
+      <div style="font-size:12px;opacity:0.6;margin-top:2px" id="batch-info">准备中…</div>
+    </div>
+    <button id="batch-submit-btn" onclick="batchSubmitAll()" disabled style="padding:9px 18px;background:#34c759;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">等待识别</button>
+  </div>
+  <div id="batch-list" style="padding-bottom:40px"></div>
+</div>
 </body>
 </html>
